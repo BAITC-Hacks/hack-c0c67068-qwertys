@@ -143,7 +143,40 @@ def select_horizon(rows: list[dict], issue_time: str, horizon_hours: int) -> lis
         raise ValueError("Horizon must be 24 or 48 hours")
     issue = _parse_utc(issue_time)
     target = [_iso(issue + timedelta(hours=i)) for i in range(1, horizon_hours + 1)]
-    by_valid = {row["valid_time"]: row for row in rows}
+    if not rows:
+        raise ValueError("Weather run has no rows")
+    by_valid = {}
+    cycle = None
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("Weather row must be an object")
+        required = {
+            "provider", "model", "run_time", "available_at", "valid_time",
+            "variables", "units", "source_reference", "availability_basis",
+            "provenance_status",
+        }
+        missing = required - row.keys()
+        if missing:
+            raise ValueError(f"Missing weather row keys: {sorted(missing)}")
+        if not all(isinstance(row[key], str) and row[key] for key in ("provider", "model", "source_reference", "availability_basis", "provenance_status")):
+            raise ValueError("Weather source identity is empty")
+        run_time = _iso(_parse_utc(row["run_time"]))
+        available_at = _iso(_parse_utc(row["available_at"]))
+        valid_time = _iso(_parse_utc(row["valid_time"]))
+        if _parse_utc(run_time) > _parse_utc(available_at):
+            raise ValueError("Run initialization is after availability")
+        identity = (
+            row["provider"], row["model"], run_time, available_at,
+            row["source_reference"], row["availability_basis"],
+            row["provenance_status"],
+        )
+        if cycle is None:
+            cycle = identity
+        elif identity != cycle:
+            raise ValueError("Mixed weather run cycles or source references")
+        if valid_time in by_valid:
+            raise ValueError(f"Duplicate weather valid_time: {valid_time}")
+        by_valid[valid_time] = row
     selected = []
     for valid in target:
         row = by_valid.get(valid)
@@ -151,11 +184,29 @@ def select_horizon(rows: list[dict], issue_time: str, horizon_hours: int) -> lis
             raise ValueError(f"Weather run does not cover {valid}")
         if _parse_utc(row["available_at"]) > issue:
             raise ValueError("Run unavailable under the +9h availability assumption")
+        if not isinstance(row["variables"], dict) or not isinstance(row["units"], dict):
+            raise ValueError(f"Weather variables/units must be objects at {valid}")
+        expected_units = {
+            "wind_speed_100m_m_s": "m/s",
+            "wind_direction_100m_deg": "degrees",
+            "temperature_2m_c": "°C",
+        }
+        missing_vars = expected_units.keys() - row["variables"].keys()
+        if missing_vars:
+            raise ValueError(f"Missing weather variables at {valid}: {sorted(missing_vars)}")
+        if any(row["units"].get(key) != unit for key, unit in expected_units.items()):
+            raise ValueError(f"Unexpected weather units at {valid}")
         if any(
             isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
-            for value in row["variables"].values()
+            for value in (row["variables"][key] for key in expected_units)
         ):
             raise ValueError(f"Nonfinite or nonnumeric weather variable at {valid}")
+        if row["variables"]["wind_speed_100m_m_s"] < 0:
+            raise ValueError(f"Negative wind speed at {valid}")
+        if row["variables"]["temperature_2m_c"] < -273.15:
+            raise ValueError(f"Temperature below absolute zero at {valid}")
+        if not 0 <= row["variables"]["wind_direction_100m_deg"] <= 360:
+            raise ValueError(f"Wind direction outside 0..360 degrees at {valid}")
         selected.append(row)
     return selected
 

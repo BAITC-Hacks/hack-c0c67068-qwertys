@@ -58,8 +58,8 @@ def fetch_range(
 ) -> dict:
     if end < start or (end - start).days > 124:
         raise ValueError("Range must be nonempty and at most 125 daily runs")
-    if sleep_seconds < 0.5:
-        raise ValueError("Minimum interval between requests is 0.5 seconds")
+    if sleep_seconds < 1.0:
+        raise ValueError("Minimum interval between request starts is 1.0 second")
     if cached_response is not None and start != end:
         raise ValueError("--cached-response requires a single run date")
     if manifest_path.exists():
@@ -81,11 +81,13 @@ def fetch_range(
     manifest["source_terms_url"] = "https://open-meteo.com/en/terms"
     manifest["attribution"] = "Weather data: Open-Meteo.com; underlying model: ECMWF IFS"
     manifest["units"] = {"wind_speed_100m_m_s": "m/s", "wind_direction_100m_deg": "degrees", "temperature_2m_c": "°C"}
-    for entry in manifest["runs"].values():
+    manifest["model_cycle_note"] = "IFS 49r1 became operational 2024-11-12; older archive responses are hindcasts. Later as-issued publication remains unconfirmed."
+    for run_day, entry in manifest["runs"].items():
         if entry.get("status") == "ready":
             entry.setdefault("expected_hours", 48)
             entry.setdefault("missing_selected_hours", 0)
             entry.setdefault("missing_selected_values", 0)
+            entry["model_cycle_regime"] = "hindcast_pre_operational_49r1" if run_day < "2024-11-12" else "operational_epoch_publication_unconfirmed"
     current = start
     attempted = 0
     while current <= end:
@@ -97,6 +99,7 @@ def fetch_range(
         run = key + "T00:00Z"
         issue = key + "T12:00Z"
         last_error = None
+        request_started = time.monotonic()
         for attempt in range(1 if cached_response is not None else 3):
             try:
                 if cached_response is not None:
@@ -122,6 +125,7 @@ def fetch_range(
                     "available_at": selected[0]["available_at"],
                     "availability_basis": selected[0]["availability_basis"],
                     "provenance_status": selected[0]["provenance_status"],
+                    "model_cycle_regime": "hindcast_pre_operational_49r1" if key < "2024-11-12" else "operational_epoch_publication_unconfirmed",
                     "first_valid_time": selected[0]["valid_time"],
                     "last_valid_time": selected[-1]["valid_time"],
                     "selected_hours": len(selected),
@@ -153,7 +157,7 @@ def fetch_range(
             failed = sum(v.get("status") == "failed" for v in manifest["runs"].values())
             print(f"{key}: {manifest['runs'][key]['status']} | ready={ready} failed={failed}", flush=True)
         if current < end:
-            time.sleep(sleep_seconds)
+            time.sleep(max(0.0, sleep_seconds - (time.monotonic() - request_started)))
         current += timedelta(days=1)
     return manifest
 
