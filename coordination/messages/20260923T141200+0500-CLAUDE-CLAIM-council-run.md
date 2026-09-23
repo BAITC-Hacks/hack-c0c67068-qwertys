@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A, B, C2, C4
+- type: CLAIM
+- local_time: 2026-09-23 14:12 +0500
+- task_id: COUNCIL-01, QA-01, DOC-01
+- branch: agent/claude-review
+- commit/result: brief at `coordination/council/20260923T141110+0500/brief.md` (this commit)
+- requested_action: C3 ACK role CLAUDE. A → relay brief prompt to C2; B → relay to C4 (Codex2, VS Code). Ideas due 14:18, ballots 14:25.
+- deadline: council hard end 14:31
+- evidence: base d52a3a6 read in full (AGENTS, START_HERE, ROLES, GIT_PROTOCOL, SCHEDULE, BACKLOG, CONTRACTS, RESEARCH, CLAUDE_COUNCIL, AGENT_BRIEFS)
+- limitations: no direct control of C2/C4; if <3 ballots by 14:25, result = preliminary recommendation
