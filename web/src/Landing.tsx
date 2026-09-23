@@ -46,9 +46,15 @@ function Hero() {
   }, [])
 
   return (
-    <section className={`hero${failed ? ' no-webgl' : ''}`} role="img" aria-label="Low-poly ветропарк в степи, над ним дует ветер">
-      <div ref={stageRef} className="hero-stage" />
+    <section className={`hero${failed ? ' no-webgl' : ''}`}>
+      <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly ветропарк в степи, над ним дует ветер" />
       <div ref={fadeRef} className="hero-fade" />
+      <div className="hero-cta">
+        <p>Шелекский коридор · прогноз выработки ВЭС на 24–48 ч</p>
+        <a className="btn primary lp-go" href="#/dashboard">
+          Открыть дашборд <span aria-hidden>→</span>
+        </a>
+      </div>
     </section>
   )
 }

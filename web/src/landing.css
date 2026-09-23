@@ -12,6 +12,17 @@
 .hero-stage canvas { display: block; width: 100%; height: 100%; }
 .hero-fade { position: absolute; inset: 0; background: #0a0f1a; opacity: 1; pointer-events: none; transition: opacity 0.9s ease; }
 .hero.no-webgl .hero-fade { opacity: 0; }
+/* the one control on the scene (user request, overrides the handoff's "nothing on top") */
+.hero-cta {
+  position: absolute; left: 0; right: 0; bottom: 0; display: grid; justify-items: center; gap: 12px;
+  padding: 90px 20px 44px; text-align: center; pointer-events: none;
+  background: linear-gradient(0deg, rgba(6, 9, 16, 0.6), rgba(6, 9, 16, 0));
+}
+.hero-cta > * { pointer-events: auto; }
+.hero-cta p {
+  margin: 0; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.02em;
+  color: #f6f3ea; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+}
 
 .lp { max-width: 1120px; margin: 0 auto; padding: 56px 20px 32px; display: grid; gap: 28px; }
 .lp-eyebrow {
