@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import './landing.css'
 
 const STEPS = [
-  { title: 'Погода', text: 'Берёт прогон ECMWF IFS, доступный к моменту выпуска по правилу «прогон + 9 ч» (допущение)' },
-  { title: 'Подготовка', text: 'Собирает почасовые входы на 24 или 48 часов вперёд' },
-  { title: 'Модель', text: 'V1: кривая «прогноз ветра → мощность» для каждой турбины' },
-  { title: 'Анализ', text: 'Проверяет время выпуска, горизонт, дубли и пропуски' },
-  { title: 'Экспорт', text: 'Таблица, журнал действий агента и CSV для диспетчера' },
+  { title: 'Weather', text: 'Picks the ECMWF IFS run available at issue time under the “run + 9 h” rule (an assumption)' },
+  { title: 'Preparation', text: 'Builds hourly inputs 24 or 48 hours ahead' },
+  { title: 'Model', text: 'V1: a “wind forecast → power” curve for each turbine' },
+  { title: 'Analysis', text: 'Checks issue time, horizon, duplicates and gaps' },
+  { title: 'Export', text: 'Table, agent action log and CSV for the dispatcher' },
 ]
 
 /** Turbine mark shared with the dashboard masthead */
@@ -56,7 +56,7 @@ function Hero() {
 
   return (
     <section className={`hero${failed ? ' no-webgl' : ''}`}>
-      <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly ветропарк в степи, над ним дует ветер" />
+      <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
       <h1 className="hero-title">JELIQ</h1>
       <header className="lp-header">
@@ -65,7 +65,7 @@ function Hero() {
           JELIQ
         </span>
         <a className="lp-nav" href="#/dashboard">
-          Дашборд
+          Dashboard
         </a>
       </header>
     </section>
@@ -73,27 +73,35 @@ function Hero() {
 }
 
 export default function Landing() {
+  useEffect(() => {
+    const prev = document.title
+    document.title = 'JELIQ · wind power forecast'
+    return () => {
+      document.title = prev
+    }
+  }, [])
+
   return (
-    <main className="landing">
+    <main className="landing" lang="en">
       <Hero />
       <section className="lp">
         <p className="lp-eyebrow">
           <Mark />
-          Шелекский коридор · HackAlem AI 2026 · QwertyS
+          Shelek corridor · HackAlem AI 2026 · QwertyS
         </p>
-        <h2>Почасовой прогноз выработки двух ветротурбин на 24–48 часов</h2>
+        <h2>Hourly power forecast for two wind turbines, 24–48 hours ahead</h2>
         <p className="lp-lead">
-          Агент берёт архивный прогноз погоды, который по правилу доступности вышел до момента выпуска, рассчитывает мощность и
-          проверяет результат. Диспетчер получает таблицу, журнал действий и CSV.
+          The agent takes an archived weather forecast that, under the availability rule, was published before the issue time,
+          computes power output and validates the result. The dispatcher gets a table, an action log and a CSV.
         </p>
         <div className="lp-cta">
           <a className="btn primary lp-go" href="#/dashboard">
-            Открыть дашборд <span aria-hidden>→</span>
+            Open dashboard <span aria-hidden>→</span>
           </a>
-          <span className="lp-note">первый сценарий: 31.01.2026, 17:00 UTC+5, 48 ч</span>
+          <span className="lp-note">first run: 31.01.2026, 17:00 UTC+5, 48 h</span>
         </div>
 
-        <ol className="lp-steps" aria-label="Этапы агента">
+        <ol className="lp-steps" aria-label="Agent stages">
           {STEPS.map((s) => (
             <li key={s.title}>
               <b>{s.title}</b>
@@ -104,31 +112,31 @@ export default function Landing() {
 
         <dl className="lp-facts">
           <div>
-            <dt>турбины</dt>
+            <dt>turbines</dt>
             <dd>
-              <span className="lp-site"><i className="pin t1" aria-hidden />Т1 43.6452° N 78.5356° E</span>
-              <span className="lp-site"><i className="pin t2" aria-hidden />Т2 43.6432° N 78.5388° E</span>
+              <span className="lp-site"><i className="pin t1" aria-hidden />T1 43.6452° N 78.5356° E</span>
+              <span className="lp-site"><i className="pin t2" aria-hidden />T2 43.6432° N 78.5388° E</span>
             </dd>
           </div>
           <div>
-            <dt>единицы</dt>
-            <dd>нормализованная мощность 0…1, не МВт</dd>
+            <dt>units</dt>
+            <dd>normalized power 0…1, not MW</dd>
           </div>
           <div>
-            <dt>проверка на январе 2026</dt>
+            <dt>January 2026 check</dt>
             <dd>
-              MAE <b>0,190</b> · RMSE <b>0,243</b> (обе турбины)
+              MAE <b>0.190</b> · RMSE <b>0.243</b> (both turbines)
             </dd>
           </div>
           <div>
-            <dt>допущения</dt>
-            <dd>время публикации погоды и часовой пояс SCADA (UTC+6); для февраля 2026 факта нет — точность не измерена</dd>
+            <dt>assumptions</dt>
+            <dd>weather publication time and SCADA time zone (UTC+6); no actuals for February 2026, so its accuracy is not measured</dd>
           </div>
         </dl>
 
         <footer className="lp-foot">
           <span>QwertyS · HackAlem AI 2026</span>
-          <a href="#/dashboard">Дашборд диспетчера →</a>
+          <a href="#/dashboard">Dispatcher dashboard →</a>
         </footer>
       </section>
     </main>
