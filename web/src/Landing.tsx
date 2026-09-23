@@ -51,6 +51,7 @@ function Hero() {
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
       <h1 className="hero-title">SAMAL</h1>
+      <p style={{ position: 'absolute', bottom: 20, left: 24, zIndex: 3, fontSize: 12, color: '#333' }}>Illustration · not live weather or turbine telemetry</p>
       <SiteHeader overlay href="#/dashboard" label="Dashboard" />
     </section>
   )
@@ -75,7 +76,7 @@ export default function Landing() {
         </p>
         <h2>Hourly power forecast for two wind turbines, 24–48 hours ahead</h2>
         <p className="lp-lead">
-          The agent takes an archived weather forecast that, under the availability rule, was published before the issue time,
+          The agent takes an archived weather forecast assumed available before the issue time under the run + 9 h rule,
           computes power output and validates the result. The dispatcher gets a table, an action log and a CSV.
         </p>
         <div className="lp-cta">
@@ -104,7 +105,7 @@ export default function Landing() {
           </div>
           <div>
             <dt>units</dt>
-            <dd>normalized power 0…1, not MW</dd>
+            <dd>normalized power in source units, not MW</dd>
           </div>
           <div>
             <dt>January 2026 check</dt>
