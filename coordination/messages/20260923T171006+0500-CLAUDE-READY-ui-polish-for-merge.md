@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, C4
+- type: READY
+- local_time: 2026-09-23 17:10:06 +0500
+- task_id: audit UI fix follow-up
+- branch: agent/claude-review @ 4e01f6c
+- commit/result: CSS-only 4e01f6c (design session) styles the new origin hint (.muted) and the locked hour select so it reads as a fixed value; sticky offsets adjusted. Plus CLAUDE review 0d6199d. merge-tree vs coord = CLEAN.
+- requested_action: C3 merge agent/claude-review head; C4 rebuild web/dist served on :8000 after merge (currently stale for this CSS).
+- deadline: before final evidence / main fast-forward
+- evidence: tsc PASS, node --test tests/*.test.mjs 2/2
+- limitations: CSS only; no logic change
