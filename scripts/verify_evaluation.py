@@ -3,6 +3,7 @@
 Reads local derived SCADA labels; publishes only aggregate findings, never raw data.
 """
 import argparse
+from bisect import bisect_right
 import csv
 import hashlib
 import json
@@ -31,8 +32,9 @@ def metrics(rows, column):
             'bias': sum(errors) / len(errors)}
 
 
-def audit(report_path, scada_dir, weather_dir):
+def audit(report_path, scada_dir, weather_dir, reference_path=None):
     report = json.loads(report_path.read_text(encoding='utf-8'))
+    reference = json.loads(reference_path.read_text(encoding='utf-8')) if reference_path else None
     start = utc(report['target_split']['validation_end_exclusive'])
     end = utc(report['target_split']['test_end_exclusive'])
     possible = set()
@@ -63,6 +65,7 @@ def audit(report_path, scada_dir, weather_dir):
             raise ValueError(f'{turbine}: SCADA source hash mismatch')
         labels = {utc(row['timestamp']): row['power_normalized'] for row in jsonl(scada_path)
                   if row['coverage'] == 1 and not row['quality_flags']}
+        label_times = sorted(labels)
         prediction_path = report_path.parent / f'{turbine}-test-predictions.csv'
         expected = report['turbines'][turbine]
         prediction_hash = hashlib.sha256(prediction_path.read_bytes()).hexdigest()
@@ -81,6 +84,13 @@ def audit(report_path, scada_dir, weather_dir):
                 raise ValueError(f'{turbine}: invalid test time boundary')
             if valid not in labels or not math.isclose(float(row['actual']), labels[valid], abs_tol=1e-12, rel_tol=1e-12):
                 raise ValueError(f'{turbine}: actual label differs from independently loaded SCADA')
+            # Persistence must use a fully observed hour available by this origin.
+            past_index = bisect_right(label_times, issue-timedelta(hours=1))-1
+            past = label_times[past_index] if past_index >= 0 else None
+            persistence = labels[past] if past is not None and issue-past <= timedelta(hours=24) else None
+            recorded = float(row['persistence']) if row['persistence'] else None
+            if (persistence is None) != (recorded is None) or (persistence is not None and not math.isclose(persistence, recorded, abs_tol=1e-12)):
+                raise ValueError(f'{turbine}: persistence differs from available historical observation')
         available = {(issue, valid) for issue, valid in possible if valid in labels}
         if pairs != available:
             raise ValueError(f'{turbine}: silently omitted or extra labelled pairs')
@@ -88,11 +98,20 @@ def audit(report_path, scada_dir, weather_dir):
                   'hours_25_48': [r for r in rows if int(r['lead_hours']) > 24]}
         result = {model: {name: metrics(group, model) for name, group in slices.items()}
                   for model in ('nwp_curve', 'catboost')}
+        persistence_rows = [row for row in rows if row['persistence']]
+        if persistence_rows:
+            result['persistence'] = {'available_only': metrics(persistence_rows, 'persistence')}
         for model, groups in result.items():
             for group, values in groups.items():
                 for key, value in values.items():
                     if not math.isclose(value, expected['test'][model][group][key], rel_tol=1e-10, abs_tol=1e-12):
                         raise ValueError(f'{turbine}/{model}/{group}/{key}: reported metric mismatch')
+                    if reference and not math.isclose(value, reference['turbines'][turbine]['test'][model][group][key], rel_tol=1e-10, abs_tol=1e-12):
+                        raise ValueError(f'{turbine}/{model}/{group}/{key}: reference run metric mismatch')
+        if persistence_rows and not math.isclose(len(persistence_rows)/len(rows), expected['test']['persistence']['coverage']):
+            raise ValueError(f'{turbine}: persistence coverage mismatch')
+        if reference and (expected['selected_on_validation'] != reference['turbines'][turbine]['selected_on_validation'] or expected['counts'] != reference['turbines'][turbine]['counts']):
+            raise ValueError(f'{turbine}: reference selection/counts mismatch')
         coverage = len(pairs) / len(possible)
         if expected['test_coverage']['possible_pairs'] != len(possible) or not math.isclose(coverage, expected['test_coverage']['coverage']):
             raise ValueError(f'{turbine}: coverage denominator mismatch')
@@ -103,6 +122,11 @@ def audit(report_path, scada_dir, weather_dir):
             'candidate_rmse_delta': delta, 'labelled_pairs': len(pairs), 'possible_pairs': len(possible),
             'coverage': coverage, 'unique_target_hours': len({v for _, v in pairs}),
             'overlapping_origins_preserved': len(pairs) > len({v for _, v in pairs})}
+    if reference_path:
+        findings['reference_report_sha256'] = hashlib.sha256(reference_path.read_bytes()).hexdigest()
+        findings['reference_metrics_selection_counts_match'] = True
+    findings['experiment_label'] = report.get('experiment_label')
+    findings['january_test_previously_viewed'] = report.get('january_test_previously_viewed')
     return findings
 
 
@@ -112,8 +136,9 @@ def main():
     parser.add_argument('--scada-dir', type=Path, required=True)
     parser.add_argument('--weather-dir', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--reference-report', type=Path, help='Compare independently reproduced metrics/selection/counts to a published report')
     args = parser.parse_args()
-    findings = audit(args.report, args.scada_dir, args.weather_dir)
+    findings = audit(args.report, args.scada_dir, args.weather_dir, args.reference_report)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(findings, ensure_ascii=False, indent=2, allow_nan=False)+'\n', encoding='utf-8')
     print(json.dumps(findings, ensure_ascii=True))
