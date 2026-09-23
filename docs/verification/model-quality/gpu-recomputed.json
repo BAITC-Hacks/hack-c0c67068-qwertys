@@ -1,0 +1,235 @@
+{
+  "verified": true,
+  "archive_sha256": "4f804e9d6f062f500e359a80c4d56c4a76ab565fda397474cebd8b447292a409",
+  "archive_bytes": 2726367,
+  "archive_files_verified": 35,
+  "reported_hardware": "Tesla T4",
+  "reported_device": "cuda",
+  "reported_torch": "2.14.0+cu126",
+  "reported_platform": "Linux-6.8.0-1063-aws-x86_64-with-glibc2.35",
+  "runtime_seconds_gpu": 115.41844137300006,
+  "runtime_seconds_cpu": 614.75,
+  "same_protocol_and_data": true,
+  "restored_weights": 24,
+  "max_cpu_replay_absolute_difference": 3.4362077713012695e-05,
+  "cross_device_comparison": "diagnostic only; same-CUDA restored inference is a separate pending check",
+  "cross_device_differences": [
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 5.21540641784668e-08
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 5.960464477539063e-08
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 6.705522537231445e-08
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 1.4156103134155273e-07
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 8.940696716308594e-08
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 4.470348358154297e-08
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 1.563131809234619e-05
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 2.4259090423583984e-05
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 1.7024576663970947e-05
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 2.1375715732574463e-05
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 1.1935830116271973e-05
+    },
+    {
+      "turbine": "turbine_1",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 2.6479363441467285e-05
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 5.960464477539063e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 4.470348358154297e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 4.470348358154297e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 8.940696716308594e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 5.960464477539063e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "residual_mlp",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 5.960464477539063e-08
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 2.3253262042999268e-05
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 2.9385089874267578e-05
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-01T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 9.797513484954834e-06
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 42,
+      "max_absolute_difference": 3.4362077713012695e-05
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 137,
+      "max_absolute_difference": 1.893937587738037e-05
+    },
+    {
+      "turbine": "turbine_2",
+      "family": "feature_transformer",
+      "cutoff": "2025-12-15T00:00:00Z",
+      "seed": 2026,
+      "max_absolute_difference": 2.0753592252731323e-05
+    }
+  ],
+  "turbines": {
+    "turbine_1": {
+      "residual_mlp": {
+        "gpu_mean_fold_rmse": 0.26097332449816807,
+        "cpu_mean_fold_rmse": 0.261313373773724,
+        "gpu_minus_cpu": -0.00034004927555592035,
+        "three_day_95pct_delta_vs_curve": [
+          -0.02275732613382876,
+          0.01328900664611154
+        ]
+      },
+      "feature_transformer": {
+        "gpu_mean_fold_rmse": 0.2617989174999108,
+        "cpu_mean_fold_rmse": 0.2643061508479677,
+        "gpu_minus_cpu": -0.0025072333480569142,
+        "three_day_95pct_delta_vs_curve": [
+          -0.022595463086655724,
+          0.014040528548866628
+        ]
+      }
+    },
+    "turbine_2": {
+      "residual_mlp": {
+        "gpu_mean_fold_rmse": 0.26505653324029044,
+        "cpu_mean_fold_rmse": 0.26445546142777565,
+        "gpu_minus_cpu": 0.0006010718125147863,
+        "three_day_95pct_delta_vs_curve": [
+          -0.017069091239471493,
+          0.013001338190353382
+        ]
+      },
+      "feature_transformer": {
+        "gpu_mean_fold_rmse": 0.26336872732726185,
+        "cpu_mean_fold_rmse": 0.2646189451732901,
+        "gpu_minus_cpu": -0.0012502178460282454,
+        "three_day_95pct_delta_vs_curve": [
+          -0.017343790421849917,
+          0.009598021115493535
+        ]
+      }
+    }
+  },
+  "verified_scope": "archive/checkpoint/prediction integrity, exact metric and CI recomputation, same protocol/data; cross-device inference is diagnostic, not exact PASS",
+  "limitations": [
+    "Different-device numerical results need not be bitwise equal",
+    "GPU device identification comes from exported training report plus C2 runtime evidence, not a new C5 cloud query",
+    "Reused temporal folds; all four intervals include zero",
+    "NWP publication and SCADA timezone remain unconfirmed"
+  ]
+}

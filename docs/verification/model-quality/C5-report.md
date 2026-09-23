@@ -71,3 +71,24 @@ Fix в этой ветке: `verify_cell` проверяет SHA prediction/chec
 ```
 
 Observed: audit verified=true,440 hashes,24 restored weights; five selected tests PASS; verified summary completed with unchanged values. Артефакты аудитора содержат только агрегаты, SHA и методику; raw labels, weights, исходные CSV и секреты не коммитятся. Audit замечает CRLF рабочего checkout и сравнивает исходный training-file SHA с C2, дополнительно проверяя семантически тот же текст после нормализации переводов строк.
+
+## Дополнение: локально выгруженный GPU V3
+
+Отдельная проверка после CPU-аудита: ZIP2726367bytes, SHA256 `4f804e9d6f062f500e359a80c4d56c4a76ab565fda397474cebd8b447292a409`. Все35 выгруженных файлов побайтно соответствуют ZIP; 24 checkpoint и8 CSV проходят fail-closed SHA/seed/metric проверку. `report.json` указывает CUDA/TeslaT4, PyTorch2.14.0+cu126, LinuxAWS, runtime115.418s; CPU runtime614.75s. Dataset/codeSHA, config, seeds, fold boundaries/counts одинаковы. C5 не запрашивал облако повторно: hardware идентифицирован сохранённым training-report и runtime evidence C2.
+
+| Mean fold RMSE | CPU T1 | GPU T1 | CPU T2 | GPU T2 |
+|---|---:|---:|---:|---:|
+| MLP |.26131337|.26097332|.26445546|.26505653|
+| Feature Transformer |.26430615|.26179892|.26461895|.26336873|
+
+Все GPU RMSE/MAE/bias и lead slices повторно рассчитаны из CSV; сводка и descriptive3-day intervals совпадают с экспортированными. **Все четыре интервала включают0**. GPU-факт подтверждает выполнение вычислений на заявленном устройстве в evidence C2, но не статистически надёжное улучшение; на T2 MLP GPU point estimate даже немного хуже CPU.
+
+Все24 CUDA-trained checkpoints безопасно загружены `weights_only=True, map_location=cpu`, выполнен локальный inference. Максимальное расхождение с сохранёнными CUDA predictions: **3.4362077713e-5** (Transformer T2 Dec15 seed42); MLP максимум1.4156103e-7. Это НЕ cross-device exact PASS: исходный C2 tolerance2e-6 не выполнен для Transformer. Предел не увеличивался задним числом, проверка одинакового CUDA-device restore остаётся отдельной незавершённой задачей C2. Разные устройства допускают численные различия, но конкретная причина этим аудитом не установлена. Точные SHA/метрики подтверждены независимо от этого ограничения.
+
+Воспроизведение без облака или нового обучения:
+
+```powershell
+<C2-python> docs/verification/model-quality/audit_gpu.py --c2-root <C2-worktree> --output docs/verification/model-quality/gpu-recomputed.json
+```
+
+Агрегаты: `gpu-recomputed.json`, `gpu-verified-summary.json`. Это дополнение относится только к замороженному V3; текущий V4 не принят автоматически.
