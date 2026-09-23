@@ -1,0 +1,221 @@
+{
+  "status": "completed",
+  "target_start_utc": "2026-01-31T18:00:00Z",
+  "target_end_exclusive_utc": "2026-02-28T18:00:00Z",
+  "calendar_offset_hours": 6,
+  "timezone_status": "inferred",
+  "selection_status": "proposed_not_confirmed_by_organizer",
+  "rule": "For each turbine/target hour select newest issue among stored forecasts with lead_hours>=1. Preserve all original issue/target rows separately.",
+  "min_lead_hours": 1,
+  "february_metrics": null,
+  "provenance_status": "unconfirmed",
+  "runs": [
+    {
+      "run_id": "c861cf906ba641dbb953c0a1a90d247d",
+      "issue_time": "2026-01-31T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "b26cdbdedacfef410a6b1cd1ffd033fc093e8e12634242b18c5826a760382282"
+    },
+    {
+      "run_id": "ed3549f8d19f419898368253458f3a87",
+      "issue_time": "2026-02-01T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "3c620c27d37a485aea3f0314d751c5499c6fb68f9f3a6437deed6daccf784667"
+    },
+    {
+      "run_id": "f6dbab4b20394d20b2664867dc6331e5",
+      "issue_time": "2026-02-02T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "38e68b08eab596c34f3d14a75467418dc953bd9b754f75a9fa379f1ff51927f1"
+    },
+    {
+      "run_id": "fed899104c8f44578137e4eb09049fd5",
+      "issue_time": "2026-02-03T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "6b420f7320e8d545c0877648ff5efe71c69e207f26fa46e9844d6322a39af7b2"
+    },
+    {
+      "run_id": "27b59618891d428fa647f723ab642dc6",
+      "issue_time": "2026-02-04T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "9bce0744a8743fa66cef8b5d95d42bde5bfbb3c772ce3691a55fa6f2e4a2d87e"
+    },
+    {
+      "run_id": "d824e112149946de87f57ebd9b6ea88e",
+      "issue_time": "2026-02-05T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "37a6ca94484761904fd6be2cd738cce317d330551ea4b94f0c56fc5b2f25d834"
+    },
+    {
+      "run_id": "801d06d0e9874ed696fb766e69e800ce",
+      "issue_time": "2026-02-06T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "2eb5401fc27c7c58be5bc1126b735661597a9946e170483fc6dd34b35bbd795b"
+    },
+    {
+      "run_id": "e4de2d3c5be44ad38e73f933f93adfbb",
+      "issue_time": "2026-02-07T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "f0f67594e4aef6f7e1e546f87730471257f08848817d0f3584f1adaf2e12ba11"
+    },
+    {
+      "run_id": "323c7bacca064cf4b762a4796270c7e9",
+      "issue_time": "2026-02-08T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "3ccb8879f5d7e93ce76423be3ceb591bdbf95edd8628b0820fe20898f7710be7"
+    },
+    {
+      "run_id": "2fe97964b08442d6948aee8528b7e55c",
+      "issue_time": "2026-02-09T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "d414987fc1252c691be73598e8c6238415fe3f99877ec28984386bacecdb83de"
+    },
+    {
+      "run_id": "72b0190c51094c77bd93ee68715a1c62",
+      "issue_time": "2026-02-10T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "37fad0f7519dbddbf59c9a089f1e16a1281f1f14d69ed5faab9e33f7f0584654"
+    },
+    {
+      "run_id": "8ac54a973cfa4a58892d852ba78ba654",
+      "issue_time": "2026-02-11T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "8c23aec1ff852df64a6ddabbc35403668ffd063efc58be4d9e5fc06a310b01a7"
+    },
+    {
+      "run_id": "fd01eb3d66934ca896857a88df9ef5ed",
+      "issue_time": "2026-02-12T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "ba726ea896df1fa083080086951142465502db69ad5c0cc3de01a292a8d71f86"
+    },
+    {
+      "run_id": "97eed3f06b6449eaaa3eb4aec756891c",
+      "issue_time": "2026-02-13T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "5107c3b74f0cf36a71c09ee0c875d6efe575e972349394be1a84bfc51d239f55"
+    },
+    {
+      "run_id": "0acd19f1c5904dcb94a3bc268318de71",
+      "issue_time": "2026-02-14T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "631a84200ff8368338dcdf4d0e7afb887a241de4c281bf8530d0016106049963"
+    },
+    {
+      "run_id": "0ce49ecd3f7245a68ff35077a32b2a20",
+      "issue_time": "2026-02-15T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "000dad0a5732b77ef2d0b2489025bb3274b32e8176f16572efb7114ccadea179"
+    },
+    {
+      "run_id": "f85a518765d547be986f00b6ebbdb9c3",
+      "issue_time": "2026-02-16T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "c5e92e2bce92ea46ab49cc16fa35196c0de9d1265603851bd9071969b29abf77"
+    },
+    {
+      "run_id": "56863c58e4624cdbb5e451d7e77d6fcf",
+      "issue_time": "2026-02-17T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "f72668048dee96edc4877b5a122d54de2ee48af75ceea19b867505927305c626"
+    },
+    {
+      "run_id": "611f8f4d63744ad4a78a57c91c5923d4",
+      "issue_time": "2026-02-18T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "03b2fb37511318fbd662bb77cc6338e812aa5c07d8bf2d388d6845f3f4c1701d"
+    },
+    {
+      "run_id": "8c83aac6f505487eb7ea19bdf98c463f",
+      "issue_time": "2026-02-19T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "4c2498989a7e9155b331955f0c5ebf41f313b24cd7c69c04ae2eb6e41cd508a1"
+    },
+    {
+      "run_id": "20d6289314ff4f4c87fef0dae41c5e69",
+      "issue_time": "2026-02-20T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "aa2c9e48838a67dc8d6a2dcfc17436e3e4852238b6a4bbf4310afb22c1396c11"
+    },
+    {
+      "run_id": "5cd3e5e74af44e9c98514fd1446c9509",
+      "issue_time": "2026-02-21T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "98805c77e65874136518da8f37abeba0d933e26e1c22380e9bb366022c07a0cf"
+    },
+    {
+      "run_id": "1028010b96d143538f23d4532eb719c3",
+      "issue_time": "2026-02-22T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "3059413b499470aa97c63cb34a7b5d0cd9e05b7ec3a56960ca28a4ce3e66d063"
+    },
+    {
+      "run_id": "a51c5d657e204556aa91f173a7859741",
+      "issue_time": "2026-02-23T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "7ba0eed29705ca858c81ed3162a93fd450663473c65688be5d67efa68958b3b3"
+    },
+    {
+      "run_id": "a021723e9f1348d49884e092eac2313c",
+      "issue_time": "2026-02-24T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "ea7f9eb4453a5691f07272c4b5c6f67e74a387a4f3e8ec96e18b477b5fe1e507"
+    },
+    {
+      "run_id": "593eba7ff11a4f02b35c0440f5b77a41",
+      "issue_time": "2026-02-25T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "03298472e1505a269c680daf834c6a4cd8af1d3b0ed4b0db438716cf186bff7a"
+    },
+    {
+      "run_id": "d7ed75542c4f4eb080e983d2419f6fbd",
+      "issue_time": "2026-02-26T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "c824e5e699a7296f0e6ecef656045a8ee7e7e585d8d9615c363d1f61c67c3d37"
+    },
+    {
+      "run_id": "f0f00231a27946afaaffabb7d2726bf3",
+      "issue_time": "2026-02-27T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "a11185ac01095eb18147f4cf013c49e73d4c80f16f0e0c84ac44d9f66e71b21a"
+    },
+    {
+      "run_id": "5228b59ca32241418144861cd6d9e269",
+      "issue_time": "2026-02-28T12:00:00Z",
+      "rows": 96,
+      "model_version": "nwp-tabular-7f1b4f31e9bb",
+      "input_version": "0d260d68e8869a0a19f9512ba4b6d9e5f4a23e7b673cbdfe910b96238fd2df3c"
+    }
+  ],
+  "full_journal_rows": 2784,
+  "unique_february_rows": 1344,
+  "hours_per_turbine": 672,
+  "mode": "deterministic"
+}

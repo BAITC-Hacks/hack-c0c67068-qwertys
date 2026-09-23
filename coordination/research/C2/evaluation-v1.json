@@ -1064,5 +1064,8 @@
     "f9cc738f9d79abd4fd907f0b89de4196263e839b11e099d7be337d6a4279becf"
   ],
   "runtime_seconds": 11.391,
-  "model_version": "nwp-tabular-7f1b4f31e9bb"
+  "model_version": "nwp-tabular-7f1b4f31e9bb",
+  "evaluation_fit_end_exclusive": "2026-01-01T00:00:00Z",
+  "production_fit_end_exclusive": "2026-01-31T00:00:00Z",
+  "estimator_relationship": "January metrics belong to estimators fitted only on pre-January targets. model_version identifies final production refit, not the January-test estimator. Same family/configuration, different fitted parameters."
 }

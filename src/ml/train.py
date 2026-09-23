@@ -138,6 +138,9 @@ def train(scada_dir, weather_dir, output_dir, report_path, baseline_only=False):
             possible_test_hours=sum(1 for path in Path(weather_dir).glob("????-??-??.jsonl") for r in read_jsonl(path) if utc(r["run_time"])+timedelta(hours=12)>=utc(VALID_END) and utc(r["run_time"])+timedelta(hours=12)<utc(FINAL_END) and utc(r["valid_time"])<utc(FINAL_END))
             report["turbines"][turbine]={"selected_on_validation":selected,"candidate_config":config,"pretest_selection":selection,"counts":{"train":len(tr),"validation":len(va),"test":len(te)},"test_coverage":{"labelled_pairs":len(te),"possible_pairs":possible_test_hours,"coverage":len(te)/possible_test_hours,"missing_pairs":possible_test_hours-len(te)},"unique_target_hours":{"train":len({r['valid_time'] for r in tr}),"validation":len({r['valid_time'] for r in va}),"test":len({r['valid_time'] for r in te})},"validation":validation,"test":test,"test_predictions_sha256":hashlib.sha256(evidence_path.read_bytes()).hexdigest(),"candidate_rmse_delta":test["catboost"]["all_48"]["rmse"]-test["nwp_curve"]["all_48"]["rmse"]}
         manifest["model_version"]="nwp-tabular-"+fingerprint({"params":PARAMS,"sources":sources,"results":report["turbines"]})[:12]
+    report["evaluation_fit_end_exclusive"]=VALID_END
+    report["production_fit_end_exclusive"]=FINAL_END
+    report["estimator_relationship"]="January metrics belong to estimators fitted only on pre-January targets. model_version identifies final production refit, not the January-test estimator. Same family/configuration, different fitted parameters."
     report["runtime_seconds"]=round(time.monotonic()-started,3); report["model_version"]=manifest["model_version"]
     write_json(output/"manifest.json",manifest); write_json(report_path,report)
     return report

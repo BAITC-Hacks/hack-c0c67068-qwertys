@@ -5,6 +5,7 @@ import json
 import math
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
 from src.ml.common import iso, utc, write_json
@@ -19,7 +20,7 @@ def readiness():
     try:
         _,manifest=load_model()
         weather_dir=Path(os.getenv("WEATHER_RUNS_DIR","data/cache/weather_runs"))
-        if not weather_dir.is_dir() or not next(weather_dir.glob("????-??-??.jsonl"),None):
+        if os.getenv("WEATHER_FETCH_POLICY","never")=="never" and (not weather_dir.is_dir() or not next(weather_dir.glob("????-??-??.jsonl"),None)):
             return {"ready":False,"reason":"weather_cache_missing"}
         if os.getenv("AGENT_MODE","auto")=="live" and not os.getenv("OPENAI_API_KEY"):
             return {"ready":False,"reason":"llm_key_missing"}
@@ -37,10 +38,11 @@ class ForecastTools:
         self.directory=Path(output_dir or os.getenv("FORECAST_OUTPUT_DIR","artifacts/runs"))/self.run_id
         self.events=[]; self.done=set(); self.weather=None; self.payload=None
         self.usage={"input_tokens":0,"output_tokens":0,"estimated_usd":0.0,"uncertain_request":False}
+        self.started=time.monotonic()
 
     def event(self, tool, state, summary, stage=None):
         event={"tool":tool,"state":state,"summary":summary,"stage":stage}
-        self.events.append(event)
+        self.events.append({"seq":len(self.events)+1,"timestamp":iso(datetime.now(timezone.utc)),**event})
         self.emit(event)
 
     def call(self, name):
@@ -54,7 +56,7 @@ class ForecastTools:
         try:
             if name=="weather":
                 self.weather=load_weather(iso(self.issue),self.request["horizon_hours"],self.weather_dir)
-                result={"hours":len(self.weather),"run_time":self.weather[0]["run_time"],"provenance_status":self.weather[0]["provenance_status"],"availability_basis":self.weather[0]["availability_basis"]}
+                result={"hours":len(self.weather),"run_time":self.weather[0]["run_time"],"provenance_status":self.weather[0]["provenance_status"],"availability_basis":self.weather[0]["availability_basis"],"fetch_policy":os.getenv("WEATHER_FETCH_POLICY","never")}
             elif name=="prepare":
                 _,manifest=load_model(self.model_dir)
                 if utc(manifest["training_end_exclusive"])>self.issue: raise InvalidForecastRequest("Model training cutoff is after issue_time")
@@ -106,6 +108,7 @@ def _live_loop(context, client=None):
             usage["input_tokens"]+=response.usage.input_tokens; usage["output_tokens"]+=response.usage.output_tokens
             usage["estimated_usd"]=(usage["input_tokens"]*RATES[model][0]+usage["output_tokens"]*RATES[model][1])/1e6
             usage["uncertain_request"]=previous_uncertainty
+        usage.setdefault("requests",[]).append({"response_id":getattr(response,"id",None),"step":step+1,"timestamp":iso(datetime.now(timezone.utc)),"input_tokens":response.usage.input_tokens if response.usage else None,"output_tokens":response.usage.output_tokens if response.usage else None})
         if usage["estimated_usd"]>0.18: raise CoreNotReady("Per-run API cost guard reached")
         context.event("llm","ok",f"Реальный ответ {model}, шаг {step+1}")
         history.extend(item.model_dump(exclude_none=True) for item in response.output)
@@ -167,5 +170,6 @@ def run_forecast(request, emit, *, model_dir=None, weather_dir=None, output_dir=
         raise
     finally:
         context.directory.mkdir(parents=True,exist_ok=True)
+        context.usage["elapsed_seconds"]=round(time.monotonic()-context.started,3)
         write_json(context.directory/"usage.json",context.usage)
         if reservation: reservation.finish(context.usage,status)
