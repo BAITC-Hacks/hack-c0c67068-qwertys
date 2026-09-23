@@ -44,6 +44,21 @@ export function issueTimeFromLocal(date: string, hour: number): string {
   return `${date}T${p2(hour)}:00:00+05:00`
 }
 
+/** The prepared daily cache supports both horizons from this origin only. */
+export const CACHED_ISSUE_HOUR_LOCAL = 17
+export function cachedIssueTime(date: string): string {
+  return issueTimeFromLocal(date, CACHED_ISSUE_HOUR_LOCAL)
+}
+export function isSupportedCachedIssue(iso: string): boolean {
+  const time = Date.parse(iso)
+  return replayDates().some((date) => Date.parse(cachedIssueTime(date)) === time)
+}
+export function nextCachedIssue(iso: string): string | null {
+  if (!isSupportedCachedIssue(iso)) return null
+  const next = new Date(Date.parse(iso) + 86400_000).toISOString()
+  return isSupportedCachedIssue(next) ? next : null
+}
+
 /** Local (UTC+5) date "YYYY-MM-DD" and hour of an RFC3339 timestamp. */
 export function localDateHour(iso: string): { date: string; hour: number } {
   const d = new Date(Date.parse(iso) + LOCAL_OFFSET_H * 3600_000)
