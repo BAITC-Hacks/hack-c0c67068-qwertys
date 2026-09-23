@@ -1,0 +1,108 @@
+{
+  "status": "PASS",
+  "source_commit": "1895090",
+  "verified_at_utc": "2026-09-23T11:20:15.934447+00:00",
+  "archive_sha256": "fae933260a7fcbc1e355f52e540ac56b04d7ddbc933ae828d12711657a2e950f",
+  "archive_files_unchanged": 274,
+  "python": "3.12.14",
+  "isolated_new_venv": true,
+  "locked_packages_verified": 46,
+  "system_site_packages": false,
+  "torch_installed": false,
+  "env_file_present": false,
+  "credentials_used": false,
+  "existing_worktree_runtime_paths": false,
+  "model_version": "nwp-tabular-7f1b4f31e9bb",
+  "tracked_manifest_sha256": "a4159d859b3dcc743ca230ca7f5fb8412752f7e1abb31718d6b5f0c3833dbd1e",
+  "model_refitted": false,
+  "weather": {
+    "fresh_provider_download": true,
+    "run_date": "2026-01-31",
+    "selected_hours": 48,
+    "raw_sha256": "3c0a5be5fa0d4c04e98d7d095efc51601593698e2d5bea2d1819b834c67b6a9e",
+    "response_bytes": 2639,
+    "provenance_status": "unconfirmed"
+  },
+  "cli_runs": [
+    {
+      "run_id": "2203b0ab33594a06bcfbd1324357ab13",
+      "rows": 48,
+      "csv_sha256": "5f68218171407c3d546b1e4cadd7f1a56cbbdf610c86f82ed429acc2ab983da0",
+      "elapsed_seconds": 0.0,
+      "csv_json_equal": true,
+      "llm_requests": 0
+    },
+    {
+      "run_id": "cf60ccb4ecb945c9bc8f70221eeae428",
+      "rows": 96,
+      "csv_sha256": "23ae2dedf9d2878cbdde2400e571a35d7c2a1011b6cc73e4d62fbecb2afa6942",
+      "elapsed_seconds": 0.015,
+      "csv_json_equal": true,
+      "llm_requests": 0
+    }
+  ],
+  "horizon_prefix_equal": true,
+  "api_smoke": {
+    "status": "PASS",
+    "runs": [
+      {
+        "run_id": "20a2fe6ec41745268dca79a7bc8ac8b4",
+        "horizon": 48,
+        "rows": 96,
+        "mode": "deterministic",
+        "duration_seconds": 0.2593,
+        "tools": [
+          "weather",
+          "prepare",
+          "forecast",
+          "validate",
+          "export",
+          "api.validate",
+          "api.persist"
+        ]
+      },
+      {
+        "run_id": "44ea9ac8abd045f8befa054bf28881a5",
+        "horizon": 24,
+        "rows": 48,
+        "mode": "deterministic",
+        "duration_seconds": 0.2358,
+        "tools": [
+          "weather",
+          "prepare",
+          "forecast",
+          "validate",
+          "export",
+          "api.validate",
+          "api.persist"
+        ]
+      },
+      {
+        "run_id": "fe0b35f5fd5a4fa0a48248c0eec953b4",
+        "horizon": 48,
+        "rows": 96,
+        "mode": "deterministic",
+        "duration_seconds": 0.1979,
+        "tools": [
+          "weather",
+          "prepare",
+          "forecast",
+          "validate",
+          "export",
+          "api.validate",
+          "api.persist"
+        ]
+      }
+    ],
+    "model_version": "nwp-tabular-7f1b4f31e9bb",
+    "limitations": "Historical weather availability and SCADA timezone remain inferred; deterministic is not LLM execution."
+  },
+  "total_llm_requests": 0,
+  "estimated_paid_api_usd": 0,
+  "scope": "Clean core install, provider fetch, CLI and HTTP. No frontend build, training or accuracy reevaluation.",
+  "limitations": [
+    "Historical weather publication and SCADA UTC+6 remain inferred",
+    "No February observed labels",
+    "Wheel cache was reused by pip; installed packages were not copied from another environment"
+  ]
+}
