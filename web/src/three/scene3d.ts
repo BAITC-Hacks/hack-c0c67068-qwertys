@@ -24,6 +24,10 @@ export interface SceneOptions {
   still?: boolean
   /** overlay faded in at the seam of the camera loop */
   fade?: HTMLElement | null
+  /** sun azimuth at sunrise and sunset, rad (0 = straight ahead of the camera, + = right) */
+  sunAz?: [number, number]
+  /** starting local hour (UTC+5), so the first frame is already lit for it */
+  hour?: number
   seed?: number
 }
 
@@ -55,10 +59,11 @@ function noise(x: number, z: number) {
 const H = (x: number, z: number) => noise(x, z) * 1.6 + Math.max(0, -z - 45) * 0.32 + Math.max(0, Math.abs(x) - 70) * 0.2
 
 const SKY_VS = `varying vec3 vW; void main(){ vW = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }`
-const SKY_FS = `varying vec3 vW; uniform vec3 top; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float sunAmt; uniform vec3 moonDir; uniform float moonAmt;
-void main(){ float h = vW.y; vec3 c = h > 0. ? mix(horizon, top, pow(smoothstep(0., .55, h), .75)) : mix(horizon, bottom, smoothstep(0., -.25, h));
-  float s = max(dot(vW, sunDir), 0.); c += sunColor * (smoothstep(.9990, .9995, s) * 1.6 + pow(s, 12.) * .35 + pow(s, 3.) * .08) * sunAmt;
-  float m = max(dot(vW, moonDir), 0.); c += vec3(.86,.9,1.) * (smoothstep(.99955, .9997, m) * 1.2 + pow(m, 60.) * .12) * moonAmt;
+const SKY_FS = `varying vec3 vW; uniform vec3 top; uniform vec3 mid; uniform vec3 horizon; uniform vec3 bottom; uniform vec3 sunDir; uniform vec3 sunColor; uniform float sunAmt; uniform float glow; uniform vec3 moonDir; uniform float moonAmt;
+void main(){ vec3 d = normalize(vW); float h = d.y; vec3 c = h > 0. ? mix(mix(horizon, mid, smoothstep(.08, .2, h)), top, smoothstep(.13, .36, h)) : mix(horizon, bottom, smoothstep(0., -.25, h));
+  float s = max(dot(d, sunDir), 0.); c += sunColor * (smoothstep(.9990, .9995, s) * 1.6 + pow(s, 12.) * .35 + pow(s, 3.) * .08) * sunAmt;
+  c += sunColor * glow * pow(s, 8.) * exp(-abs(h) * 6.) * .3; // low-sun halo hugging the horizon
+  float m = max(dot(d, moonDir), 0.); c += vec3(.86,.9,1.) * (smoothstep(.99955, .9997, m) * 1.2 + pow(m, 60.) * .12) * moonAmt;
   gl_FragColor = vec4(c, 1.); }`
 
 interface TurbineData {
@@ -96,23 +101,6 @@ function makeTurbine(mat: THREE.Material, bladeGeo: THREE.BufferGeometry) {
   return g
 }
 
-function flatColor(src: THREE.BufferGeometry, fn: (c: THREE.Color, x: number, y: number, z: number) => void) {
-  const geo = src.toNonIndexed()
-  const p = geo.attributes.position
-  const col = new Float32Array(p.count * 3)
-  const c = new THREE.Color()
-  for (let i = 0; i < p.count; i += 3) {
-    const x = (p.getX(i) + p.getX(i + 1) + p.getX(i + 2)) / 3
-    const y = (p.getY(i) + p.getY(i + 1) + p.getY(i + 2)) / 3
-    const z = (p.getZ(i) + p.getZ(i + 1) + p.getZ(i + 2)) / 3
-    fn(c, x, y, z)
-    for (let k = 0; k < 3; k++) col.set([c.r, c.g, c.b], (i + k) * 3)
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(col, 3))
-  geo.computeVertexNormals()
-  return geo
-}
-
 /** Mounts its own <canvas> into `host` (a fresh WebGL context per mount); throws if WebGL is unavailable. */
 export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScene {
   const R = rng(opt.seed ?? 11)
@@ -138,17 +126,23 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
   const plane = new THREE.PlaneGeometry(260, 260, 90, 90)
   plane.rotateX(-Math.PI / 2)
   {
+    // colour per shared vertex, interpolated across faces: a smooth height gradient, no per-face noise or spots
+    const pal = [C('#4f7a33'), C('#6a9a3e'), C('#8fb152'), C('#b7b866')]
     const p = plane.attributes.position
-    for (let i = 0; i < p.count; i++) p.setY(i, H(p.getX(i), p.getZ(i)))
+    const col = new Float32Array(p.count * 3)
+    const c = new THREE.Color()
+    for (let i = 0; i < p.count; i++) {
+      const y = H(p.getX(i), p.getZ(i))
+      p.setY(i, y)
+      const t = clamp((y + 3) / 9, 0, 1) * (pal.length - 1)
+      const k = Math.min(Math.floor(t), pal.length - 2)
+      c.copy(pal[k]).lerp(pal[k + 1], t - k).toArray(col, i * 3)
+    }
+    plane.setAttribute('color', new THREE.BufferAttribute(col, 3))
+    plane.computeVertexNormals()
+    for (let i = 0; i < 90 * 90 * 4; i++) R() // the old per-face colouring drew 2 randoms per face; keep tree/rock layout unchanged
   }
-  const pal = [C('#4f7a33'), C('#6a9a3e'), C('#8fb152'), C('#b7b866')]
-  const tgeo = flatColor(plane, (c, _x, y) => {
-    const t = clamp((y + 2) / 6, 0, 1) + (R() - 0.5) * 0.18
-    c.copy(pal[clamp(Math.floor(t * 3.99), 0, 3)])
-    if (R() < 0.05) c.lerp(C('#c9c17a'), 0.5)
-  })
-  plane.dispose()
-  const ground = new THREE.Mesh(tgeo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 1 }))
+  const ground = new THREE.Mesh(plane, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 1 }))
   ground.receiveShadow = true
   scene.add(ground)
 
@@ -209,6 +203,59 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
     return t.userData as TurbineData
   })
 
+  // --- shelterbelts and groves: poplar rows (as along steppe fields) and round trees, instanced;
+  // own seed, so the prototype's layout above and below stays as designed
+  {
+    const R2 = rng(29)
+    const clear = (x: number, z: number) => tpos.every(([px, pz]) => Math.hypot(x - px, z - pz) > 4)
+    type Tree = [x: number, z: number, scale: number, turn: number]
+    const poplars: Tree[] = []
+    const rounds: Tree[] = []
+    for (let i = 0; i < 14; i++) {
+      const x0 = (R2() - 0.5) * 200
+      const z0 = -R2() * 125 + 20
+      const a = R2() * Math.PI
+      const n = 6 + Math.floor(R2() * 8)
+      for (let k = 0; k < n; k++) {
+        const x = x0 + Math.cos(a) * k * 1.25
+        const z = z0 + Math.sin(a) * k * 1.25
+        if (clear(x, z)) poplars.push([x, z, 0.8 + R2() * 0.45, R2() * 6])
+      }
+    }
+    for (let i = 0; i < 26; i++) {
+      const x0 = (R2() - 0.5) * 210
+      const z0 = -R2() * 130 + 25
+      const n = 3 + Math.floor(R2() * 5)
+      for (let k = 0; k < n; k++) {
+        const x = x0 + (R2() - 0.5) * 5
+        const z = z0 + (R2() - 0.5) * 5
+        if (clear(x, z)) rounds.push([x, z, 0.6 + R2() * 0.5, R2() * 6])
+      }
+    }
+    const poplarGeo = new THREE.IcosahedronGeometry(0.42, 0).scale(1, 3.2, 1).translate(0, 1.75, 0)
+    const roundGeo = new THREE.IcosahedronGeometry(0.75, 0).scale(1, 0.85, 1).translate(0, 1.1, 0)
+    const stemGeo = trunkGeo.clone().translate(0, 0.25, 0)
+    const leaves = ['#4f7d33', '#5f8a38', '#6f963c', '#3f6f33'].map(C)
+    const o = new THREE.Object3D()
+    const plant = (geo: THREE.BufferGeometry, mat: THREE.Material, pts: Tree[], tint: boolean) => {
+      const m = new THREE.InstancedMesh(geo, mat, pts.length)
+      pts.forEach(([x, z, s, r], i) => {
+        o.position.set(x, H(x, z) - 0.05, z)
+        o.rotation.y = r
+        o.scale.setScalar(s)
+        o.updateMatrix()
+        m.setMatrixAt(i, o.matrix)
+        if (tint) m.setColorAt(i, leaves[Math.floor(R2() * leaves.length)])
+      })
+      m.castShadow = true
+      scene.add(m)
+    }
+    const leafMat = new THREE.MeshStandardMaterial({ flatShading: true, roughness: 1 })
+    plant(poplarGeo, leafMat, poplars, true)
+    plant(roundGeo, leafMat, rounds, true)
+    plant(stemGeo, trunkMat, [...poplars, ...rounds], false)
+  }
+
   // --- clouds
   const clouds: THREE.Group[] = []
   const cloudMat = new THREE.MeshStandardMaterial({ color: 0xffffff, flatShading: true, roughness: 1, transparent: true, opacity: 0.95 })
@@ -253,11 +300,13 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
   // --- sky, stars, lights
   const skyU = {
     top: { value: C('#3f7fd0').clone() },
+    mid: { value: C('#97bfe6').clone() },
     horizon: { value: C('#bfe0f5').clone() },
     bottom: { value: C('#5b6b4b').clone() },
     sunDir: { value: new THREE.Vector3(0, 0.3, -1).normalize() },
     sunColor: { value: C('#fff1dc').clone() },
     sunAmt: { value: 1 },
+    glow: { value: 0 },
     moonDir: { value: new THREE.Vector3(0.4, 0.5, -0.7).normalize() },
     moonAmt: { value: 0 },
   }
@@ -302,16 +351,18 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
   let fit = 1 // pull the camera back on portrait screens so the farm stays in frame
 
   // --- light by hour (Shelek, January, UTC+5)
-  const st: SceneState & { hCur: number; wsCur: number } = { ws: 6, hour: 14, p: [], hCur: 14, wsCur: 6 }
+  const h0 = opt.hour ?? 14
+  const st: SceneState & { hCur: number; wsCur: number } = { ws: 6, hour: h0, p: [], hCur: h0, wsCur: 6 }
   const RISE = 7.1
   const SET = 16.7
+  const SUN_AZ = opt.sunAz ?? [-1.25, 1.25]
   function sunVec(h: number) {
     const t = (h - RISE) / (SET - RISE)
     let el: number
     let az: number
     if (t >= -0.15 && t <= 1.15) {
       el = Math.sin(clamp(t, -0.15, 1.15) * Math.PI) * 26
-      az = lerp(-1.25, 1.25, t)
+      az = lerp(SUN_AZ[0], SUN_AZ[1], t)
     } else {
       el = -18
       az = 0
@@ -322,26 +373,31 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
   function applyLight(h: number) {
     const { el, v } = sunVec(h)
     const day = clamp((el + 2) / 12, 0, 1)
-    const tw = clamp(1 - Math.abs(el - 1) / 9, 0, 1)
-    const mix3 = (n: string, d: string, t: string, out: THREE.Color) => out.copy(C(n)).lerp(C(d), day).lerp(C(t), tw * 0.65)
-    mix3('#040817', '#3c7ccc', '#2a3a78', skyU.top.value)
-    mix3('#10183a', '#c9e4f4', '#f39a5c', skyU.horizon.value)
-    mix3('#05070c', '#6f7d5a', '#3a2c2a', skyU.bottom.value)
+    const tw = clamp(1 - Math.abs(el - 8) / 10, 0, 1) // golden hour: strongest with the sun on the far ridge (~7.5° high)
+    const mix3 = (n: string, d: string, t: string, out: THREE.Color) => out.copy(C(n)).lerp(C(d), day).lerp(C(t), tw)
+    mix3('#040817', '#3c7ccc', '#9a8fb8', skyU.top.value) // dusty lavender
+    mix3('#0a1030', '#97bfe6', '#f0bc98', skyU.mid.value) // soft peach
+    mix3('#10183a', '#c9e4f4', '#ffd28e', skyU.horizon.value) // soft gold
+    mix3('#05070c', '#6f7d5a', '#4a2f3a', skyU.bottom.value)
     skyU.sunDir.value.copy(v)
-    skyU.sunColor.value.copy(C('#ff8f4f')).lerp(C('#fff3dd'), clamp(el / 18, 0, 1))
+    skyU.sunColor.value.copy(C('#ff8f4f')).lerp(C('#fff3dd'), clamp(el / 18, 0, 1) * (1 - tw))
     skyU.sunAmt.value = clamp((el + 4) / 6, 0, 1)
+    skyU.glow.value = tw
+    cloudMat.emissive.copy(C('#f0a890')).multiplyScalar(tw * 0.2) // clouds catch the warm afterglow
     skyU.moonAmt.value = 1 - day
-    fog.color.copy(skyU.horizon.value)
+    // lavender haze: distant ridges read as layers against the gold horizon
+    fog.color.copy(skyU.horizon.value).lerp(C('#a07aa8'), tw * 0.8)
     starM.opacity = clamp(1 - day - tw * 0.6, 0, 1)
-    sun.color.copy(C('#ff9a5a')).lerp(C('#fff1dc'), clamp(el / 16, 0, 1))
+    sun.color.copy(C('#ff9a5a')).lerp(C('#fff1dc'), clamp(el / 16, 0, 1) * (1 - tw * 0.8))
     sun.intensity = 2.8 * clamp((el + 1) / 8, 0, 1)
     sun.position.copy(target).addScaledVector(v, 120)
     sun.target.position.copy(target)
     moon.position.set(40, 80, -60)
     moon.intensity = 0.45 * (1 - day)
-    hemi.color.copy(C('#26335e')).lerp(C('#c6e0ff'), day).lerp(C('#f0a070'), tw * 0.35)
-    hemi.groundColor.copy(C('#0b0f0a')).lerp(C('#5d6b3a'), day)
-    hemi.intensity = 0.35 + day * 0.75
+    // dusk fill: lavender sky light keeps the sun-averted slopes violet instead of muddy
+    hemi.color.copy(C('#26335e')).lerp(C('#c6e0ff'), day).lerp(C('#a987c9'), tw * 0.8)
+    hemi.groundColor.copy(C('#0b0f0a')).lerp(C('#5d6b3a'), day).lerp(C('#7a4a35'), tw * 0.5)
+    hemi.intensity = 0.35 + day * 0.75 + tw * 0.2
     renderer.toneMappingExposure = 0.9 + day * 0.15 + (1 - day) * 0.25
     return day
   }

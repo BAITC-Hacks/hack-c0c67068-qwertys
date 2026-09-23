@@ -26,14 +26,16 @@ function Hero() {
         const scene = createScene(stageRef.current, {
           windAngle: 0.85,
           fov: 34,
-          target: [0, 5.5, -10],
-          sweep: { r: 48, h: 2.5, a0: -0.42, a1: 0.42, dur: 36 },
+          target: [0, 8, -10],
+          sweep: { r: 48, h: 0.5, a0: -0.42, a1: 0.42, dur: 36 }, // near-level gaze: more sunset sky
           still: matchMedia('(prefers-reduced-motion: reduce)').matches,
           fade: fadeRef.current,
+          hour: 15.94, // January sunset: only the top of the sun peeks over the far ridge, UTC+5 (decorative)
+          sunAz: [-2.3, 0.35], // sun sets just right of the view centre
         })
-        // 17.01.2026 14:00 UTC+5 as in the handoff; 7.9 m/s is the prototype's animation-only
-        // estimate (generic power curve inverted from the January backtest), not a measurement
-        scene.set({ ws: 7.9, hour: 14 })
+        // 7.9 m/s is the prototype's animation-only estimate for 17.01.2026 14:00
+        // (generic power curve inverted from the January backtest), not a measurement
+        scene.set({ ws: 7.9 })
         dispose = scene.dispose
       })
       .catch((e) => {
@@ -51,7 +53,7 @@ function Hero() {
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
       <h1 className="hero-title">SAMAL</h1>
-      <p style={{ position: 'absolute', bottom: 20, left: 24, zIndex: 3, fontSize: 12, color: '#333' }}>Illustration · not live weather or turbine telemetry</p>
+      <p className="hero-note">Illustration · not live weather or turbine telemetry</p>
       <SiteHeader overlay href="#/dashboard" label="Dashboard" />
     </section>
   )

@@ -9,6 +9,7 @@
 :root {
   color-scheme: light;
   --font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-brand: 'Outfit', var(--font-ui);
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
   --page: #f5f5f4;
@@ -107,7 +108,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
   border-bottom: 1px solid var(--border);
   -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%);
 }
-.site-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; letter-spacing: 0.14em; }
+.site-logo { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-brand); font-size: 16px; font-weight: 300; letter-spacing: 0.4em; }
 .mark-icon { flex: none; width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .mark-icon circle { fill: currentColor; stroke: none; }
 .mark-icon .mast { stroke-width: 1.6; opacity: 0.7; }
