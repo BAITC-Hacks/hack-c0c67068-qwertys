@@ -34,12 +34,12 @@ export function KpiStrip({ rows, turbines, tz }: Props) {
             </div>
             <div className="kpi-grid">
               <div>
-                <span>среднее 1–24 ч</span>
+                <span title="среднее за упреждение 1–24 ч">ср. 1–24 ч</span>
                 <b>{f3(mean(v(1, 24)))}</b>
               </div>
               {m2.length > 0 && (
                 <div>
-                  <span>среднее 25–48 ч</span>
+                  <span title="среднее за упреждение 25–48 ч">ср. 25–48 ч</span>
                   <b>{f3(mean(m2))}</b>
                 </div>
               )}
@@ -49,7 +49,7 @@ export function KpiStrip({ rows, turbines, tz }: Props) {
                 {peak && <small>{fmtDayHour(Date.parse(peak.valid_time), tz)}</small>}
               </div>
               <div>
-                <span>макс. изменение за час</span>
+                <span title="максимальное изменение между соседними часами">макс. Δ за час</span>
                 <b>{ramp ? `${ramp.d >= 0 ? '+' : '−'}${Math.abs(ramp.d).toFixed(3)}` : '—'}</b>
                 {ramp && <small>{fmtDayHour(Date.parse(ramp.at), tz)}</small>}
               </div>
