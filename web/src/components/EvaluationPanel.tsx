@@ -21,6 +21,9 @@ export interface EvaluationV1 {
   target_split?: { train_end_exclusive?: string; validation_end_exclusive?: string; test_end_exclusive?: string }
   turbines?: Record<string, TurbineEval>
   february_metrics?: unknown
+  evaluation_fit_end_exclusive?: string
+  production_fit_end_exclusive?: string
+  estimator_relationship?: string
 }
 
 const MODEL_LABEL: Record<string, string> = {
@@ -48,9 +51,10 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
         <>
           <p className="eval-meta">
             Тест: {d10(split?.validation_end_exclusive)} — {d10(split?.test_end_exclusive)}, не использовался для выбора. Выбор модели — на валидации
-            (обучение до {d10(split?.train_end_exclusive)}); для теста выбранная процедура переобучена на данных до {d10(split?.validation_end_exclusive)};
-            модель для прогнозов переобучается на истории до выпуска (шаг prepare в журнале агента). Отчёт {evaluation?.model_version ?? '?'} · единица{' '}
-            {evaluation?.unit ?? '?'} · bias = прогноз − факт
+            (обучение до {d10(split?.train_end_exclusive)}); для теста выбранная процедура переобучена на данных до{' '}
+            {d10(evaluation?.evaluation_fit_end_exclusive ?? split?.validation_end_exclusive)}; модель для прогнозов переобучена на данных до{' '}
+            {evaluation?.production_fit_end_exclusive ? d10(evaluation.production_fit_end_exclusive) : 'момента выпуска (шаг prepare в журнале агента)'}. Версия{' '}
+            {evaluation?.model_version ?? '?'} · единица {evaluation?.unit ?? '?'} · bias = прогноз − факт
           </p>
           {currentModel && evaluation?.model_version && currentModel !== evaluation.model_version && (
             <p className="eval-note">
@@ -99,6 +103,7 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
               </div>
             ))}
           </div>
+          {evaluation?.estimator_relationship && <p className="eval-meta">{evaluation.estimator_relationship}</p>}
           {evaluation?.protocol && (
             <details className="eval-proto">
               <summary>Протокол оценки</summary>
