@@ -1,5 +1,16 @@
 # C2 resource ledger — sole writer C2
 
+## Current state — 2026-09-23 15:44 UTC+5
+
+- One user-deployed Brev environment47y85unm3, created15:21:27, still Running. AWS T4 16GB; actual Tesla T4 15360MiB, driver595.91.07. Rate panel verified15:43: $0.65/hour ($0.63 compute+$0.02 storage previously itemized).
+- At15:43 elapsed21min33sec since creation: approximately$0.2335 at displayed hourly rate; billing rounding/settlement may differ. Panel still displays$50.00 credit, therefore this is NOT a settled remaining balance. Conservative estimated remaining from original$50: $49.7665 before other provider charges.
+- Latest direct user instruction15:38 explicitly requests another bounded quality cycle. C3 ACK15:41 supersedes previous15:51:27 stop: results16:30, one existingGPU stops no later than16:40. Maximum creation-to-new-stop78min33sec ≈$0.8510 at displayed rate; no added machines, top-ups or increased$50 ceiling.
+- CUDA project DL completed115.418s; CPU equivalent614.75s. Actual weights/reports archived on GPU; local export pending. Initial failed setup repaired via official uv/Python3.12, torch2.14cu126, numpy2.5.3, catboost1.2.10. No account keys or git credentials uploaded.
+- Storage persists after compute Stop at approximately$0.02/hour ($0.48/day). Do not claim zero ongoing charge after Stop. Export and deletion decision remain separate.
+- OpenAI cumulative actual-token estimate unchanged$0.0060296; no new API calls or subscriptions in this quality cycle so far.
+
+Historical entries below remain as recorded; this current-state section supersedes their old GPU pending/stop status.
+
 Authorization: BUDGET_AUTHORIZATION.md; shared team ceilings NVIDIA USD50 and OpenAI API USD50. No top-ups/subscriptions. Confirmed remaining account credit is UNKNOWN until panel verification.
 
 | Time UTC+5 | Service/job | Owner | Upper estimate | Actual/source | Stop/state |
