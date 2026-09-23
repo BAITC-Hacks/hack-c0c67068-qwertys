@@ -2,6 +2,8 @@
 import json
 import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 from datetime import timedelta
 from pathlib import Path
 from src.ml.common import iso, utc, write_json
@@ -64,5 +66,33 @@ class ForecastTests(unittest.TestCase):
         with self.assertRaises(WeatherUnavailable): run_forecast(self.request,events.append,model_dir=self.model,weather_dir=self.weather,output_dir=self.root/"runs",agent_mode="deterministic")
         self.assertFalse(list((self.root/"runs").glob("*/forecast.csv")))
         self.assertEqual(events[-1]["state"],"error")
+
+    def test_llm_failure_after_export_keeps_only_partial_artifacts_and_usage(self):
+        class Call:
+            type="function_call"
+            arguments="{}"
+            def __init__(self,name): self.name=name; self.call_id=name
+            def model_dump(self,**kwargs): return {"type":self.type,"name":self.name,"arguments":self.arguments,"call_id":self.call_id}
+        class FakeResponses:
+            def __init__(self): self.index=0
+            def create(self,**kwargs):
+                names=["weather","prepare","forecast","validate","export"]
+                if self.index==5: raise TimeoutError("synthetic failure after export")
+                name=names[self.index]; self.index+=1
+                return SimpleNamespace(usage=SimpleNamespace(input_tokens=100,output_tokens=20),output=[Call(name)],output_text="")
+        client=SimpleNamespace(responses=FakeResponses()); events=[]
+        with patch.dict("os.environ",{"OPENAI_BUDGET_LEDGER":str(self.root/"budget.json"),"OPENAI_MODEL":"gpt-4.1-mini-2025-04-14"}):
+            with self.assertRaises(TimeoutError): run_forecast(self.request,events.append,model_dir=self.model,weather_dir=self.weather,output_dir=self.root/"runs",agent_mode="live",client=client)
+        self.assertFalse(list((self.root/"runs").glob("*/forecast.csv")))
+        self.assertEqual(len(list((self.root/"runs").glob("*/forecast.csv.partial"))),1)
+        usage=json.loads(next((self.root/"runs").glob("*/usage.json")).read_text())
+        self.assertEqual(usage["input_tokens"],500)
+        self.assertEqual(usage["output_tokens"],100)
+        self.assertTrue(usage["uncertain_request"])
+        self.assertEqual(json.loads((self.root/"budget.json").read_text())["charged_or_reserved_usd"],0.2)
+
+    def test_unknown_llm_price_fails_before_network(self):
+        with patch.dict("os.environ",{"OPENAI_MODEL":"unpriced-test-model"}):
+            with self.assertRaises(CoreNotReady): run_forecast(self.request,lambda event:None,model_dir=self.model,weather_dir=self.weather,output_dir=self.root/"runs",agent_mode="live",client=object())
 
 if __name__=="__main__": unittest.main()
