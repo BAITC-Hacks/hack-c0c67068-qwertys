@@ -16,9 +16,9 @@
     "provider": "Open-Meteo Single Runs",
     "model": "ecmwf_ifs",
     "run_time": "2026-01-31T00:00:00Z",
-    "available_at": "2026-01-31T06:00:00Z",
-    "available_at_basis": "inferred conservative run_init + 6h; not provider publication timestamp",
-    "availability_basis": "inferred_run_plus_6h",
+    "available_at": "2026-01-31T09:00:00Z",
+    "available_at_basis": "inferred run_init + 9h safety margin; not provider publication timestamp",
+    "availability_basis": "inferred_run_plus_9h",
     "provenance_status": "unconfirmed",
     "valid_time": "2026-01-31T08:00:00Z",
     "variables": {

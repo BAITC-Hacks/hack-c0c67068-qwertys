@@ -4,6 +4,8 @@
 
 JSON snake_case. Timestamps RFC3339 с обязательным offset, ответы UTC Z. turbine_id: turbine_1/turbine_2. unit: normalized_power без неподтверждённого диапазона. Предлагаемые маршруты:
 
+Текущее допущение погодного адаптера C1 после исправления e48a836: `available_at = run_time + 9h`, `availability_basis=inferred_run_plus_9h`, `provenance_status=unconfirmed`. Это выбранный запас, не подтверждённое историческое время публикации и не гарантия отсутствия утечки. UI/API сохраняют предупреждение; предыдущий запас +6h отменён. Положительный пример: выпуск 00Z, issue_time 12Z, покрытие 48 часов при наличии 72-часового источника.
+
 | Метод | Путь | Результат |
 |---|---|---|
 | GET | `/api/health` | status=ok, forecast_ready=true/false |

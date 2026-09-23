@@ -2,7 +2,7 @@ import csv
 import json
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from src.data.scada import prepare_hourly
@@ -44,24 +44,29 @@ class ScadaPreparationTests(unittest.TestCase):
 class WeatherSourceTests(unittest.TestCase):
     def test_source_hash_and_issue_time_gate(self):
         hourly = {
-            "time": [f"2026-01-31T{hour:02d}:00" for hour in range(24)],
-            "wind_speed_100m": [5.0] * 24,
-            "wind_direction_100m": [90] * 24,
-            "temperature_2m": [1.0] * 24,
+            "time": [(datetime(2026, 1, 31, tzinfo=timezone.utc) + timedelta(hours=hour)).strftime("%Y-%m-%dT%H:%M") for hour in range(72)],
+            "wind_speed_100m": [5.0] * 72,
+            "wind_direction_100m": [90] * 72,
+            "temperature_2m": [1.0] * 72,
         }
         payload = json.dumps({"hourly": hourly}).encode()
         rows, report = inspect_payload(payload, url="https://example.test/run", run="2026-01-31T00:00Z")
-        self.assertEqual(report["hour_count"], 24)
+        self.assertEqual(report["hour_count"], 72)
         self.assertEqual(report["null_counts"]["wind_speed_100m"], 0)
-        self.assertEqual(rows[0]["available_at"], "2026-01-31T06:00:00Z")
+        self.assertEqual(rows[0]["available_at"], "2026-01-31T09:00:00Z")
         self.assertEqual(rows[0]["provenance_status"], "unconfirmed")
         with self.assertRaisesRegex(ValueError, "unavailable"):
             select_horizon(rows, "2026-01-31T00:00Z", 24)
+        with self.assertRaisesRegex(ValueError, "unavailable"):
+            select_horizon(rows, "2026-01-31T06:00Z", 24)
+        with self.assertRaisesRegex(ValueError, "unavailable"):
+            select_horizon(rows, "2026-01-31T08:00Z", 24)
+        self.assertEqual(len(select_horizon(rows, "2026-01-31T12:00Z", 48)), 48)
         with self.assertRaisesRegex(ValueError, "does not cover"):
-            select_horizon(rows, "2026-01-31T07:00Z", 24)
-        rows[8]["variables"]["wind_speed_100m_m_s"] = float("nan")
+            select_horizon(rows, "2026-02-02T12:00Z", 24)
+        rows[13]["variables"]["wind_speed_100m_m_s"] = float("nan")
         with self.assertRaisesRegex(ValueError, "Nonfinite"):
-            select_horizon(rows, "2026-01-31T07:00Z", 24)
+            select_horizon(rows, "2026-01-31T12:00Z", 24)
 
 
 if __name__ == "__main__":
