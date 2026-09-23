@@ -1,0 +1,255 @@
+{
+  "role": "C4",
+  "independent_executor": true,
+  "shortlist_commit": "42bb23a46c88c746867921215bbd56a855d6766a",
+  "candidates": [
+    {
+      "id": "S-01",
+      "scores": {
+        "K": 5,
+        "F": 4,
+        "D": 4,
+        "I": 5,
+        "V": 5,
+        "R": 4,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 150,
+        "integration_and_check": 30
+      },
+      "owner": "C1/C2/C3/C4",
+      "files": [
+        "src/, web/"
+      ],
+      "dependencies": [
+        "Archive availability evidence; ML owner confirmed"
+      ],
+      "stop_rule": "Keep simplest measured model if GBM not ready at 15:15",
+      "veto": null,
+      "reason": "Primary line matches all required product behaviors; +6h publication remains an assumption until evidenced."
+    },
+    {
+      "id": "S-02",
+      "scores": {
+        "K": 4,
+        "F": 5,
+        "D": 4,
+        "I": 4,
+        "V": 4,
+        "R": 5,
+        "N": 2
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 100,
+        "integration_and_check": 25
+      },
+      "owner": "C1/C2/C3/C4",
+      "files": [
+        "src/, web/"
+      ],
+      "dependencies": [
+        "MOS on archived forecasts"
+      ],
+      "stop_rule": "Use as fallback if no measured GBM gain by 15:15",
+      "veto": null,
+      "reason": "Strong fallback, preserve identical API and observable workflow."
+    },
+    {
+      "id": "S-03",
+      "scores": {
+        "K": 3,
+        "F": 3,
+        "D": 3,
+        "I": 3,
+        "V": 4,
+        "R": 3,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 20,
+        "integration_and_check": 10
+      },
+      "owner": "C2/C4",
+      "files": [
+        "src/ml/, web/"
+      ],
+      "dependencies": [
+        "Independent calibration set"
+      ],
+      "stop_rule": "Drop if no measured interval coverage by 15:45",
+      "veto": null,
+      "reason": "Useful but unsupported confidence shading would mislead."
+    },
+    {
+      "id": "S-04",
+      "scores": {
+        "K": 3,
+        "F": 2,
+        "D": 2,
+        "I": 3,
+        "V": 3,
+        "R": 2,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 35,
+        "integration_and_check": 15
+      },
+      "owner": "C1/C2",
+      "files": [
+        "src/weather/, src/ml/"
+      ],
+      "dependencies": [
+        "Second source as-of archive"
+      ],
+      "stop_rule": "Drop if P0 pending at 15:15",
+      "veto": null,
+      "reason": "More data and lineage dependencies threaten two-hour target."
+    },
+    {
+      "id": "S-05",
+      "scores": {
+        "K": 3,
+        "F": 4,
+        "D": 4,
+        "I": 4,
+        "V": 5,
+        "R": 4,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C4",
+      "files": [
+        "web/"
+      ],
+      "dependencies": [
+        "Two genuine revisions returned by backend"
+      ],
+      "stop_rule": "Drop if real reruns absent by 15:30",
+      "veto": null,
+      "reason": "Visible value of recomputation, only compare same valid hours."
+    },
+    {
+      "id": "S-06",
+      "scores": {
+        "K": 5,
+        "F": 4,
+        "D": 4,
+        "I": 5,
+        "V": 5,
+        "R": 5,
+        "N": 2
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C1/CLAUDE/B",
+      "files": [
+        "cache policy, docs/verification/"
+      ],
+      "dependencies": [
+        "Permission to publish weather cache; secrets excluded"
+      ],
+      "stop_rule": "No unauthorized cache committed; use supplied local cache if needed",
+      "veto": null,
+      "reason": "Reproducibility is essential and worth prioritizing over extra models."
+    },
+    {
+      "id": "S-07",
+      "scores": {
+        "K": 3,
+        "F": 3,
+        "D": 2,
+        "I": 3,
+        "V": 4,
+        "R": 3,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C3",
+      "files": [
+        "src/agent/"
+      ],
+      "dependencies": [
+        "Validated physical thresholds and weather variables"
+      ],
+      "stop_rule": "Drop if unsupported thresholds or P0 incomplete",
+      "veto": null,
+      "reason": "Operational alerts need calibrated rules; simple result warnings suffice first."
+    },
+    {
+      "id": "S-08",
+      "scores": {
+        "K": 4,
+        "F": 3,
+        "D": 3,
+        "I": 4,
+        "V": 5,
+        "R": 4,
+        "N": 2
+      },
+      "evidence": [
+        "coordination/CONTRACTS.md: as-of invariant and immutable run identity",
+        "local CSV audit: no February actuals; normalized target"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C3/C1/C4",
+      "files": [
+        "src/, web/"
+      ],
+      "dependencies": [
+        "Observed-only pretest timezone analysis"
+      ],
+      "stop_rule": "Do not auto-change timezone based on final evaluation",
+      "veto": null,
+      "reason": "Retain previous results in UI; timezone test cannot independently prove metadata."
+    }
+  ]
+}
