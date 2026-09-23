@@ -38,6 +38,13 @@ class ForecastRequest(Contract):
             raise ValueError("Use an ISO 8601 timestamp with timezone")
         return value
 
+    @field_validator("issue_time")
+    @classmethod
+    def hourly_issue(cls, value):
+        if value.minute or value.second or value.microsecond:
+            raise ValueError("issue_time must be an exact hour")
+        return value
+
 
 class ApiError(Contract):
     code: str

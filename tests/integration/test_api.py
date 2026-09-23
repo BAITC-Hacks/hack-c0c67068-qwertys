@@ -19,7 +19,7 @@ def synthetic_stub(request, emit):
     emit(EventInput(tool="test.stub", state="ok", summary="SYNTHETIC TEST ONLY", stage="forecast"))
     return ForecastPayload(
         rows=[ForecastRow(turbine_id=turbine, issue_time=request.issue_time, valid_time=request.issue_time + timedelta(hours=hour), lead_hours=hour, y_pred=1.2 if hour == 1 else 0.4) for turbine in request.turbine_ids for hour in range(1, request.horizon_hours + 1)],
-        metadata=ForecastMetadata(model_version="TEST-STUB", weather_available_at=request.issue_time - timedelta(hours=2), weather_run_time=request.issue_time - timedelta(hours=8), availability_basis="inferred_run_plus_6h", provenance_status="unconfirmed", scada_timezone="UTC+6", timezone_status="inferred"),
+        metadata=ForecastMetadata(model_version="TEST-STUB", weather_available_at=request.issue_time - timedelta(hours=2), weather_run_time=request.issue_time - timedelta(hours=11), availability_basis="inferred_run_plus_9h", provenance_status="unconfirmed", scada_timezone="UTC+6", timezone_status="inferred"),
         mode="deterministic",
     )
 
@@ -44,6 +44,7 @@ def test_without_core_is_not_ready(tmp_path):
 
 @pytest.mark.parametrize('change', [
     {'issue_time': '2026-01-31T23:00:00'}, {'issue_time': 1770000000},
+    {'issue_time': '2026-01-31T23:15:00Z'},
     {'turbine_ids': ['T1']}, {'turbine_ids': ['turbine_1', 'turbine_1']},
     {'horizon_hours': 12}, {'unknown_key': 'sensitive-value'},
 ])
@@ -145,3 +146,25 @@ def test_unknown_run_and_route(tmp_path):
         assert client.get('/api/runs/absent').status_code == 404
         assert client.get('/api/runs/absent/events').status_code == 404
         assert client.get('/api/absent').json()['error']['code'] == 'unknown_endpoint'
+
+
+def test_readiness_tracks_artifacts_without_creating_failed_runs(tmp_path):
+    state = {'ready': False}
+    with TestClient(create_app(synthetic_stub, tmp_path / 'runs.db', readiness=lambda: state)) as client:
+        assert client.get('/api/health').json()['forecast_ready'] is False
+        assert client.post('/api/runs', json=BODY).status_code == 503
+        assert client.get('/api/runs').json() == []
+        state['ready'] = True
+        assert client.get('/api/health').json()['forecast_ready'] is True
+        run_id = client.post('/api/runs', json=BODY).json()['run_id']
+        assert completed(client, run_id)['status'] == 'completed'
+
+
+def test_readiness_failure_is_safe(tmp_path):
+    def unavailable():
+        raise RuntimeError('api_key=private-readiness')
+    with TestClient(create_app(synthetic_stub, tmp_path / 'runs.db', readiness=unavailable)) as client:
+        assert client.get('/api/health').json()['forecast_ready'] is False
+        response = client.post('/api/runs', json=BODY)
+        assert response.status_code == 503
+        assert 'private' not in response.text

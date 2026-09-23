@@ -52,7 +52,7 @@ def configured_runner() -> Runner | None:
     return runner
 
 
-def create_app(runner: Runner | None = None, store_path: Path | None = None, static_dir: Path | None = None) -> FastAPI:
+def create_app(runner: Runner | None = None, store_path: Path | None = None, static_dir: Path | None = None, readiness: Callable | None = None) -> FastAPI:
     store = RunStore(store_path or Path(os.getenv("RUN_STORE_PATH", ".local/runs.sqlite3")))
     slots = BoundedSemaphore(4)
 
@@ -66,6 +66,17 @@ def create_app(runner: Runner | None = None, store_path: Path | None = None, sta
     app = FastAPI(title="QwertyS Wind Forecast", version="0.1.0", lifespan=lifespan)
     app.state.runner = runner
     app.state.store = store
+
+    def forecast_ready():
+        if app.state.runner is None:
+            return False
+        if readiness is None:
+            return True
+        try:
+            return readiness().get("ready") is True
+        except Exception:
+            # Configuration errors must not expose filesystem paths or provider secrets.
+            return False
 
     @app.exception_handler(HTTPException)
     async def http_error(_request, exc):
@@ -117,12 +128,12 @@ def create_app(runner: Runner | None = None, store_path: Path | None = None, sta
 
     @app.get("/api/health")
     def health():
-        return {"status": "ok", "forecast_ready": app.state.runner is not None, "version": app.version}
+        return {"status": "ok", "forecast_ready": forecast_ready(), "version": app.version}
 
     @app.post("/api/runs", response_model=RunStatus, status_code=202)
     def start_run(body: ForecastRequest):
-        if app.state.runner is None:
-            problem(503, "not_ready", "Численная модель ещё не подключена")
+        if not forecast_ready():
+            problem(503, "not_ready", "Модель или необходимые входные данные ещё не готовы")
         if not slots.acquire(blocking=False):
             problem(503, "busy", "Очередь расчётов заполнена. Повторите позже.", True)
         run_id = uuid4().hex
@@ -182,4 +193,6 @@ def create_app(runner: Runner | None = None, store_path: Path | None = None, sta
 
 
 load_dotenv()
-app = create_app(runner=configured_runner())
+_runner = configured_runner()
+_readiness = getattr(importlib.import_module(_runner.__module__), "readiness", None) if _runner else None
+app = create_app(runner=_runner, readiness=_readiness)
