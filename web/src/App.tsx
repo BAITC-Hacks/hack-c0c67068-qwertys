@@ -15,6 +15,8 @@ import { AgentPanel } from './components/AgentPanel'
 import { EvaluationPanel } from './components/EvaluationPanel'
 import { ForecastChart } from './components/ForecastChart'
 import { ForecastTable } from './components/ForecastTable'
+import { KpiStrip } from './components/KpiStrip'
+import { TrustStrip } from './components/TrustStrip'
 import { ProvenanceCard } from './components/ProvenanceCard'
 import { ReplayPanel } from './components/ReplayPanel'
 import { fmtIso, issueTimeFromLocal, localDateHour, replayDates, tzLabel, type DisplayTz } from './lib/time'
@@ -73,6 +75,7 @@ export default function App() {
   const [events, setEvents] = useState<AgentEvent[]>([])
   const [forecast, setForecast] = useState<ForecastResponse | null>(null)
   const [previous, setPrevious] = useState<ForecastResponse | null>(null)
+  const [compareId, setCompareId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
@@ -149,19 +152,30 @@ export default function App() {
     return f
   }, [])
 
-  /** Previous completed live run with the same issue/horizon (for revision compare). */
+  /** Load any saved run as the comparison layer (only real runs; common valid hours are matched later). */
+  const selectCompare = useCallback(
+    async (id: string | null) => {
+      setCompareId(id)
+      if (!id) return setPrevious(null)
+      try {
+        setPrevious(await getForecast(id))
+      } catch (e) {
+        setPrevious(null)
+        setCompareId(null)
+        setError(`Сравнение недоступно: ${errText(e)}`)
+      }
+    },
+    [getForecast],
+  )
+
+  /** Default comparison: previous completed live run with the same issue/horizon (recompute). */
   const loadPrevious = useCallback(
     async (rec: RunRecord, all: RunRecord[]) => {
       const idx = all.findIndex((r) => r.run_id === rec.run_id)
       const prev = all.slice(idx + 1).find((r) => !r.synthetic && sameParams(r.request, rec.request))
-      if (!prev) return setPrevious(null)
-      try {
-        setPrevious(await getForecast(prev.run_id))
-      } catch {
-        setPrevious(null)
-      }
+      await selectCompare(prev?.run_id ?? null)
     },
-    [getForecast],
+    [selectCompare],
   )
 
   const poll = useCallback(
@@ -199,6 +213,7 @@ export default function App() {
       setError(null)
       setForecast(null)
       setPrevious(null)
+      setCompareId(null)
       setStatus(null)
       setEvents([])
       const loc = localDateHour(rec.request.issue_time)
@@ -230,6 +245,7 @@ export default function App() {
       setEvents([])
       setForecast(null)
       setPrevious(null)
+      setCompareId(null)
       poll(rec, next)
     } catch (e) {
       setBusy(false)
@@ -249,6 +265,27 @@ export default function App() {
     openRun(rec, next)
   }
 
+  const retry = () => {
+    if (current && !current.synthetic) {
+      setDate(localDateHour(current.request.issue_time).date)
+      setHour(localDateHour(current.request.issue_time).hour)
+      setHorizon(current.request.horizon_hours)
+    }
+    launch()
+  }
+
+  /** Other real runs whose valid window overlaps the current one. */
+  const compareCandidates = current
+    ? runs.filter((r) => {
+        if (r.synthetic || r.run_id === current.run_id) return false
+        const a0 = Date.parse(current.request.issue_time)
+        const a1 = a0 + current.request.horizon_hours * 3600_000
+        const b0 = Date.parse(r.request.issue_time)
+        const b1 = b0 + r.request.horizon_hours * 3600_000
+        return b0 < a1 && a0 < b1
+      })
+    : []
+
   const sameIssueCount = current ? runs.filter((r) => !r.synthetic && sameParams(r.request, current.request)).length : 0
   const shownTurbines = ALL_TURBINES.filter((t) => shown.includes(t))
   const statusChip = status
@@ -263,6 +300,11 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
+          <svg className="mark" viewBox="0 0 32 32" aria-hidden>
+            <circle cx="16" cy="13" r="2.2" />
+            <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
+            <path d="M16 15.2 L16 30" className="mast" />
+          </svg>
           <h1>Прогноз выработки ВЭС · Шелекский коридор</h1>
           <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, доступным на момент выпуска</p>
         </div>
@@ -295,7 +337,17 @@ export default function App() {
       )}
       {error && (
         <div className="banner error" role="alert">
-          Ошибка: {error}
+          <span>Ошибка: {error}</span>
+          <span className="banner-actions">
+            {current && !current.synthetic && (
+              <button className="btn" type="button" onClick={retry} disabled={busy || !health}>
+                Повторить запуск
+              </button>
+            )}
+            <button className="btn" type="button" onClick={() => setError(null)}>
+              Скрыть
+            </button>
+          </span>
         </div>
       )}
 
@@ -389,6 +441,18 @@ export default function App() {
                   : `время на графике: ${tzLabel(tz)}`}
               </small>
             </h2>
+            {forecast && !synthetic && (
+              <TrustStrip
+                metadata={forecast.metadata}
+                status={status}
+                rows={forecast.rows}
+                horizon={current?.request.horizon_hours ?? horizon}
+                turbines={ALL_TURBINES.length}
+                tz={tz}
+                synthetic={synthetic}
+              />
+            )}
+            {forecast && <KpiStrip rows={forecast.rows} turbines={shownTurbines} tz={tz} />}
             <ForecastChart
               rows={forecast?.rows ?? []}
               previous={previous?.rows}
@@ -396,6 +460,7 @@ export default function App() {
               issueTime={current?.request.issue_time ?? null}
               tz={tz}
               synthetic={synthetic}
+              loadingStage={busy && !forecast ? (status?.stage ?? '') : null}
             />
             {forecast && (
               <div className="controls" style={{ marginTop: 10 }}>
@@ -408,9 +473,28 @@ export default function App() {
                     Скачать CSV
                   </a>
                 )}
+                {!synthetic && (
+                  <label className="field compare">
+                    <span>Сравнить с запуском</span>
+                    <select
+                      value={compareId ?? ''}
+                      onChange={(e) => selectCompare(e.target.value || null)}
+                      disabled={!compareCandidates.length}
+                      title={compareCandidates.length ? 'Наложить другой сохранённый запуск на общие часы' : 'Нет другого сохранённого запуска с общими часами — нажмите «Пересчитать» или запустите соседнюю дату'}
+                    >
+                      <option value="">{compareCandidates.length ? '— без сравнения —' : 'нет запусков с общими часами'}</option>
+                      {compareCandidates.map((r) => (
+                        <option key={r.run_id} value={r.run_id}>
+                          {sameParams(r.request, current!.request) ? 'та же дата · ' : 'выпуск '}
+                          {fmtIso(r.request.issue_time, tz)} · {r.run_id.slice(0, 10)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <span style={{ color: 'var(--ink-2)', fontSize: 12.5 }}>
                   {forecast.rows.length} строк · единица: {forecast.unit}
-                  {previous ? ` · сравнение с предыдущей версией (${previous.run_id})` : sameIssueCount > 1 ? '' : ' · для сравнения версий нажмите «Пересчитать»'}
+                  {previous ? ` · пунктир и Δ: ${previous.run_id}` : sameIssueCount > 1 ? '' : ' · «Пересчитать» создаст вторую версию для сравнения'}
                 </span>
               </div>
             )}

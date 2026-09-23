@@ -1,4 +1,5 @@
 import {
+  Brush,
   CartesianGrid,
   Line,
   LineChart,
@@ -22,6 +23,7 @@ interface Props {
   issueTime: string | null
   tz: DisplayTz
   synthetic: boolean
+  loadingStage?: string | null
 }
 
 type Point = { t: number; lead: number } & Partial<Record<string, number | null>>
@@ -42,11 +44,24 @@ export function buildPoints(rows: ForecastRow[], previous?: ForecastRow[] | null
   return [...byT.values()].sort((a, b) => a.t - b.t)
 }
 
-export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthetic }: Props) {
+const STAGE_RU: Record<string, string> = { weather: 'получение погоды', prepare: 'подготовка данных', forecast: 'расчёт модели', validate: 'анализ результата', export: 'экспорт' }
+
+export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthetic, loadingStage }: Props) {
   if (!rows.length) {
     return (
       <div className="chart-wrap">
-        <div className="empty">Прогноза пока нет. Выберите дату выпуска и запустите агента.</div>
+        {loadingStage !== undefined && loadingStage !== null ? (
+          <div className="skeleton" aria-busy="true" aria-live="polite">
+            <div className="sk-lines" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </div>
+            <p>Агент работает: {STAGE_RU[loadingStage] ?? (loadingStage || 'в очереди')}…</p>
+          </div>
+        ) : (
+          <div className="empty">Прогноза пока нет. Выберите дату выпуска и запустите агента.</div>
+        )}
       </div>
     )
   }
@@ -58,7 +73,7 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
 
   return (
     <>
-      <div className="chart-wrap" role="img" aria-label="Почасовой прогноз нормализованной мощности">
+      <div className="chart-wrap" role="figure" aria-label="Почасовой прогноз нормализованной мощности; те же данные — в таблице ниже">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
             <CartesianGrid stroke="var(--grid)" vertical={false} />
@@ -90,6 +105,7 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
               formatter={(value, name) => [typeof value === 'number' ? value.toFixed(3) : String(value), String(name)]}
               contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
               labelStyle={{ color: 'var(--ink)' }}
+              cursor={{ stroke: 'var(--ink-2)', strokeWidth: 1, strokeDasharray: '2 3' }}
             />
             {turbines.map((t) => (
               <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} />
@@ -98,6 +114,9 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
               turbines.map((t) => (
                 <Line key={`prev_${t}`} dataKey={`prev_${t}`} name={`${TURBINE_LABEL[t]} — пред. версия`} stroke={COLOR[t]} strokeWidth={1.5} strokeDasharray="5 4" strokeOpacity={0.75} dot={false} isAnimationActive={false} connectNulls={false} />
               ))}
+            {data.length > 12 && (
+              <Brush dataKey="t" height={22} travellerWidth={8} stroke="var(--axis)" fill="var(--surface-2)" tickFormatter={(v: number) => fmtHour(v, tz)} />
+            )}
           </LineChart>
         </ResponsiveContainer>
         {synthetic && <div className="watermark">СИНТЕТИКА</div>}
@@ -107,7 +126,7 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
           <span key={t}><span className="swatch" style={{ borderColor: COLOR[t] }} />{TURBINE_LABEL[t]}</span>
         ))}
         {hasPrev && <span><span className="swatch dashed" style={{ borderColor: 'var(--ink-2)' }} />предыдущая версия (общие часы)</span>}
-        <span>Ось Y: нормализованная мощность (как в SCADA), не МВт · время {tzLabel(tz)} · серая зона: упреждение 25–48 ч</span>
+        <span>Ось Y: нормализованная мощность (как в SCADA), не МВт · время {tzLabel(tz)} · серая зона: упреждение 25–48 ч · ползунок внизу — масштаб</span>
       </div>
     </>
   )
