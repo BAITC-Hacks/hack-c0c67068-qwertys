@@ -3,6 +3,7 @@
 // Never use for demos or results.  Run: node web/scripts/mock-api.mjs  (port 8010, not the real 8000)
 // UI against mock: VITE_API_TARGET=http://127.0.0.1:8010 npm run dev
 import http from 'node:http'
+import fs from 'node:fs'
 
 const runs = new Map()
 const STAGES = ['weather', 'prepare', 'forecast', 'validate', 'export']
@@ -27,6 +28,9 @@ http
     const url = new URL(req.url, 'http://x')
     const p = url.pathname
     if (p === '/api/health') return json(res, 200, { status: 'ok', forecast_ready: true })
+    // MOCK_EVAL=<path to a real C2 evaluation json> lets the UI panel be checked against real file shape
+    if (p === '/api/evaluation')
+      return process.env.MOCK_EVAL ? json(res, 200, JSON.parse(fs.readFileSync(process.env.MOCK_EVAL, 'utf8'))) : json(res, 404, { error: { code: 'not_found', message: 'no evaluation', retryable: false } })
     if (p === '/api/runs' && req.method === 'POST') {
       let body = ''
       req.on('data', (c) => (body += c))

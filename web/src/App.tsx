@@ -3,7 +3,6 @@ import { api, HttpError } from './api/client'
 import { SYNTHETIC_TAG, syntheticEvents, syntheticForecast } from './api/synthetic'
 import type {
   AgentEvent,
-  Evaluation,
   ForecastResponse,
   Health,
   RunRecord,
@@ -12,7 +11,7 @@ import type {
   TurbineId,
 } from './api/types'
 import { AgentPanel } from './components/AgentPanel'
-import { EvaluationPanel } from './components/EvaluationPanel'
+import { EvaluationPanel, type EvaluationV1 } from './components/EvaluationPanel'
 import { ForecastChart } from './components/ForecastChart'
 import { ForecastTable } from './components/ForecastTable'
 import { KpiStrip } from './components/KpiStrip'
@@ -78,7 +77,7 @@ export default function App() {
   const [compareId, setCompareId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [evaluation, setEvaluation] = useState<Evaluation | null>(null)
+  const [evaluation, setEvaluation] = useState<EvaluationV1 | null>(null)
 
   const forecastCache = useRef(new Map<string, ForecastResponse>())
   const pollRef = useRef<number | null>(null)

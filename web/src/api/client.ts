@@ -1,12 +1,12 @@
 import type {
   ApiError,
   EventsResponse,
-  Evaluation,
   ForecastResponse,
   Health,
   RunRequest,
   RunStatus,
 } from './types'
+import type { EvaluationV1 } from '../components/EvaluationPanel'
 
 export class HttpError extends Error {
   status: number
@@ -65,6 +65,6 @@ export const api = {
   run: (id: string) => request<RunStatus>(`/runs/${encodeURIComponent(id)}`),
   forecast: (id: string) => request<ForecastResponse>(`/runs/${encodeURIComponent(id)}/forecast`),
   events: (id: string) => request<EventsResponse>(`/runs/${encodeURIComponent(id)}/events`),
-  evaluation: () => request<Evaluation>('/evaluation'),
+  evaluation: () => request<EvaluationV1>('/evaluation'),
   exportUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/export.csv`,
 }
