@@ -9,6 +9,13 @@ from pathlib import Path
 from src.data.scada import prepare_hourly
 from src.weather.open_meteo import inspect_payload, select_horizon
 
+PROVIDER_UNITS = {
+    "time": "iso8601",
+    "wind_speed_100m": "m/s",
+    "wind_direction_100m": "°",
+    "temperature_2m": "°C",
+}
+
 
 class ScadaPreparationTests(unittest.TestCase):
     def test_coverage_and_fixed_offset_are_explicit(self):
@@ -50,7 +57,7 @@ class WeatherSourceTests(unittest.TestCase):
             "wind_direction_100m": [90] * 72,
             "temperature_2m": [1.0] * 72,
         }
-        payload = json.dumps({"hourly": hourly}).encode()
+        payload = json.dumps({"hourly": hourly, "hourly_units": PROVIDER_UNITS}).encode()
         rows, report = inspect_payload(payload, url="https://example.test/run", run="2026-01-31T00:00Z")
         self.assertEqual(report["hour_count"], 72)
         self.assertEqual(report["null_counts"]["wind_speed_100m"], 0)
@@ -76,7 +83,7 @@ class WeatherSourceTests(unittest.TestCase):
             "wind_direction_100m": [90.0] * 72,
             "temperature_2m": [1.0] * 72,
         }
-        rows, _ = inspect_payload(json.dumps({"hourly": hourly}).encode(), url="https://example.test/run", run="2026-01-31T00:00Z")
+        rows, _ = inspect_payload(json.dumps({"hourly": hourly, "hourly_units": PROVIDER_UNITS}).encode(), url="https://example.test/run", run="2026-01-31T00:00Z")
         issue = "2026-01-31T12:00Z"
         self.assertEqual(len(select_horizon(rows, issue, 24)), 24)
         for variable, value, error in (
@@ -109,6 +116,35 @@ class WeatherSourceTests(unittest.TestCase):
         duplicate_time[60]["valid_time"] = duplicate_time[59]["valid_time"]
         with self.assertRaisesRegex(ValueError, "Duplicate weather valid_time"):
             select_horizon(duplicate_time, issue, 24)
+
+    def test_inspect_payload_rejects_missing_or_wrong_provider_units(self):
+        hourly = {
+            "time": ["2026-01-31T00:00", "2026-01-31T01:00"],
+            "wind_speed_100m": [5.0, 6.0],
+            "wind_direction_100m": [90.0, 91.0],
+            "temperature_2m": [1.0, 2.0],
+        }
+
+        def inspect(units):
+            payload = json.dumps({"hourly": hourly, "hourly_units": units}).encode()
+            return inspect_payload(payload, url="https://example.test/run", run="2026-01-31T00:00Z")
+
+        rows, report = inspect(PROVIDER_UNITS)
+        self.assertEqual(rows[0]["units"]["temperature_2m_c"], "°C")
+        self.assertEqual(report["hourly_units"], PROVIDER_UNITS)
+        for units in (None, {}, []):
+            with self.subTest(units=units), self.assertRaisesRegex(ValueError, "hourly_units|provider unit"):
+                inspect(units)
+        for name, wrong in (
+            ("time", "unix"),
+            ("wind_speed_100m", "km/h"),
+            ("wind_direction_100m", "radian"),
+            ("temperature_2m", "°F"),
+        ):
+            with self.subTest(name=name, mode="missing"), self.assertRaisesRegex(ValueError, name):
+                inspect({key: value for key, value in PROVIDER_UNITS.items() if key != name})
+            with self.subTest(name=name, mode="wrong"), self.assertRaisesRegex(ValueError, name):
+                inspect({**PROVIDER_UNITS, name: wrong})
 
 
 if __name__ == "__main__":
