@@ -1,0 +1,16 @@
+[
+  {
+    "filename": "Dataset HackAlemAI для участников 11.03.2023-28.02.2026 - turbine 1.csv",
+    "bytes": 6049266,
+    "sha256": "C4C341582FB2DD348B7187F0128CFF265FE055F469413871EBB5DB50EEF58B5B",
+    "source": "Official HackAlem participant distribution",
+    "repository_policy": "Raw data excluded; each authorized participant obtains original locally"
+  },
+  {
+    "filename": "Dataset HackAlemAI для участников 11.03.2023-28.02.2026 - turbine 2.csv",
+    "bytes": 6354725,
+    "sha256": "820578CD18BB557CD30C2E102F3AE5A386DFC6C489A5A15743339C2B017305E5",
+    "source": "Official HackAlem participant distribution",
+    "repository_policy": "Raw data excluded; each authorized participant obtains original locally"
+  }
+]

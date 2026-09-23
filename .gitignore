@@ -6,3 +6,24 @@ venv/
 .ipynb_checkpoints/
 .DS_Store
 graphify-out/
+
+# Local data, secrets, generated assets and large skill packs
+.env.*
+!.env.example
+*.pem
+*.key
+data/raw/
+data/cache/
+cases/
+all_my_skills1/
+claude_everything_skill/
+node_modules/
+dist/
+models/
+artifacts/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage/
+*.log
