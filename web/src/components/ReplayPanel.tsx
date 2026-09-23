@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api, HttpError } from '../api/client'
 import type { ForecastResponse, ForecastRow, RunRecord, RunRequest, TurbineId } from '../api/types'
@@ -28,6 +28,10 @@ interface Props {
   enabled: boolean
   onRun: (rec: RunRecord) => void
   onOpen: (run_id: string) => void
+  /** Real runs already stored by the API (server list + this browser). */
+  saved: RunRecord[]
+  /** Deep link ?replay=saved: fill the panel from saved runs once on load. */
+  autoLoadSaved?: boolean
 }
 
 /** For each (turbine, valid hour) keep the row from the most recent issue (smallest lead). */
@@ -54,12 +58,43 @@ function stitch(cells: Cell[]) {
   return { points: [...byT.values()].sort((a, b) => a.t - b.t), covered }
 }
 
-export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Props) {
+export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen, saved, autoLoadSaved }: Props) {
   const [cells, setCells] = useState<Cell[]>(() => replayDates().map((date) => ({ date, state: 'pending' })))
   const [running, setRunning] = useState(false)
   const stopRef = useRef(false)
 
   const update = (i: number, patch: Partial<Cell>) => setCells((cs) => cs.map((c, j) => (j === i ? { ...c, ...patch } : c)))
+
+  /** Rebuild the grid from completed runs already stored by the API — no new POSTs. */
+  const loadSaved = async () => {
+    setRunning(true)
+    const dates = replayDates()
+    setCells(dates.map((date) => ({ date, state: 'pending' })))
+    for (let i = 0; i < dates.length; i++) {
+      const at = Date.parse(issueTimeFromLocal(dates[i], hour))
+      const cand = saved.filter((r) => !r.synthetic && r.request.horizon_hours === 48 && Date.parse(r.request.issue_time) === at)
+      let filled = false
+      for (const r of cand) {
+        try {
+          const f = await api.forecast(r.run_id) // 409/404 for failed or unknown runs -> try the next one
+          update(i, { state: 'completed', run_id: r.run_id, rows: f.rows })
+          filled = true
+          break
+        } catch {
+          /* not completed */
+        }
+      }
+      if (!filled) update(i, { state: 'pending', error: 'сохранённого завершённого выпуска нет' })
+    }
+    setRunning(false)
+  }
+  const autoDone = useRef(false)
+  useEffect(() => {
+    if (!autoLoadSaved || autoDone.current || !enabled || !saved.length) return
+    autoDone.current = true
+    loadSaved()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoLoadSaved, enabled, saved.length])
 
   const runAll = async () => {
     stopRef.current = false
@@ -130,6 +165,9 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Prop
         )}
         <button className="btn" type="button" onClick={exportAll} disabled={!done}>
           CSV всех выпусков
+        </button>
+        <button className="btn" type="button" onClick={loadSaved} disabled={!enabled || running} title="Собрать сетку из уже выполненных и сохранённых сервером запусков (без новых расчётов)">
+          Показать сохранённые выпуски
         </button>
         <span style={{ color: 'var(--ink-2)', fontSize: 12.5 }}>
           готово {done}/29{failed ? ` · ошибок ${failed}` : ''} · покрытие февраля: Т1 {covered.turbine_1}/{FEB_HOURS} ч, Т2 {covered.turbine_2}/{FEB_HOURS} ч

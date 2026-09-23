@@ -593,6 +593,8 @@ export default function App() {
           )}
 
           <ReplayPanel
+            saved={runs}
+            autoLoadSaved={new URLSearchParams(window.location.search).get('replay') === 'saved'}
             hour={hour}
             tz={tz}
             turbines={shownTurbines}
