@@ -58,6 +58,7 @@ function Hero() {
     <section className={`hero${failed ? ' no-webgl' : ''}`}>
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly ветропарк в степи, над ним дует ветер" />
       <div ref={fadeRef} className="hero-fade" />
+      <h1 className="hero-title">JELIQ</h1>
       <header className="lp-header">
         <span className="lp-logo">
           <Mark />
@@ -80,7 +81,7 @@ export default function Landing() {
           <Mark />
           Шелекский коридор · HackAlem AI 2026 · QwertyS
         </p>
-        <h1>Почасовой прогноз выработки двух ветротурбин на 24–48 часов</h1>
+        <h2>Почасовой прогноз выработки двух ветротурбин на 24–48 часов</h2>
         <p className="lp-lead">
           Агент берёт архивный прогноз погоды, который по правилу доступности вышел до момента выпуска, рассчитывает мощность и
           проверяет результат. Диспетчер получает таблицу, журнал действий и CSV.
