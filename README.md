@@ -6,13 +6,13 @@ SAMAL соединяет архивный погодный прогноз, об�
 
 [Быстрый запуск](#быстрый-запуск) · [Результаты](#модель-и-результаты) · [Воспроизводимость](docs/REPRODUCIBILITY.md) · [Демонстрация за 4 минуты](coordination/FINAL_DELIVERY.md) · [Соответствие кейсу](coordination/CASE_ALIGNMENT_1505.md)
 
-![SAMAL: главная страница с закатом](docs/demo/SAMAL-final-sunset.png)
+![SAMAL: главная страница с закатом](docs/demo/SAMAL-sunset-landing-1440.png)
 
 3D-сцена главной страницы — иллюстрация. Рабочий экран ниже показывает настоящий результат API и сравнение двух погодных выпусков.
 
-![SAMAL: прогноз и сравнение выпусков](docs/demo/CLAUDE-FE-dashboard-desktop.png)
+![SAMAL: прогноз и сравнение выпусков](docs/demo/SAMAL-dashboard-desktop-1440.png)
 
-[Мобильная компоновка, 500 px](docs/demo/CLAUDE-FE-dashboard-narrow-500.png) · [Проверка подключения финального интерфейса к API](coordination/messages/20260923T174100+0500-CLAUDE-READY-samal-backend-final.md).
+[Лендинг на телефоне, 390 px](docs/demo/SAMAL-sunset-landing-mobile-390.png) · [Рабочий экран на телефоне, 390 px](docs/demo/SAMAL-dashboard-mobile-390.png) · [Проверка подключения финального интерфейса к API](coordination/messages/20260923T174100+0500-CLAUDE-READY-samal-backend-final.md).
 
 ## Кейс
 
