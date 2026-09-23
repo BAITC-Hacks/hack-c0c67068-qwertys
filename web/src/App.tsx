@@ -155,13 +155,17 @@ export default function App() {
   }, [])
 
   /** Load any saved run as the comparison layer (only real runs; common valid hours are matched later). */
+  const compareGen = useRef(0)
   const selectCompare = useCallback(
     async (id: string | null) => {
+      const gen = ++compareGen.current // only the latest comparison request may write state
       setCompareId(id)
       if (!id) return setPrevious(null)
       try {
-        setPrevious(await getForecast(id))
+        const f = await getForecast(id)
+        if (gen === compareGen.current) setPrevious(f)
       } catch (e) {
+        if (gen !== compareGen.current) return
         setPrevious(null)
         setCompareId(null)
         setError(`Сравнение недоступно: ${errText(e)}`)
@@ -221,6 +225,7 @@ export default function App() {
       setForecast(null)
       setPrevious(null)
       setCompareId(null)
+      compareGen.current++
       setStatus(null)
       setEvents([])
       const loc = localDateHour(rec.request.issue_time)
@@ -254,6 +259,7 @@ export default function App() {
       setForecast(null)
       setPrevious(null)
       setCompareId(null)
+      compareGen.current++
       poll(rec, next, genRef.current)
     } catch (e) {
       setBusy(false)

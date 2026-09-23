@@ -47,13 +47,15 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
       ) : (
         <>
           <p className="eval-meta">
-            Тест: {d10(split?.validation_end_exclusive)} — {d10(split?.test_end_exclusive)} (не использовался для выбора) · обучение до{' '}
-            {d10(split?.train_end_exclusive)} · модель {evaluation?.model_version ?? '?'} · единица {evaluation?.unit ?? '?'} · bias = прогноз − факт
+            Тест: {d10(split?.validation_end_exclusive)} — {d10(split?.test_end_exclusive)}, не использовался для выбора. Выбор модели — на валидации
+            (обучение до {d10(split?.train_end_exclusive)}); для теста выбранная процедура переобучена на данных до {d10(split?.validation_end_exclusive)};
+            модель для прогнозов переобучается на истории до выпуска (шаг prepare в журнале агента). Отчёт {evaluation?.model_version ?? '?'} · единица{' '}
+            {evaluation?.unit ?? '?'} · bias = прогноз − факт
           </p>
           {currentModel && evaluation?.model_version && currentModel !== evaluation.model_version && (
             <p className="eval-note">
-              ⚠ Версии различаются: текущий прогноз построен моделью {currentModel}, а метрики выше относятся к модели {evaluation.model_version} (обучение до{' '}
-              {d10(split?.train_end_exclusive)}). Сопоставление версий — в отчёте C2 (model-manifest).
+              ⚠ Версия модели текущего прогноза ({currentModel}) не совпадает с версией в отчёте ({evaluation.model_version}). Метрики описывают процедуру
+              обучения и отбора, а не напрямую оценку этого экземпляра модели.
             </p>
           )}
           <div className="eval-grid">
