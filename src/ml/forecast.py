@@ -7,7 +7,7 @@ from datetime import timedelta
 from pathlib import Path
 import numpy as np
 from src.ml.common import TURBINES, curve_predict, features, fingerprint, iso, read_jsonl, utc
-from src.weather.open_meteo import select_horizon, probe
+from src.weather.open_meteo import AVAILABILITY_LAG_HOURS, select_horizon, probe
 
 
 class CoreNotReady(RuntimeError):
@@ -31,18 +31,31 @@ def validate_request(issue_time, turbine_ids, horizon_hours):
     return issue
 
 
+def available_horizon(weather, issue_time, horizon_hours):
+    """One temporal gate for both file-backed and direct numerical callers."""
+    try:
+        selected = select_horizon(weather, issue_time, horizon_hours)
+        for row in selected:
+            earliest = utc(row["run_time"]) + timedelta(hours=AVAILABILITY_LAG_HOURS)
+            if utc(row["available_at"]) < earliest:
+                raise ValueError("Weather metadata violates the +9h availability gate")
+        return selected
+    except (KeyError, ValueError) as error:
+        raise WeatherUnavailable("Weather cycle lacks a valid available complete horizon") from error
+
+
 def load_weather(issue_time, horizon_hours, weather_dir=None, *, fetch_policy=None):
     issue = utc(issue_time)
     directory = Path(weather_dir or os.getenv("WEATHER_RUNS_DIR", "data/cache/weather_runs"))
     # Daily 00Z run: newest cycle passing the documented +9h assumption.
-    run = (issue - timedelta(hours=9)).replace(hour=0, minute=0, second=0, microsecond=0)
+    run = (issue - timedelta(hours=AVAILABILITY_LAG_HOURS)).replace(hour=0, minute=0, second=0, microsecond=0)
     path = directory / (run.strftime("%Y-%m-%d") + ".jsonl")
     policy=fetch_policy or os.getenv("WEATHER_FETCH_POLICY","never")
     if policy not in ("never","missing","refresh"): raise InvalidForecastRequest("Unknown WEATHER_FETCH_POLICY")
     if policy=="refresh" or (policy=="missing" and not path.is_file()):
         try:
             rows,report,_=probe(43.645150,78.535604,iso(run),directory/"raw",forecast_hours=72)
-            select_horizon(rows,iso(issue),horizon_hours)
+            available_horizon(rows,iso(issue),horizon_hours)
             directory.mkdir(parents=True,exist_ok=True)
             temporary=path.with_suffix(".jsonl.partial")
             temporary.write_text("\n".join(json.dumps(row,ensure_ascii=False) for row in rows)+"\n",encoding="utf-8")
@@ -58,14 +71,7 @@ def load_weather(issue_time, horizon_hours, weather_dir=None, *, fetch_policy=No
         raise WeatherUnavailable("Duplicate weather valid_time")
     if len({row["source_reference"] for row in rows}) != 1:
         raise WeatherUnavailable("Mixed source references in weather cycle")
-    try:
-        selected = select_horizon(rows, iso(issue), horizon_hours)
-    except (KeyError, ValueError) as error:
-        raise WeatherUnavailable("Weather cycle lacks a valid available complete horizon") from error
-    for row in selected:
-        if utc(row["available_at"]) < run + timedelta(hours=9):
-            raise WeatherUnavailable("Weather metadata violates the +9h availability gate")
-    return selected
+    return available_horizon(rows, iso(issue), horizon_hours)
 
 
 def load_model(model_dir=None):
@@ -97,16 +103,22 @@ def predict_from_inputs(issue_time, turbine_ids, horizon_hours, weather, model_d
     directory, manifest = load_model(model_dir)
     if utc(manifest["training_end_exclusive"]) > issue:
         raise InvalidForecastRequest("Model training cutoff is after requested issue time")
-    weather = select_horizon(weather, iso(issue), horizon_hours)
+    weather = available_horizon(weather, iso(issue), horizon_hours)
     x = features(weather, issue)
     output = []
     model_warnings=[]
+    artifact_hashes = {}
     for turbine in turbine_ids:
         spec = manifest["turbines"][turbine]
         if spec["kind"] == "catboost":
             from catboost import CatBoostRegressor
+            artifact = (directory / spec["file"]).read_bytes()
+            artifact_hashes[turbine] = hashlib.sha256(artifact).hexdigest()
+            if spec.get("sha256") and artifact_hashes[turbine] != spec["sha256"]:
+                raise CoreNotReady("Trained model artifact checksum mismatch")
             model = CatBoostRegressor()
-            model.load_model(str(directory / spec["file"]))
+            # Load the very bytes being fingerprinted, even if the file changes later.
+            model.load_model(blob=artifact)
             prediction = model.predict(x*np.array(spec.get("feature_mask",[1]*7)))
         elif spec["kind"] == "curve":
             prediction = curve_predict(spec["curve"], x[:, 0])
@@ -119,7 +131,11 @@ def predict_from_inputs(issue_time, turbine_ids, horizon_hours, weather, model_d
         for lead, (row, value) in enumerate(zip(weather, prediction), start=1):
             output.append({"turbine_id": turbine, "issue_time": iso(issue), "valid_time": row["valid_time"], "lead_hours": lead, "y_pred": float(value)})
     first = weather[0]
-    input_version = fingerprint({"model": manifest["model_version"], "weather": weather})
+    input_version = fingerprint({
+        "model": manifest, "model_artifacts": artifact_hashes, "weather": weather,
+        "request": {"issue_time": iso(issue), "horizon_hours": horizon_hours,
+                    "turbine_ids": sorted(turbine_ids)},
+    })
     return {"rows": output, "mode": "deterministic", "metadata": {"model_version": manifest["model_version"], "input_version": input_version, "weather_provider": first["provider"], "weather_model": first["model"], "weather_run_time": first["run_time"], "weather_available_at": first["available_at"], "availability_basis": first["availability_basis"], "scada_timezone": manifest["scada_timezone"], "timezone_status": "inferred", "provenance_status": first["provenance_status"]}, "warnings": ["Архивная погода Open-Meteo; публикация на момент выпуска не подтверждена (+9h — допущение).", "Часовой пояс SCADA принят как фиксированный UTC+6; подтверждения владельца нет.", "Мощность в исходных нормализованных единицах; это не МВт и не энергия.", "Февральских фактических меток нет; февральские метрики не вычислялись.",*model_warnings]}
 
 
