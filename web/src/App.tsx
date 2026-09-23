@@ -1,120 +1,580 @@
-import { useEffect, useRef, useState } from 'react';
-import { runForecast } from './api';
-import Chart from './Chart';
-import { formatTime, makeCsv, timestamp } from './domain';
-import { exampleResult } from './example';
-import type { ForecastRequest, Horizon, Mode, RunResult, RunStatus } from './types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { api, HttpError } from './api/client'
+import { SYNTHETIC_TAG, syntheticEvents, syntheticForecast } from './api/synthetic'
+import type {
+  AgentEvent,
+  ForecastResponse,
+  Health,
+  RunRecord,
+  RunRequest,
+  RunStatus,
+  TurbineId,
+} from './api/types'
+import { AgentPanel } from './components/AgentPanel'
+import { EvaluationPanel, type EvaluationV1 } from './components/EvaluationPanel'
+import { ForecastChart } from './components/ForecastChart'
+import { ForecastTable } from './components/ForecastTable'
+import { KpiStrip } from './components/KpiStrip'
+import { TrustStrip } from './components/TrustStrip'
+import { ProvenanceCard } from './components/ProvenanceCard'
+import { ReplayPanel } from './components/ReplayPanel'
+import { fmtIso, issueTimeFromLocal, localDateHour, replayDates, tzLabel, type DisplayTz } from './lib/time'
 
-function Icon({ name, size = 20 }: { name: string; size?: number }) {
-  const paths: Record<string, React.ReactNode> = {
-    wind: <><path d="M3 8h12a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h5a3 3 0 1 1-3 3"/></>,
-    chart: <><path d="M4 4v16h16M8 14l4-5 4 3 5-7"/></>,
-    clock: <><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></>,
-    download: <><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></>,
-    arrow: <path d="M5 12h14m-5-5 5 5-5 5"/>,
-    check: <path d="m5 12 4 4L19 6"/>,
-    info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></>,
-    turbine: <><path d="M12 12v10M12 10V1M12 10 3 16M12 10l9 6"/><circle cx="12" cy="10" r="1.5"/></>,
-    refresh: <><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-2l2 3M4 16l2 3a7 7 0 0 0 12-2"/></>,
-    list: <><path d="M8 6h12M8 12h12M8 18h12M3 6h1m-1 6h1m-1 6h1"/></>,
-  };
-  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name] ?? paths.info}</svg>;
+const ALL_TURBINES: TurbineId[] = ['turbine_1', 'turbine_2']
+const RUNS_KEY = 'wind-ui-runs-v1'
+const POLL_MS = 1000
+
+function loadRuns(): RunRecord[] {
+  try {
+    return JSON.parse(localStorage.getItem(RUNS_KEY) ?? '[]') as RunRecord[]
+  } catch {
+    return []
+  }
+}
+function saveRuns(runs: RunRecord[]) {
+  try {
+    localStorage.setItem(RUNS_KEY, JSON.stringify(runs.slice(0, 50)))
+  } catch {
+    /* storage unavailable — history is per-session only */
+  }
+}
+const sameParams = (a: RunRequest, b: RunRequest) =>
+  Date.parse(a.issue_time) === Date.parse(b.issue_time) && a.horizon_hours === b.horizon_hours
+
+function errText(e: unknown): string {
+  if (e instanceof HttpError) return `${e.api?.code ?? e.status}: ${e.message}`
+  return e instanceof Error ? e.message : String(e)
 }
 
-const stateLabels: Record<string, string> = { queued: 'В очереди', pending: 'В очереди', running: 'Идёт расчёт', completed: 'Расчёт завершён', success: 'Расчёт завершён', succeeded: 'Расчёт завершён', done: 'Расчёт завершён', failed: 'Ошибка расчёта', error: 'Ошибка расчёта', example: 'Тестовый пример' };
+function downloadCsv(name: string, f: ForecastResponse, synthetic: boolean) {
+  const head = 'run_id,turbine_id,issue_time,valid_time,lead_hours,y_pred,unit,mode'
+  const lines = f.rows.map((r) =>
+    [f.run_id, r.turbine_id, r.issue_time, r.valid_time, r.lead_hours, r.y_pred, f.unit, synthetic ? 'synthetic' : 'live'].join(','),
+  )
+  const blob = new Blob([[head, ...lines].join('\n')], { type: 'text/csv;charset=utf-8' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
 
 export default function App() {
-  const [issue, setIssue] = useState('2026-01-31T23:00');
-  const [offset, setOffset] = useState('+06:00');
-  const [turbine, setTurbine] = useState('both');
-  const [horizon, setHorizon] = useState<Horizon>(48);
-  const [version, setVersion] = useState('latest');
-  const [mode, setMode] = useState<Mode>('api');
-  const [result, setResult] = useState<RunResult | null>(null);
-  const [history, setHistory] = useState<RunResult[]>([]);
-  const [status, setStatus] = useState<RunStatus | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [tab, setTab] = useState<'chart' | 'table'>('chart');
-  const [tableTurbine, setTableTurbine] = useState('all');
-  const abort = useRef<AbortController | null>(null);
-  const requestNumber = useRef(0);
-  useEffect(() => () => abort.current?.abort(), []);
+  const [health, setHealth] = useState<Health | null>(null)
+  const [healthErr, setHealthErr] = useState<string | null>(null)
+  const [tz, setTz] = useState<DisplayTz>('local')
+  const [date, setDate] = useState('2026-01-31')
+  const [hour, setHour] = useState(17) // 17:00 UTC+5 = 12:00 UTC: 00Z run + 9 h availability rule (C3 BLOCKER 14:35)
+  const [horizon, setHorizon] = useState<24 | 48>(48)
+  const [shown, setShown] = useState<TurbineId[]>(ALL_TURBINES)
 
-  async function launch() {
-    const number = ++requestNumber.current;
-    abort.current?.abort();
-    const controller = new AbortController(); abort.current = controller;
-    const issueTime = `${issue}:00${offset}`;
-    if (!timestamp(issueTime)) { setError('Укажите корректный момент выпуска и часовой пояс.'); return; }
-    if (!version.trim()) { setError('Укажите версию входных данных.'); return; }
-    const request: ForecastRequest = { issue_time: issueTime, turbine_ids: turbine === 'both' ? ['1', '2'] : [turbine], horizon_hours: horizon, input_version: version.trim() };
-    setError(''); setStatus(null); setBusy(true);
+  const [runs, setRuns] = useState<RunRecord[]>(loadRuns)
+  const [currentId, setCurrentId] = useState<string | null>(null)
+  const [status, setStatus] = useState<RunStatus | null>(null)
+  const [events, setEvents] = useState<AgentEvent[]>([])
+  const [forecast, setForecast] = useState<ForecastResponse | null>(null)
+  const [previous, setPrevious] = useState<ForecastResponse | null>(null)
+  const [compareId, setCompareId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [evaluation, setEvaluation] = useState<EvaluationV1 | null>(null)
+
+  const forecastCache = useRef(new Map<string, ForecastResponse>())
+  const pollRef = useRef<number | null>(null)
+  // Generation guard: responses for a run the user has navigated away from are dropped.
+  const genRef = useRef(0)
+
+  const current = runs.find((r) => r.run_id === currentId) ?? null
+  const synthetic = !!current?.synthetic
+  const backendReady = !!health?.forecast_ready
+  const request: RunRequest = useMemo(
+    () => ({ issue_time: issueTimeFromLocal(date, hour), turbine_ids: ALL_TURBINES, horizon_hours: horizon }),
+    [date, hour, horizon],
+  )
+
+  // Health + optional history evaluation, re-checked every 10 s.
+  useEffect(() => {
+    let alive = true
+    const check = async () => {
+      try {
+        const h = await api.health()
+        if (!alive) return
+        setHealth(h)
+        setHealthErr(null)
+        api
+          .runs()
+          .then((list) => {
+            if (!alive) return
+            setRuns((local) => {
+              const known = new Set(local.map((r) => r.run_id))
+              const fromServer: RunRecord[] = list
+                .filter((s) => !known.has(s.run_id) && s.issue_time && s.horizon_hours)
+                .map((s) => ({
+                  run_id: s.run_id,
+                  request: { issue_time: s.issue_time!, turbine_ids: s.turbine_ids ?? ALL_TURBINES, horizon_hours: s.horizon_hours! },
+                  created_at: s.started_at ?? s.updated_at ?? new Date(0).toISOString(),
+                  synthetic: false,
+                }))
+              if (!fromServer.length) return local
+              return [...local, ...fromServer].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+            })
+          })
+          .catch(() => {})
+        api.evaluation().then((e) => alive && setEvaluation(e)).catch(() => alive && setEvaluation(null))
+      } catch (e) {
+        if (!alive) return
+        setHealth(null)
+        setHealthErr(errText(e))
+      }
+    }
+    check()
+    const id = window.setInterval(check, 10_000)
+    return () => {
+      alive = false
+      window.clearInterval(id)
+    }
+  }, [])
+
+  useEffect(() => saveRuns(runs), [runs])
+  const runsRef = useRef(runs)
+  runsRef.current = runs
+
+  const stopPolling = () => {
+    if (pollRef.current != null) window.clearTimeout(pollRef.current)
+    pollRef.current = null
+    genRef.current++
+  }
+  useEffect(() => stopPolling, [])
+
+  const getForecast = useCallback(async (id: string) => {
+    const hit = forecastCache.current.get(id)
+    if (hit) return hit
+    const f = await api.forecast(id)
+    forecastCache.current.set(id, f)
+    return f
+  }, [])
+
+  /** Load any saved run as the comparison layer (only real runs; common valid hours are matched later). */
+  const compareGen = useRef(0)
+  const selectCompare = useCallback(
+    async (id: string | null) => {
+      const gen = ++compareGen.current // only the latest comparison request may write state
+      setCompareId(id)
+      if (!id) return setPrevious(null)
+      try {
+        const f = await getForecast(id)
+        if (gen === compareGen.current) setPrevious(f)
+      } catch (e) {
+        if (gen !== compareGen.current) return
+        setPrevious(null)
+        setCompareId(null)
+        setError(`Сравнение недоступно: ${errText(e)}`)
+      }
+    },
+    [getForecast],
+  )
+
+  /** Default comparison: previous completed live run with the same issue/horizon (recompute). */
+  const loadPrevious = useCallback(
+    async (rec: RunRecord, all: RunRecord[]) => {
+      const idx = all.findIndex((r) => r.run_id === rec.run_id)
+      const prev = all.slice(idx + 1).find((r) => !r.synthetic && sameParams(r.request, rec.request))
+      await selectCompare(prev?.run_id ?? null)
+    },
+    [selectCompare],
+  )
+
+  const poll = useCallback(
+    async (rec: RunRecord, all: RunRecord[], gen: number) => {
+      const stale = () => gen !== genRef.current
+      try {
+        const [s, ev] = await Promise.all([api.run(rec.run_id), api.events(rec.run_id).catch(() => null)])
+        if (stale()) return
+        setStatus(s)
+        if (ev) setEvents(ev.events)
+        if (s.status === 'completed') {
+          if (s.forecast_available !== false) {
+            const f = await getForecast(rec.run_id)
+            if (stale()) return
+            setForecast(f)
+            await loadPrevious(rec, all)
+          }
+          if (!stale()) setBusy(false)
+          return
+        }
+        if (s.status === 'failed') {
+          setBusy(false)
+          setError(s.error ? `${s.error.code}: ${s.error.message}` : 'Запуск завершился ошибкой')
+          return
+        }
+        pollRef.current = window.setTimeout(() => poll(rec, all, gen), POLL_MS)
+      } catch (e) {
+        if (stale()) return
+        setBusy(false)
+        setError(errText(e))
+      }
+    },
+    [getForecast, loadPrevious],
+  )
+
+  const openRun = useCallback(
+    (rec: RunRecord, all: RunRecord[] = runs) => {
+      stopPolling()
+      setCurrentId(rec.run_id)
+      setError(null)
+      setForecast(null)
+      setPrevious(null)
+      setCompareId(null)
+      compareGen.current++
+      setStatus(null)
+      setEvents([])
+      const loc = localDateHour(rec.request.issue_time)
+      setDate(loc.date)
+      setHour(loc.hour)
+      setHorizon(rec.request.horizon_hours)
+      if (rec.synthetic) {
+        setBusy(false)
+        setForecast(syntheticForecast(rec.run_id, rec.request))
+        setEvents(syntheticEvents())
+        return
+      }
+      setBusy(true)
+      poll(rec, all, genRef.current)
+    },
+    [poll, runs],
+  )
+
+  const launch = async () => {
+    setError(null)
+    setBusy(true)
     try {
-      const next = mode === 'example' ? exampleResult(request) : await runForecast(request, controller.signal, s => { if (number === requestNumber.current) setStatus(s); });
-      if (number !== requestNumber.current) return;
-      setResult(next); setStatus(next.status); setTableTurbine('all');
-      setHistory(old => [next, ...old.filter(r => r.status.run_id !== next.status.run_id)].slice(0, 8));
+      const s = await api.createRun(request)
+      const rec: RunRecord = { run_id: s.run_id, request, created_at: new Date().toISOString(), synthetic: false }
+      const next = [rec, ...runs]
+      setRuns(next)
+      stopPolling()
+      setCurrentId(rec.run_id)
+      setStatus(s)
+      setEvents([])
+      setForecast(null)
+      setPrevious(null)
+      setCompareId(null)
+      compareGen.current++
+      poll(rec, next, genRef.current)
     } catch (e) {
-      if (number === requestNumber.current && !controller.signal.aborted) setError(e instanceof Error ? e.message : 'Не удалось выполнить расчёт.');
-    } finally { if (number === requestNumber.current) setBusy(false); }
+      setBusy(false)
+      setError(errText(e))
+    }
   }
 
-  function cancel() { requestNumber.current++; abort.current?.abort(); setBusy(false); setError('Ожидание остановлено. Уже созданный расчёт может продолжаться на сервере.'); }
-  function exportCsv() {
-    if (!result) return;
-    const url = URL.createObjectURL(new Blob([makeCsv(result)], { type: 'text/csv;charset=utf-8;' }));
-    const anchor = document.createElement('a'); anchor.href = url; anchor.download = `${result.mode === 'example' ? 'SYNTHETIC-' : ''}forecast-${result.status.run_id.replace(/[^a-zA-Z0-9_-]/g, '_')}.csv`; anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const launchSynthetic = () => {
+    const rec: RunRecord = {
+      run_id: `synthetic-${Date.now().toString(36)}`,
+      request,
+      created_at: new Date().toISOString(),
+      synthetic: true,
+    }
+    const next = [rec, ...runs]
+    setRuns(next)
+    openRun(rec, next)
   }
 
-  const rows = result?.rows ?? [];
-  const valid = rows.filter(r => r.y_pred !== null);
-  const expected = result ? result.request.horizon_hours * result.request.turbine_ids.length : horizon * (turbine === 'both' ? 2 : 1);
-  const maximum = valid.length ? Math.max(...valid.map(r => r.y_pred!)) : null;
-  const resultOffset = result?.request.issue_time.slice(-6) ?? offset;
-  const visibleRows = rows.filter(r => tableTurbine === 'all' || r.turbine_id === tableTurbine).sort((a, b) => Date.parse(a.valid_time) - Date.parse(b.valid_time) || a.turbine_id.localeCompare(b.turbine_id));
-  const weather = result?.status.weather;
-  const isExample = result?.mode === 'example';
+  const retry = () => {
+    if (current && !current.synthetic) {
+      setDate(localDateHour(current.request.issue_time).date)
+      setHour(localDateHour(current.request.issue_time).hour)
+      setHorizon(current.request.horizon_hours)
+    }
+    launch()
+  }
 
-  return <div className="app-shell">
-    <aside className="sidebar">
-      <a className="brand" href="#forecast" aria-label="QwertyS — прогноз ВЭС"><span className="brand-icon"><Icon name="turbine" size={25}/></span><span>QwertyS<small>WIND INTELLIGENCE</small></span></a>
-      <div className="nav-label">РАБОЧАЯ ОБЛАСТЬ</div>
-      <nav><a className="nav-link active" href="#forecast"><Icon name="chart"/>Прогноз мощности<span>↗</span></a><a className="nav-link" href="#journal"><Icon name="list"/>Журнал расчёта</a><a className="nav-link" href="#source"><Icon name="info"/>Источники данных</a></nav>
-      <div className="site-card"><span className="site-eyebrow">ПЛОЩАДКА</span><div className="site-title">Шелекский коридор</div><p>Алматинская область</p><div className="turbine-art"><Icon name="turbine" size={68}/><Icon name="turbine" size={48}/><div/></div><span className="site-count">2 турбины · почасовой прогноз</span></div>
-      <div className="sidebar-footer"><span className="avatar">QS</span><span>HackAlem AI<small>Команда QwertyS · 2026</small></span></div>
-    </aside>
+  /** Other real runs whose valid window overlaps the current one. */
+  const compareCandidates = current
+    ? runs.filter((r) => {
+        if (r.synthetic || r.run_id === current.run_id) return false
+        const a0 = Date.parse(current.request.issue_time)
+        const a1 = a0 + current.request.horizon_hours * 3600_000
+        const b0 = Date.parse(r.request.issue_time)
+        const b1 = b0 + r.request.horizon_hours * 3600_000
+        return b0 < a1 && a0 < b1
+      })
+    : []
 
-    <div className="workspace">
-      <header className="topbar"><div><span className="breadcrumb">Ветроэлектростанция</span><span className="slash">/</span> Прогноз</div><span className="top-tag"><span className="dot"/>Исторический сценарий</span></header>
-      <main id="forecast">
-        <div className="page-heading"><div><div className="eyebrow">ПЛАНИРОВАНИЕ ВЫРАБОТКИ</div><h1>Ветер в данных.<br className="mobile-break"/> Мощность в прогнозе.</h1><p>Почасовой прогноз двух турбин на следующие 24–48 часов.</p></div><span className="period-tag"><Icon name="clock"/>Февраль 2026</span></div>
+  const sameIssueCount = current ? runs.filter((r) => !r.synthetic && sameParams(r.request, current.request)).length : 0
+  const shownTurbines = ALL_TURBINES.filter((t) => shown.includes(t))
+  const statusChip = status
+    ? status.status === 'completed'
+      ? 'good'
+      : status.status === 'failed'
+        ? 'bad'
+        : 'warn'
+    : ''
 
-        <section className="panel controls" aria-labelledby="settings-title"><div className="section-heading"><div><span className="section-index">01</span><h2 id="settings-title">Параметры прогноза</h2></div><span className="muted small">Погода, доступная на момент выпуска</span></div>
-          <form onSubmit={event => { event.preventDefault(); void launch(); }}>
-            <div className="form-grid"><label>Момент выпуска<input type="datetime-local" value={issue} onChange={e => setIssue(e.target.value)} required disabled={busy}/></label><label>Часовой пояс<select value={offset} onChange={e => setOffset(e.target.value)} disabled={busy}><option value="+06:00">UTC+6 · гипотеза SCADA</option><option value="+05:00">UTC+5</option><option value="+00:00">UTC</option></select></label><label>Турбины<select value={turbine} onChange={e => setTurbine(e.target.value)} disabled={busy}><option value="both">Обе турбины</option><option value="1">Турбина 1</option><option value="2">Турбина 2</option></select></label><fieldset className="horizon"><legend>Горизонт</legend><div className="segmented">{([24, 48] as const).map(h => <button type="button" key={h} aria-pressed={horizon === h} disabled={busy} className={horizon === h ? 'selected' : ''} onClick={() => setHorizon(h)}>{h} ч</button>)}</div></fieldset><button className="primary launch" type="submit" disabled={busy}>{busy ? <><span className="spinner"/>Считаем…</> : <><Icon name={result ? 'refresh' : 'arrow'}/>{result ? 'Пересчитать' : 'Рассчитать прогноз'}</>}</button></div>
-            <div className="controls-bottom"><span><Icon name="info" size={15}/>Значения мощности нормализованы, без пересчёта в МВт.</span><details><summary>Настройки запуска</summary><div className="advanced"><label>Источник результата<select value={mode} onChange={e => setMode(e.target.value as Mode)} disabled={busy}><option value="api">Расчёт через API</option><option value="example">Синтетический пример интерфейса</option></select></label><label>Версия входных данных<input value={version} maxLength={120} onChange={e => setVersion(e.target.value)} disabled={busy}/></label><p>Изменение версии передаётся серверу для пересчёта. Часовой пояс данных требует подтверждения.</p></div></details></div>
-          </form>
-        </section>
+  return (
+    <div className="app">
+      <header className="topbar">
+        <div className="brand">
+          <svg className="mark" viewBox="0 0 32 32" aria-hidden>
+            <circle cx="16" cy="13" r="2.2" />
+            <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
+            <path d="M16 15.2 L16 30" className="mast" />
+          </svg>
+          <h1>Прогноз выработки ВЭС · Шелекский коридор</h1>
+          <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, которые по правилу доступности (допущение) вышли до момента выпуска</p>
+          <p className="site">
+            <span><i className="pin t1" aria-hidden />Т1 43.6452° N 78.5356° E</span>
+            <span><i className="pin t2" aria-hidden />Т2 43.6432° N 78.5388° E</span>
+            <span>прогноз погоды: одна ячейка ECMWF (43.62° N 78.48° E, 555 м)</span>
+          </p>
+        </div>
+        <div className="chips" aria-live="polite">
+          <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
+            <span className="dot" />
+            {backendReady ? 'Backend готов' : health ? 'Модель ещё не подключена' : 'Backend недоступен'}
+          </span>
+          {status && (
+            <span className={`chip ${statusChip}`}>
+              <span className="dot" />
+              {status.status}
+              {status.stage ? ` · ${status.stage}` : ''}
+            </span>
+          )}
+          {status?.mode && <span className="chip">режим: {status.mode}</span>}
+          {synthetic && <span className="chip synthetic">{SYNTHETIC_TAG}</span>}
+        </div>
+      </header>
 
-        {busy && <div className="notice loading" role="status"><span className="spinner"/><div><b>{status ? stateLabels[status.state] ?? status.state : 'Отправляем запрос'}</b><span>{status ? `Запуск ${status.run_id}` : 'Ожидаем ответ сервера'}</span></div><button className="text-button" onClick={cancel}>Остановить ожидание</button></div>}
-        {error && <div className="notice error" role="alert"><Icon name="info"/><div><b>{error}</b>{result && <span>Ниже сохранён предыдущий результат: {result.status.run_id}.</span>}</div></div>}
-        {result && <div className={`result-banner ${isExample ? 'example' : ''}`}><span><Icon name={isExample ? 'info' : 'check'} size={17}/>{isExample ? 'СИНТЕТИЧЕСКИЙ ПРИМЕР · не прогноз ВЭС' : `Результат API · ${result.status.mode ?? 'режим не указан сервером'}`}</span><span>Выпуск {formatTime(result.request.issue_time, resultOffset, true)} · UTC{resultOffset} · {result.request.horizon_hours} ч</span></div>}
+      {synthetic && (
+        <div className="banner synthetic" role="status">
+          Показан <b>синтетический пример</b> формы данных — это не прогноз и не погода. Реальные прогнозы появятся после подключения backend.
+        </div>
+      )}
+      {!health && healthErr && !synthetic && (
+        <div className="banner info" role="status">
+          {healthErr}. Запустите backend (см. README) — UI обращается к <code>/api</code> через прокси Vite.
+        </div>
+      )}
+      {error && (
+        <div className="banner error" role="alert">
+          <span>Ошибка: {error}</span>
+          <span className="banner-actions">
+            {current && !current.synthetic && (
+              <button className="btn" type="button" onClick={retry} disabled={busy || !health}>
+                Повторить запуск
+              </button>
+            )}
+            <button className="btn" type="button" onClick={() => setError(null)}>
+              Скрыть
+            </button>
+          </span>
+        </div>
+      )}
 
-        <div className="metrics"><article className="metric"><div><span>Покрытие прогноза</span><Icon name="clock"/></div><strong>{result ? `${valid.length}` : '—'}<small>{result ? ` / ${expected}` : ' часов'}</small></strong><p>{result ? `${result.request.turbine_ids.length} турб. × ${result.request.horizon_hours} ч${isExample ? ' · пример' : ''}` : 'Ожидаем результат расчёта'}</p></article><article className="metric"><div><span>Максимальная мощность</span><Icon name="wind"/></div><strong>{maximum === null ? '—' : maximum.toFixed(3)}<small> отн. ед.</small></strong><p>{isExample ? 'Синтетическое значение' : 'Среди полученных почасовых значений'}</p></article><article className="metric"><div><span>Погодный источник</span><Icon name="turbine"/></div><strong className="metric-word">{isExample ? 'Нет погоды' : weather?.provider ?? 'Не указан'}</strong><p>{isExample ? 'Пример создан только для UI' : weather?.model ?? 'Источник появится в результате'}</p></article></div>
+      <section className="card" aria-label="Параметры запуска">
+        <div className="controls">
+          <label className="field">
+            <span>Дата выпуска</span>
+            <select value={date} onChange={(e) => setDate(e.target.value)}>
+              {replayDates().map((d) => (
+                <option key={d} value={d}>
+                  {d.slice(8, 10)}.{d.slice(5, 7)}.{d.slice(0, 4)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            <span>Час выпуска (UTC+5)</span>
+            <select value={hour} onChange={(e) => setHour(Number(e.target.value))}>
+              {Array.from({ length: 24 }, (_, h) => (
+                <option key={h} value={h}>
+                  {String(h).padStart(2, '0')}:00
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="field">
+            <span>Горизонт</span>
+            <div className="seg" role="group" aria-label="Горизонт">
+              {([24, 48] as const).map((h) => (
+                <button key={h} type="button" aria-pressed={horizon === h} onClick={() => setHorizon(h)}>
+                  {h} ч
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field">
+            <span>Показать</span>
+            <div className="seg" role="group" aria-label="Турбины">
+              {ALL_TURBINES.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  aria-pressed={shown.includes(t)}
+                  onClick={() => setShown((s) => (s.includes(t) ? (s.length > 1 ? s.filter((x) => x !== t) : s) : [...s, t]))}
+                >
+                  {t === 'turbine_1' ? 'Т1' : 'Т2'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="field">
+            <span>Время</span>
+            <div className="seg" role="group" aria-label="Часовой пояс отображения">
+              <button type="button" aria-pressed={tz === 'local'} onClick={() => setTz('local')}>
+                UTC+5
+              </button>
+              <button type="button" aria-pressed={tz === 'scada'} onClick={() => setTz('scada')} title="Часы SCADA (фиксированный UTC+6, допущение)">
+                UTC+6
+              </button>
+              <button type="button" aria-pressed={tz === 'utc'} onClick={() => setTz('utc')}>
+                UTC
+              </button>
+            </div>
+          </div>
+          <span className="spacer" />
+          <button className="btn primary" type="button" onClick={launch} disabled={busy || !health}>
+            {busy ? 'Агент работает…' : 'Запустить агента'}
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={launch}
+            disabled={busy || !health || !current || current.synthetic}
+            title="Новый запуск с теми же параметрами: агент проверит, появились ли более новые входные данные; прежний результат сохраняется"
+          >
+            Пересчитать
+          </button>
+          {!backendReady && (
+            <button className="btn" type="button" onClick={launchSynthetic} disabled={busy}>
+              Синтетический пример
+            </button>
+          )}
+        </div>
+      </section>
 
-        <section className="panel forecast-panel" aria-labelledby="chart-title"><div className="section-heading"><div><span className="section-index">02</span><h2 id="chart-title">Почасовая мощность</h2></div><div className="chart-actions"><div className="segmented compact" aria-label="Вид прогноза"><button className={tab === 'chart' ? 'selected' : ''} aria-pressed={tab === 'chart'} onClick={() => setTab('chart')}><Icon name="chart" size={16}/>График</button><button className={tab === 'table' ? 'selected' : ''} aria-pressed={tab === 'table'} onClick={() => setTab('table')}><Icon name="list" size={16}/>Таблица</button></div><button className="outline" disabled={!result} onClick={exportCsv}><Icon name="download" size={16}/>CSV</button></div></div>
-          {tab === 'chart' ? <Chart rows={rows} offset={resultOffset} example={Boolean(isExample)}/> : <div className="table-view"><label className="table-filter">Показать<select value={tableTurbine} onChange={e => setTableTurbine(e.target.value)}><option value="all">Все турбины</option>{[...new Set(rows.map(r => r.turbine_id))].map(id => <option key={id} value={id}>Турбина {id}</option>)}</select></label><div className="table-scroll"><table><caption>{isExample ? 'Синтетические значения' : 'Почасовой прогноз'} · UTC{resultOffset} · нормализованная мощность</caption><thead><tr><th>Целевой час</th><th>Турбина</th><th>Горизонт</th><th>Мощность</th><th>Резервный метод</th></tr></thead><tbody>{visibleRows.map(row => <tr key={`${row.turbine_id}-${row.valid_time}`}><td>{formatTime(row.valid_time, resultOffset, true)}</td><td><span className={`turbine-dot t${row.turbine_id}`}/>Турбина {row.turbine_id}</td><td>+{row.lead_hours} ч</td><td className="numeric">{row.y_pred?.toFixed(4) ?? 'Нет данных'}</td><td>{row.fallback_status ?? '—'}</td></tr>)}</tbody></table>{!rows.length && <p className="table-empty">Запустите расчёт, чтобы получить почасовые значения.</p>}</div></div>}
-          <div className="panel-footnote"><Icon name="info" size={15}/>Фактические данные за февраль не предоставлены. Ошибка прогноза за этот период не рассчитывается.</div>
-        </section>
+      <div className="layout">
+        <div className="main-col">
+          <section className="card" aria-labelledby="fc-h">
+            <h2 id="fc-h">
+              Почасовой прогноз
+              <small>
+                {current
+                  ? `выпуск ${fmtIso(current.request.issue_time, tz)} · ${current.request.horizon_hours} ч`
+                  : `время на графике: ${tzLabel(tz)}`}
+              </small>
+            </h2>
+            {forecast && !synthetic && (
+              <TrustStrip
+                metadata={forecast.metadata}
+                status={status}
+                rows={forecast.rows}
+                horizon={current?.request.horizon_hours ?? horizon}
+                turbines={ALL_TURBINES.length}
+                tz={tz}
+                synthetic={synthetic}
+              />
+            )}
+            {forecast && <KpiStrip rows={forecast.rows} turbines={shownTurbines} tz={tz} />}
+            <ForecastChart
+              rows={forecast?.rows ?? []}
+              previous={previous?.rows}
+              turbines={shownTurbines}
+              issueTime={current?.request.issue_time ?? null}
+              tz={tz}
+              synthetic={synthetic}
+              loadingStage={busy && !forecast ? (status?.stage ?? '') : null}
+            />
+            {forecast && (
+              <div className="controls" style={{ marginTop: 10 }}>
+                {synthetic ? (
+                  <button className="btn" type="button" onClick={() => downloadCsv(`${forecast.run_id}.csv`, forecast, true)}>
+                    Скачать CSV (синтетика)
+                  </button>
+                ) : (
+                  <a className="btn" href={api.exportUrl(forecast.run_id)} download style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+                    Скачать CSV
+                  </a>
+                )}
+                {!synthetic && (
+                  <label className="field compare">
+                    <span>Сравнить с запуском</span>
+                    <select
+                      value={compareId ?? ''}
+                      onChange={(e) => selectCompare(e.target.value || null)}
+                      disabled={!compareCandidates.length}
+                      title={compareCandidates.length ? 'Наложить другой сохранённый запуск на общие часы' : 'Нет другого сохранённого запуска с общими часами — нажмите «Пересчитать» или запустите соседнюю дату'}
+                    >
+                      <option value="">{compareCandidates.length ? '— без сравнения —' : 'нет запусков с общими часами'}</option>
+                      {compareCandidates.map((r) => (
+                        <option key={r.run_id} value={r.run_id}>
+                          {sameParams(r.request, current!.request) ? 'та же дата · ' : 'выпуск '}
+                          {fmtIso(r.request.issue_time, tz)} · {r.run_id.slice(0, 10)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <span style={{ color: 'var(--ink-2)', fontSize: 12.5 }}>
+                  {forecast.rows.length} строк · единица: {forecast.unit}
+                  {previous ? ` · пунктир и Δ: ${previous.run_id}` : sameIssueCount > 1 ? '' : ' · «Пересчитать» создаст вторую версию для сравнения'}
+                </span>
+              </div>
+            )}
+          </section>
 
-        {!!result?.warnings.length && <div className="warnings" role="status">{result.warnings.map(warning => <p key={warning}><Icon name="info" size={16}/>{warning}</p>)}</div>}
-        <div className="lower-grid"><section className="panel" id="journal" aria-labelledby="journal-title"><div className="section-heading"><div><span className="section-index">03</span><h2 id="journal-title">Журнал расчёта</h2></div><span className="badge">{result?.events.length ?? 0} событий</span></div>{result?.events.length ? <ol className="events">{result.events.map((event, i) => <li key={i}><span className="event-marker">{i + 1}</span><div><h3>{event.tool_name}</h3><p>{event.state_transition}</p>{event.safe_input_summary && <p>{event.safe_input_summary}</p>}{event.result_reference && <code>{event.result_reference}</code>}</div><time>{formatTime(event.timestamp, resultOffset)}</time></li>)}</ol> : <div className="empty-journal"><Icon name="list" size={28}/><p>{isExample ? 'В тестовом примере нет вызовов агента.' : 'Действия появятся после получения журнала API.'}</p><span>Загрузка погоды → подготовка → прогноз → анализ</span></div>}</section>
-          <section className="panel" id="source" aria-labelledby="source-title"><div className="section-heading"><div><span className="section-index">04</span><h2 id="source-title">Происхождение результата</h2></div></div><dl className="source-list"><div><dt>Запуск</dt><dd>{result?.status.run_id ?? 'Ещё не создан'}</dd></div><div><dt>Версия модели</dt><dd>{result?.status.model_version ?? rows[0]?.model_version ?? 'Не указана'}</dd></div><div><dt>Погодная модель</dt><dd>{weather?.model ?? 'Не указана'}</dd></div><div><dt>Выпуск погоды</dt><dd>{formatTime(weather?.run_time, resultOffset, true)}</dd></div><div><dt>Доступен с</dt><dd>{formatTime(weather?.available_at, resultOffset, true)}</dd></div><div><dt>Версия входов</dt><dd>{result?.status.input_version ?? result?.request.input_version ?? '—'}</dd></div><div><dt>Источник</dt><dd>{weather?.source_reference ?? rows[0]?.weather_reference ?? 'Не указан'}</dd></div></dl><p className="source-note">Время показано в UTC{resultOffset}. Источник должен быть доступен не позже момента выпуска прогноза.</p></section></div>
-        {history.length > 1 && <section className="run-history"><h2>Результаты этой сессии</h2>{history.map(run => <button key={run.status.run_id} onClick={() => { setResult(run); setTableTurbine('all'); }} className={result?.status.run_id === run.status.run_id ? 'selected' : ''}>{run.mode === 'example' ? 'Пример UI' : run.status.run_id} · {run.request.horizon_hours} ч</button>)}</section>}
-        <footer className="page-footer"><span>QwertyS · HackAlem AI 2026</span><span>Архивная погода. Проверяемый расчёт.</span></footer>
-      </main>
+          {forecast && (
+            <section className="card" aria-labelledby="tbl-h">
+              <h2 id="tbl-h">Таблица</h2>
+              <ForecastTable rows={forecast.rows} previous={previous?.rows} turbines={shownTurbines} tz={tz} />
+            </section>
+          )}
+
+          <ReplayPanel
+            hour={hour}
+            tz={tz}
+            turbines={shownTurbines}
+            enabled={!!health && !busy}
+            onRun={(rec) => setRuns((rs) => [rec, ...rs])}
+            onOpen={(id) => {
+              const rec = runsRef.current.find((r) => r.run_id === id)
+              if (rec) openRun(rec, runsRef.current)
+            }}
+          />
+
+          <EvaluationPanel evaluation={evaluation} currentModel={forecast?.metadata.model_version ?? null} />
+        </div>
+
+        <aside className="side-col">
+          <AgentPanel status={status} events={events} tz={tz} synthetic={synthetic} />
+          <ProvenanceCard metadata={forecast?.metadata ?? null} status={status} issueTime={current?.request.issue_time ?? null} tz={tz} />
+          <section className="card" aria-labelledby="runs-h">
+            <h2 id="runs-h">
+              Запуски <small>сервер + этот браузер</small>
+            </h2>
+            {runs.length === 0 ? (
+              <p className="unknown">Запусков ещё не было.</p>
+            ) : (
+              <ul className="runs">
+                {runs.slice(0, 12).map((r) => (
+                  <li key={r.run_id}>
+                    <button type="button" aria-current={r.run_id === currentId} onClick={() => openRun(r)}>
+                      {r.synthetic ? '⚗ ' : ''}
+                      {fmtIso(r.request.issue_time, tz)} · {r.request.horizon_hours} ч
+                      <div className="meta">
+                        {r.synthetic ? 'синтетика' : r.run_id} · создан {fmtIso(r.created_at, tz)}
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </aside>
+      </div>
+
+      <footer className="foot">
+        Мощность — нормализованная, как в исходных SCADA (номинал неизвестен), не МВт. Погода: только прогнозы, отобранные по правилу доступности к моменту выпуска (время доступности — допущение, не подтверждённый журнал публикации). Данные Open-Meteo (CC BY 4.0).
+      </footer>
     </div>
-  </div>;
+  )
 }

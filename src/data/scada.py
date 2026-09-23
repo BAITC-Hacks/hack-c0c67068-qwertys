@@ -58,11 +58,6 @@ def prepare_hourly(
             raw_rows += 1
             try:
                 local = datetime.strptime(record[TIME], "%Y-%m-%d %H:%M:%S")
-                wind = float(record[WIND])
-                power = float(record[POWER])
-                temp = float(record[TEMP])
-                if not all(math.isfinite(x) for x in (wind, power, temp)):
-                    raise ValueError("nonfinite numeric value")
             except (TypeError, ValueError) as error:
                 raise ValueError(f"Invalid SCADA row {line_no}: {error}") from error
             utc = (local - timedelta(hours=utc_offset_hours)).replace(tzinfo=timezone.utc)
@@ -70,6 +65,14 @@ def prepare_hourly(
                 continue
             if end_utc is not None and utc >= end_utc:
                 continue
+            try:
+                wind = float(record[WIND])
+                power = float(record[POWER])
+                temp = float(record[TEMP])
+                if not all(math.isfinite(x) for x in (wind, power, temp)):
+                    raise ValueError("nonfinite numeric value")
+            except (TypeError, ValueError) as error:
+                raise ValueError(f"Invalid SCADA row {line_no}: {error}") from error
             hour = utc.replace(minute=0, second=0, microsecond=0)
             buckets[hour].append((utc, wind, temp, power))
 

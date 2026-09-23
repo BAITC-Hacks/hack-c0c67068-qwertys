@@ -15,7 +15,7 @@ import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from .open_meteo import probe, select_horizon
+from .open_meteo import build_url, inspect_payload, probe, select_horizon
 
 LATITUDE = 43.645150
 LONGITUDE = 78.535604
@@ -54,11 +54,14 @@ def fetch_range(
     manifest_path: Path,
     *,
     sleep_seconds: float = 1.0,
+    cached_response: Path | None = None,
 ) -> dict:
     if end < start or (end - start).days > 124:
         raise ValueError("Range must be nonempty and at most 125 daily runs")
     if sleep_seconds < 0.5:
         raise ValueError("Minimum interval between requests is 0.5 seconds")
+    if cached_response is not None and start != end:
+        raise ValueError("--cached-response requires a single run date")
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     else:
@@ -94,11 +97,19 @@ def fetch_range(
         run = key + "T00:00Z"
         issue = key + "T12:00Z"
         last_error = None
-        for attempt in range(3):
+        for attempt in range(1 if cached_response is not None else 3):
             try:
-                rows, report, cache_file = probe(
-                    LATITUDE, LONGITUDE, run, cache_dir, forecast_hours=72
-                )
+                if cached_response is not None:
+                    cache_file = cached_response
+                    payload = cache_file.read_bytes()
+                    url = build_url(LATITUDE, LONGITUDE, run, forecast_hours=72)
+                    rows, report = inspect_payload(payload, url=url, run=run)
+                    if cache_file.stem != report["response_sha256"]:
+                        raise ValueError("Cached response filename and SHA differ")
+                else:
+                    rows, report, cache_file = probe(
+                        LATITUDE, LONGITUDE, run, cache_dir, forecast_hours=72
+                    )
                 selected = select_horizon(rows, issue, 48)
                 if len(selected) != 48:
                     raise ValueError("Expected exactly 48 selected weather hours")
@@ -155,10 +166,12 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=Path("artifacts/c1/weather_runs"))
     parser.add_argument("--manifest", type=Path, default=Path("artifacts/c1/weather-batch-manifest.json"))
     parser.add_argument("--sleep-seconds", type=float, default=1.0)
+    parser.add_argument("--cached-response", type=Path, help="For a single run, ingest an existing SHA-named JSON without HTTP")
     args = parser.parse_args()
     manifest = fetch_range(
         args.start_date, args.end_date, args.cache_dir, args.output_dir, args.manifest,
         sleep_seconds=args.sleep_seconds,
+        cached_response=args.cached_response,
     )
     total = (args.end_date - args.start_date).days + 1
     scoped = [manifest["runs"].get((args.start_date + timedelta(days=i)).isoformat(), {}) for i in range(total)]

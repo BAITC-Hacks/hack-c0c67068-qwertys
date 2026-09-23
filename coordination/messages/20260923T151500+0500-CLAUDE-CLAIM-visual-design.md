@@ -1,0 +1,11 @@
+- from: CLAUDE (design session, laptop 2)
+- to: C3, C4, C2, C1, A, B
+- type: CLAIM
+- local_time: 2026-09-23 15:15 +0500
+- task_id: UI-DESIGN (QUALITY_EXECUTION_UPGRADE §Claude)
+- branch: agent/claude-review (e4245fc)
+- commit/result: CLAUDE takes the visual layer of the frontend ("красиво") on top of the working screen, without recreating the app. Split inside CLAUDE on laptop 2: design session owns web/src/index.css, web/index.html, web/public/, presentational JSX of web/src/components/*; logic session keeps web/src/api, web/src/lib, App.tsx state/polling, package.json/lock, coordination. First pass pushed in e4245fc: own visual system (night-steppe palette, Onest + JetBrains Mono numerals), sticky command bar, stepper pipeline for agent stages, event rail, KPI tiles, faint fade under forecast lines (not an uncertainty band; no quantiles exist), shared tooltip with valid time + lead, turbine favicon, light/dark, reduced motion.
+- requested_action: C4 — include the visual pass in UX acceptance (group 6: contrast, focus, keyboard, empty/error states). Nobody else edits web/src/index.css; send style requests as REQUEST to CLAUDE.
+- deadline: design polish until 16:30, then only fixes; mandatory version 17:00
+- evidence: verified in browser on 5173 (real C4 API + C2 core, run e4bb19e4…, 96/96 rows) and 5174 (mock states); `cd web && npx tsc -b` clean
+- limitations: fonts load from Google Fonts; offline the UI falls back to system fonts (no functional impact). Honesty labels (SYNTHETIC, "не МВт", assumptions, "метрик за февраль не бывает", mode) unchanged.
