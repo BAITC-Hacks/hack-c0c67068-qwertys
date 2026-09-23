@@ -58,11 +58,11 @@ function Hero() {
     <section className={`hero${failed ? ' no-webgl' : ''}`}>
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
-      <h1 className="hero-title">JELIQ</h1>
+      <h1 className="hero-title">SAMAL</h1>
       <header className="lp-header">
         <span className="lp-logo">
           <Mark />
-          JELIQ
+          SAMAL
         </span>
         <a className="lp-nav" href="#/dashboard">
           Dashboard
@@ -75,7 +75,7 @@ function Hero() {
 export default function Landing() {
   useEffect(() => {
     const prev = document.title
-    document.title = 'JELIQ · wind power forecast'
+    document.title = 'SAMAL · wind power forecast'
     return () => {
       document.title = prev
     }
