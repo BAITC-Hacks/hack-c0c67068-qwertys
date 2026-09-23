@@ -82,6 +82,8 @@ export default function App() {
 
   const forecastCache = useRef(new Map<string, ForecastResponse>())
   const pollRef = useRef<number | null>(null)
+  // Generation guard: responses for a run the user has navigated away from are dropped.
+  const genRef = useRef(0)
 
   const current = runs.find((r) => r.run_id === currentId) ?? null
   const synthetic = !!current?.synthetic
@@ -141,6 +143,7 @@ export default function App() {
   const stopPolling = () => {
     if (pollRef.current != null) window.clearTimeout(pollRef.current)
     pollRef.current = null
+    genRef.current++
   }
   useEffect(() => stopPolling, [])
 
@@ -179,17 +182,21 @@ export default function App() {
   )
 
   const poll = useCallback(
-    async (rec: RunRecord, all: RunRecord[]) => {
+    async (rec: RunRecord, all: RunRecord[], gen: number) => {
+      const stale = () => gen !== genRef.current
       try {
         const [s, ev] = await Promise.all([api.run(rec.run_id), api.events(rec.run_id).catch(() => null)])
+        if (stale()) return
         setStatus(s)
         if (ev) setEvents(ev.events)
         if (s.status === 'completed') {
-          setBusy(false)
           if (s.forecast_available !== false) {
-            setForecast(await getForecast(rec.run_id))
+            const f = await getForecast(rec.run_id)
+            if (stale()) return
+            setForecast(f)
             await loadPrevious(rec, all)
           }
+          if (!stale()) setBusy(false)
           return
         }
         if (s.status === 'failed') {
@@ -197,8 +204,9 @@ export default function App() {
           setError(s.error ? `${s.error.code}: ${s.error.message}` : 'Запуск завершился ошибкой')
           return
         }
-        pollRef.current = window.setTimeout(() => poll(rec, all), POLL_MS)
+        pollRef.current = window.setTimeout(() => poll(rec, all, gen), POLL_MS)
       } catch (e) {
+        if (stale()) return
         setBusy(false)
         setError(errText(e))
       }
@@ -221,12 +229,13 @@ export default function App() {
       setHour(loc.hour)
       setHorizon(rec.request.horizon_hours)
       if (rec.synthetic) {
+        setBusy(false)
         setForecast(syntheticForecast(rec.run_id, rec.request))
         setEvents(syntheticEvents())
         return
       }
       setBusy(true)
-      poll(rec, all)
+      poll(rec, all, genRef.current)
     },
     [poll, runs],
   )
@@ -246,7 +255,7 @@ export default function App() {
       setForecast(null)
       setPrevious(null)
       setCompareId(null)
-      poll(rec, next)
+      poll(rec, next, genRef.current)
     } catch (e) {
       setBusy(false)
       setError(errText(e))
@@ -306,7 +315,7 @@ export default function App() {
             <path d="M16 15.2 L16 30" className="mast" />
           </svg>
           <h1>Прогноз выработки ВЭС · Шелекский коридор</h1>
-          <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, доступным на момент выпуска</p>
+          <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, которые по правилу доступности (допущение) вышли до момента выпуска</p>
         </div>
         <div className="chips" aria-live="polite">
           <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
@@ -551,7 +560,7 @@ export default function App() {
       </div>
 
       <footer className="foot">
-        Мощность — нормализованная, как в исходных SCADA (номинал неизвестен), не МВт. Погода: только прогнозы, доступные на момент выпуска. Данные Open-Meteo (CC BY 4.0).
+        Мощность — нормализованная, как в исходных SCADA (номинал неизвестен), не МВт. Погода: только прогнозы, отобранные по правилу доступности к моменту выпуска (время доступности — допущение, не подтверждённый журнал публикации). Данные Open-Meteo (CC BY 4.0).
       </footer>
     </div>
   )

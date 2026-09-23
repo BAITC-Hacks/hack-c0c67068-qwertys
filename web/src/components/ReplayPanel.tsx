@@ -72,9 +72,15 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Prop
         let s = await api.createRun(req)
         onRun({ run_id: s.run_id, request: req, created_at: new Date().toISOString(), synthetic: false })
         update(i, { run_id: s.run_id })
-        while (s.status === 'queued' || s.status === 'running') {
+        // bounded polling; Stop is honoured inside a run too (the run itself keeps going on the server)
+        for (let k = 0; (s.status === 'queued' || s.status === 'running') && !stopRef.current; k++) {
+          if (k > 900) throw new Error('timeout: нет результата за ~10 мин')
           await sleep(700)
           s = await api.run(s.run_id)
+        }
+        if (stopRef.current && (s.status === 'queued' || s.status === 'running')) {
+          update(i, { state: 'pending', error: 'остановлено пользователем, запуск продолжается на сервере' })
+          break
         }
         if (s.status === 'failed') {
           update(i, { state: 'failed', error: s.error ? `${s.error.code}: ${s.error.message}` : 'failed' })
