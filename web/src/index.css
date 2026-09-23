@@ -354,9 +354,9 @@ dl.kv.ev dt, dl.kv.ev dd { padding: 3px 0; border: 0; }
 .runs .meta { color: var(--muted); font-size: 10.5px; margin-top: 2px; }
 
 /* ---------- February replay ---------- */
-.replay-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 5px; margin-top: 12px; }
+.replay-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 5px; margin-top: 12px; }
 .rcell {
-  height: 34px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted);
+  height: 34px; padding: 0 4px; white-space: nowrap; border-radius: 7px; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted);
   font-size: 11.5px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; cursor: pointer;
   transition: transform 0.12s, border-color 0.15s, background-color 0.2s;
 }
@@ -422,7 +422,9 @@ a.btn:focus-visible, .rcell:focus-visible, .runs button:focus-visible, .trust su
 
 /* ---------- evaluation ---------- */
 .eval-meta { margin: 0 0 10px; color: var(--ink-2); font-size: 12.5px; }
-.eval-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; }
+.eval-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 12px; }
+.eval-grid .table-scroll { max-height: none; }
+.eval-grid td:first-child { white-space: normal; min-width: 150px; font-family: var(--font-ui); }
 .eval-cap { caption-side: top; text-align: left; padding: 8px 12px; font-size: 12.5px; font-weight: 600; color: var(--ink); background: var(--surface); }
 tr.selected td { background: var(--accent-soft); }
 tr.selected td:first-child { font-weight: 700; box-shadow: inset 3px 0 0 var(--accent); }
