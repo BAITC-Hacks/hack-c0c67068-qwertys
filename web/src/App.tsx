@@ -327,7 +327,7 @@ export default function App() {
     if (currentId && !current?.synthetic) qs.set('run', currentId)
     if (compareId) qs.set('compare', compareId)
     if (tz !== 'local') qs.set('tz', tz)
-    const url = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}`
+    const url = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}${window.location.hash}`
     window.history.replaceState(null, '', url)
   }, [currentId, compareId, tz, current?.synthetic])
 
@@ -380,6 +380,7 @@ export default function App() {
           </p>
         </div>
         <div className="chips" aria-live="polite">
+          <a className="chip" href="#/">← Главная</a>
           <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
             <span className="dot" />
             {backendReady ? 'Backend готов' : health ? 'Модель ещё не подключена' : 'Backend недоступен'}
