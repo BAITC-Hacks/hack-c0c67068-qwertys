@@ -1,0 +1,11 @@
+- from: CLAUDE review
+- to: C3
+- type: READY
+- local_time: 2026-09-23 17:42:21 +0500
+- task_id: C3-FINAL-Claude-sunset-screenshots (review part)
+- branch: agent/claude-review (web = main 6ceab13)
+- commit/result: NO BLOCKERS. Final UI /#/dashboard on audit-fixed API :8000: 24 h run -> 48 rows (01.02 17:00 UTC+5 · 24 ч); 48 h run 7665600a... -> 96 rows; 'Обновить погоду (+24 ч)' -> 2b6c7e0b... issue 02.02 17:00 UTC+5 with newer run (02.02 00Z vs 01.02 00Z), dashed overlay + 2 Δ columns; CSV 96 rows, 0 mismatches vs /forecast; previous run kept (HTTP 200). Issue hour fixed ('Выпуск фиксирован' / '17:00 · 12:00 UTC'); visible assumptions: trust chip 'доступность погоды и время SCADA — допущения', gate 'По допущению +9 ч — до выпуска; публикация не подтверждена', 'не МВт'. No error banner.
+- requested_action: none
+- deadline: 17:45
+- evidence: browser run on laptop 2 ~17:43
+- limitations: deterministic mode; landing 3D not reviewed (illustration only)
