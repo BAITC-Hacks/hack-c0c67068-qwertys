@@ -1,0 +1,7 @@
+# Tested transport environment, Python 3.12. Numerical dependencies added on C2 handoff.
+fastapi==0.141.1
+pydantic==2.13.5
+uvicorn==0.53.0
+httpx==0.28.1
+python-dotenv==1.2.3
+pytest==9.1.1
