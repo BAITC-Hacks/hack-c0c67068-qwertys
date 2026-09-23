@@ -81,15 +81,16 @@
 }
 
 * { box-sizing: border-box; }
-body {
-  margin: 0;
-  min-height: 100vh;
+body { margin: 0; min-height: 100vh; background: var(--page); }
+/* glow on its own fixed layer: no full-page repaint on scroll (background-attachment: fixed would) */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     radial-gradient(1100px 520px at 8% -8%, var(--page-glow-1), transparent 60%),
-    radial-gradient(900px 480px at 100% -12%, var(--page-glow-2), transparent 60%),
-    var(--page);
-  background-attachment: fixed;
+    radial-gradient(900px 480px at 100% -12%, var(--page-glow-2), transparent 60%);
 }
+/* anchors / deep links land below the sticky command bar */
+.card { scroll-margin-top: 170px; }
 button, select, input { font: inherit; color: inherit; }
 code { font-family: var(--font-mono); font-size: 0.92em; }
 ::selection { background: var(--accent-soft); }
@@ -120,7 +121,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--glass); backdrop-filter: blur(8px);
+  border: 1px solid var(--border); background: var(--surface);
   font-size: 12px; color: var(--ink-2); white-space: nowrap; font-family: var(--font-mono); letter-spacing: -0.01em;
 }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
@@ -160,7 +161,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
 /* command bar: the only card that is a direct child of .app */
 .app > section.card {
   position: sticky; top: 8px; z-index: 20; padding: 12px 16px;
-  background: var(--glass); backdrop-filter: blur(14px) saturate(1.2);
+  background: var(--glass); backdrop-filter: blur(10px);
   border-color: var(--border-strong);
 }
 
