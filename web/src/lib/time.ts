@@ -39,3 +39,9 @@ export function replayDates(): string[] {
 export function issueTimeFromLocal(date: string, hour: number): string {
   return `${date}T${p2(hour)}:00:00+05:00`
 }
+
+/** Local (UTC+5) date "YYYY-MM-DD" and hour of an RFC3339 timestamp. */
+export function localDateHour(iso: string): { date: string; hour: number } {
+  const d = new Date(Date.parse(iso) + LOCAL_OFFSET_H * 3600_000)
+  return { date: d.toISOString().slice(0, 10), hour: d.getUTCHours() }
+}

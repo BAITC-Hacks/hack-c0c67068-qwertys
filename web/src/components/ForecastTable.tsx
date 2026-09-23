@@ -9,7 +9,7 @@ interface Props {
   tz: DisplayTz
 }
 
-const fmt = (v: number | undefined) => (v == null ? '—' : v.toFixed(3))
+const fmt = (v: number | null | undefined) => (v == null ? '—' : v.toFixed(3))
 
 export function ForecastTable({ rows, previous, turbines, tz }: Props) {
   if (!rows.length) return null

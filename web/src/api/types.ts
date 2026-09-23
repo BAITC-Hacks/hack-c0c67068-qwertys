@@ -31,10 +31,12 @@ export interface RunStatus {
   forecast_available: boolean
   warnings: string[]
   error: ApiError | null
-  // Not in V1 but tolerated if the backend adds them:
+  // C4 transport also returns these:
   issue_time?: string
   horizon_hours?: 24 | 48
   turbine_ids?: TurbineId[]
+  started_at?: string
+  updated_at?: string
 }
 
 export interface ForecastRow {
@@ -42,7 +44,7 @@ export interface ForecastRow {
   issue_time: string
   valid_time: string
   lead_hours: number
-  y_pred: number
+  y_pred: number | null
 }
 
 export interface ForecastMetadata {
@@ -71,6 +73,7 @@ export interface AgentEvent {
   tool: string
   state: string
   summary: string
+  stage?: Stage
 }
 
 export interface EventsResponse {

@@ -24,7 +24,7 @@ interface Props {
   synthetic: boolean
 }
 
-type Point = { t: number; lead: number } & Partial<Record<string, number>>
+type Point = { t: number; lead: number } & Partial<Record<string, number | null>>
 
 export function buildPoints(rows: ForecastRow[], previous?: ForecastRow[] | null): Point[] {
   const byT = new Map<number, Point>()

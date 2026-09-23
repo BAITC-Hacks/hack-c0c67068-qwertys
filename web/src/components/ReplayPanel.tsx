@@ -34,11 +34,12 @@ function stitch(cells: Cell[]) {
   const best = new Map<string, ForecastRow>()
   for (const c of cells)
     for (const r of c.rows ?? []) {
+      if (r.y_pred == null) continue // missing hour: fall back to an older issue, never to zero
       const k = `${r.turbine_id}|${Date.parse(r.valid_time)}`
       const cur = best.get(k)
       if (!cur || r.lead_hours < cur.lead_hours) best.set(k, r)
     }
-  const byT = new Map<number, Record<string, number>>()
+  const byT = new Map<number, { t: number } & Record<string, number | null>>()
   const covered: Record<string, number> = { turbine_1: 0, turbine_2: 0 }
   for (const r of best.values()) {
     const t = Date.parse(r.valid_time)

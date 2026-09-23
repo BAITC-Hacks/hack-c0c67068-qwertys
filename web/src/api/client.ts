@@ -46,6 +46,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   health: () => request<Health>('/health'),
+  runs: () => request<RunStatus[]>('/runs'),
   createRun: (body: RunRequest) => request<RunStatus>('/runs', { method: 'POST', body: JSON.stringify(body) }),
   run: (id: string) => request<RunStatus>(`/runs/${encodeURIComponent(id)}`),
   forecast: (id: string) => request<ForecastResponse>(`/runs/${encodeURIComponent(id)}/forecast`),

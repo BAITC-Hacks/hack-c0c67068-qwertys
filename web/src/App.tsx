@@ -17,7 +17,7 @@ import { ForecastChart } from './components/ForecastChart'
 import { ForecastTable } from './components/ForecastTable'
 import { ProvenanceCard } from './components/ProvenanceCard'
 import { ReplayPanel } from './components/ReplayPanel'
-import { fmtIso, issueTimeFromLocal, replayDates, tzLabel, type DisplayTz } from './lib/time'
+import { fmtIso, issueTimeFromLocal, localDateHour, replayDates, tzLabel, type DisplayTz } from './lib/time'
 
 const ALL_TURBINES: TurbineId[] = ['turbine_1', 'turbine_2']
 const RUNS_KEY = 'wind-ui-runs-v1'
@@ -37,7 +37,8 @@ function saveRuns(runs: RunRecord[]) {
     /* storage unavailable — history is per-session only */
   }
 }
-const sameParams = (a: RunRequest, b: RunRequest) => a.issue_time === b.issue_time && a.horizon_hours === b.horizon_hours
+const sameParams = (a: RunRequest, b: RunRequest) =>
+  Date.parse(a.issue_time) === Date.parse(b.issue_time) && a.horizon_hours === b.horizon_hours
 
 function errText(e: unknown): string {
   if (e instanceof HttpError) return `${e.api?.code ?? e.status}: ${e.message}`
@@ -96,6 +97,25 @@ export default function App() {
         if (!alive) return
         setHealth(h)
         setHealthErr(null)
+        api
+          .runs()
+          .then((list) => {
+            if (!alive) return
+            setRuns((local) => {
+              const known = new Set(local.map((r) => r.run_id))
+              const fromServer: RunRecord[] = list
+                .filter((s) => !known.has(s.run_id) && s.issue_time && s.horizon_hours)
+                .map((s) => ({
+                  run_id: s.run_id,
+                  request: { issue_time: s.issue_time!, turbine_ids: s.turbine_ids ?? ALL_TURBINES, horizon_hours: s.horizon_hours! },
+                  created_at: s.started_at ?? s.updated_at ?? new Date(0).toISOString(),
+                  synthetic: false,
+                }))
+              if (!fromServer.length) return local
+              return [...local, ...fromServer].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+            })
+          })
+          .catch(() => {})
         api.evaluation().then((e) => alive && setEvaluation(e)).catch(() => alive && setEvaluation(null))
       } catch (e) {
         if (!alive) return
@@ -181,9 +201,9 @@ export default function App() {
       setPrevious(null)
       setStatus(null)
       setEvents([])
-      const d = rec.request.issue_time.slice(0, 10)
-      setDate(d)
-      setHour(Number(rec.request.issue_time.slice(11, 13)))
+      const loc = localDateHour(rec.request.issue_time)
+      setDate(loc.date)
+      setHour(loc.hour)
       setHorizon(rec.request.horizon_hours)
       if (rec.synthetic) {
         setForecast(syntheticForecast(rec.run_id, rec.request))
@@ -423,7 +443,7 @@ export default function App() {
           <ProvenanceCard metadata={forecast?.metadata ?? null} status={status} issueTime={current?.request.issue_time ?? null} tz={tz} />
           <section className="card" aria-labelledby="runs-h">
             <h2 id="runs-h">
-              Запуски <small>в этом браузере</small>
+              Запуски <small>сервер + этот браузер</small>
             </h2>
             {runs.length === 0 ? (
               <p className="unknown">Запусков ещё не было.</p>
