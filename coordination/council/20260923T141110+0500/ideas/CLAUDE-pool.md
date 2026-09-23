@@ -1,0 +1,164 @@
+# CLAUDE extended idea pool — RUN_ID 20260923T141110+0500
+
+Requested by participant B at 14:20. Six parallel generators, each simulating 2 of the 12 perspectives from CLAUDE_COUNCIL.md; generated 14:20–14:23 without reading repo files, other ideas or ballots, no tools, 0 external API calls. **All = ONE Claude voice.** 148 raw ideas (+ CLAUDE 18, C4 10, C1 10 = 186 total). Not fact-checked individually: numbers quoted inside are from the brief (REPORTED).
+
+## Perspectives: wind operator/dispatcher (OP) + NWP/meteorology (NWP)
+- OP-01 | Day-ahead nomination sheet | hourly per-turbine nomination table from P50 (normalized units; MWh only after R07) | value | 30 | low
+- OP-02 | Imbalance exposure estimator | on history backtest, nominated vs actual with an assumed symmetric tariff (clearly labelled assumption) | value | 30 | low
+- OP-03 | P10/P50/P90 bands | 3 quantile LightGBM models | technical | 40 | low
+- OP-04 | High-wind cut-out alert | flag ws > cut-out (turbine-specific unknown; ~25 m/s) and derate | fit | 15 | low
+- OP-05 | Icing risk flag | T≈0 °C + high RH/precip → flag and optional derate | fit | 15 | low
+- OP-06 | Ramp alert | hour-to-hour Δpower above threshold | fit | 20 | low
+- OP-07 | Maintenance window recommender | lowest expected energy-loss window in next 48 h | value | 20 | low
+- OP-08 | Turbine-pair discrepancy monitor | flag historical T1 vs T2 divergence (wake/availability) | originality | 30 | med
+- OP-09 | Confidence traffic light | green/yellow/red per hour by band width | UX | 30 | low
+- OP-10 | Versioned forecast archive | every issued forecast stored with run/model version; auto-recompute on new NWP run | README | 30 | low
+- OP-11 [BOLD] | Newsvendor nomination optimizer | pick the quantile that minimises expected imbalance cost given penalty asymmetry (parameter, not invented tariff) | value + originality | 40 | med
+- OP-12 [BOLD] | LLM shift-handover note | forecast + flags → dispatcher note, template fallback w/o key | value + originality | 30 | low
+- NWP-01 | Bias correction (MOS) | per-hour-of-day linear / quantile mapping NWP wind → SCADA wind | technical | 30 | low
+- NWP-02 | Direction regime feature | E/NE vs W/SW valley-channel category | technical | 20 | low
+- NWP-03 | Shear-based hub extrapolation | fit shear exponent from 10/100 m vs SCADA | technical | 30 | med
+- NWP-04 | Run-to-run consistency | diff 00Z vs 12Z on overlapping valid hours → instability flag | technical + originality | 30 | low
+- NWP-05 | Lead-time error growth | band widens with lead from backtest error curve | technical | 25 | low
+- NWP-06 | Regime-conditioned power curve | separate curve/interaction per flow regime | fit + originality | 35 | low
+- NWP-07 | Multi-source spread proxy | ECMWF + GFS/ICON previous-runs as poor-man ensemble | technical | 35 | med
+- NWP-08 | Baselines + skill score | persistence & climatology, skill score of ML | rigor + README | 20 | low
+- NWP-09 | Nocturnal stability correction | hour-of-day term for stable-BL low-level wind bias | technical | 25 | med
+- NWP-10 | Tested alignment step | documented UTC+6 → UTC and single-cell join as tested prep step | README | 30 | low
+- NWP-11 [BOLD] | Valley speed-up factor | per-direction-sector empirical SCADA/NWP speed ratio as downscaling | originality | 40 | med
+- NWP-12 [BOLD] | Analog ensemble | k-nearest historical NWP analogs → SCADA outcome spread as empirical ensemble | originality + technical | 40 | med
+
+## Perspectives: time-series scientist (TS-A) + causality/leakage auditor (TS-B)
+- TS-A01 | Climatology baseline | hour-of-day × month mean normalized power lookup | baseline required | 20 | low
+- TS-A02 | Persistence-24h baseline | t−24h persistence (last SCADA before issue) | baseline table | 10 | low
+- TS-A03 | Walk-forward backtest | rolling-origin over 2024-03..2026-01 on Previous-Runs archived fields, scored on SCADA | technical + README | 40 | med
+- TS-A04 | Cubic/power-curve feature | ws³ clipped + empirical binned power-curve lookup as feature/baseline | fit | 15 | low
+- TS-A05 | Bimodal regime encoding | dir sin/cos + categorical E/NE vs W/SW regime flag | domain fit | 20 | low
+- TS-A06 | Direct per-horizon vs single model | per-lead LightGBM (1–48) vs one model with lead feature | technical | 40 | med
+- TS-A07 | Quantile bands | LightGBM quantile P10/P50/P90 + coverage on backtest | technical + originality | 35 | med
+- TS-A08 | NWP lead smoothing | rolling 3 h mean/std of forecast wind/gust/temp around each lead | fit | 20 | low
+- TS-A09 | Logit target transform | logit/beta transform of 0–1 target to handle clipping | technical | 15 | low
+- TS-A10 | Model blend | LightGBM + CatBoost + power-curve, weights from backtest | fit | 30 | low
+- TS-A11 [BOLD] | Pseudo-ensemble spread | previous_day1/day2 (and 00Z vs 12Z) as poor-man ensemble; spread → uncertainty & recompute trigger | originality + value | 40 | med-high
+- TS-A12 [BOLD] | Turbine-pair joint model | cross-turbine regime-conditioned bias terms on shared NWP cell | originality | 40 | med-high
+- TS-B01 | Issue-time freeze assert | assert no NWP row has available_at after issue_time | correctness | 20 | low
+- TS-B02 | UTC join audit | diff-check SCADA UTC+6 vs API GMT joins for off-by-one hour | technical | 25 | med
+- TS-B03 | Source-match audit | training features only from archived forecasts, never ERA5 → identical train/infer data type | fit | 20 | med
+- TS-B04 | Horizon-blocked CV | chronological walk-forward CV with gaps so overlapping 48 h windows don't leak | technical | 35 | med
+- TS-B05 | Gap guard | no forward-fill across T1 60-day gap | fit | 20 | low
+- TS-B06 | Publication-lag gate | enforce +6 h publication delay before a run counts as available | technical | 15 | low
+- TS-B07 | Random-split check | forbid row-wise random splits on 10-min data | technical | 25 | med
+- TS-B08 | Normalization leak check | any scaler fit only on train window | fit | 15 | low
+- TS-B09 | Feb-metrics guardrail | assertion blocks computing metrics on Feb targets | README | 15 | low
+- TS-B10 | Hindcast-vs-operational note | README cites exact endpoint/params proving as-issued data | README | 20 | low
+- TS-B11 [BOLD] | Clock-simulator harness | "time machine" data access layer only returns rows ≤ issue_time; full Feb replay runs through it as integration test | technical + README | 45 | med-high
+- TS-B12 [BOLD] | Leak-injection meta-test | inject fake leaky feature (future power) and prove the audit suite rejects it | originality + technical | 40 | med-high
+
+## Perspectives: SCADA data quality (DQ) + ML experiment lead (ML)
+- DQ-01 | Power-curve outlier filter | median+MAD per 0.5 m/s bin, flag >3 MAD (curtailment/icing/faults) before training | technical | 30 | med
+- DQ-02 | Completeness-gated hourly resample | hourly only if ≥5/6 samples, else missing | fit | 20 | low
+- DQ-03 | Curtailment/fault mask | ws>4 m/s & p≈0 for >30 min → exclude from weather-driven target | fit | 25 | low
+- DQ-04 | Icing/derate heuristic | power ≪ curve at T≤0 °C steady wind → separate regime tag | originality | 35 | med
+- DQ-05 | Gap guard | lag/rolling windows never cross the T1 mid-2024 gap | technical | 15 | low
+- DQ-06 | Cross-turbine short-gap imputation | <2 h T1 gaps from T2 (r=0.97), flagged; never for the 60-day gap | fit | 30 | med
+- DQ-07 | Availability ratio | actual / curve-expected → "unavailable" flag, not weather target | technical | 30 | med
+- DQ-08 | Power-curve drift audit | per-quarter binned curves 2023→2026 | README | 30 | low
+- DQ-09 | UTC alignment validator | assert SCADA hourly vs UTC forecast alignment before join | technical | 15 | low
+- DQ-10 | Gap catalog | every gap >1 h per turbine + monthly coverage table in docs | README | 25 | low
+- DQ-11 [BOLD] | Unsupervised regime labeler | isolation forest on (wind, power, temp, hour) → regime column | originality | 40 | med
+- DQ-12 [BOLD] | Pair wake/shadowing feature | T1/T2 power ratio by inferred regime | originality | 40 | high
+- ML-01 | Two-stage wind→power | stage 1 MOS NWP→SCADA wind, stage 2 wind→power | technical | 40 | med
+- ML-02 | Residual over physics curve | GBM learns actual − curve(wind) | technical + originality | 35 | med
+- ML-03 | Pooled vs per-turbine ablation | one pooled model with turbine_id vs two models | technical + README | 40 | low
+- ML-04 | Quantile bands | 0.1/0.5/0.9 with crossing fix | value + technical | 35 | low
+- ML-05 | Lead-aware correction | lead / day1-vs-day2 feature or bias term | fit | 25 | low
+- ML-06 | Bias+curve floor baseline | NWP −bias → empirical curve, ablation floor | README | 15 | low
+- ML-07 | Rolling-origin CV | forward-chaining time blocks | technical | 25 | low
+- ML-08 | LightGBM vs CatBoost bake-off | tiny fixed grid, documented winner | technical + README | 40 | low
+- ML-09 | Experiment log | each run's model/features/metrics appended to CSV/JSON | README | 20 | low
+- ML-10 | Recompute hook | predict() rerun when new weather file lands | fit | 30 | low
+- ML-11 [BOLD] | Monotone-constrained model | LightGBM monotone_constraints on wind up to rated | technical + originality | 30 | med
+- ML-12 [BOLD] | Joint two-turbine model | multi-output with pair ratio auxiliary | originality | 40 | high
+
+## Perspectives: agentic AI architect (AG) + LLM API/cost & reliability (LLM)
+- AG-01 | Explicit FSM | FETCH→PREP→FORECAST→ANALYZE→PUBLISH→WAIT, every transition logged | technical | 30 | low
+- AG-02 | Tool-calling orchestrator | LLM planner calls fetch_weather / prepare_features / run_model / write_report via function calling | technical | 45 | med
+- AG-03 | Critic pass | second step reviews curve for implausible jumps vs wind, may request re-run | fit + technical | 30 | low
+- AG-04 | Auto re-run on new NWP run | watcher polls for new 00Z/12Z run → re-triggers pipeline, logged as agent decision | technical (core requirement) | 40 | med
+- AG-05 | Journal timeline UI | append-only JSONL (input hash, decision, output) rendered as timeline | technical + README | 30 | low
+- AG-06 | Deterministic replay cache | raw Open-Meteo responses cached per (issue, run) | README | 25 | low
+- AG-07 | Multi-agent role split | Data / Forecast / QA / Report nodes (LangGraph) with visible handoffs | technical | 40 | med
+- AG-08 | Numeric guardrail | reject/repair any LLM text containing numbers not from tool outputs | fit | 25 | low
+- AG-09 | Human-in-loop escalation | critic-flagged anomaly → "needs review" state with approve/reject in UI | value + technical | 35 | med
+- AG-10 | Adaptive planner branch | stale/missing inputs → planner skips/falls back instead of fixed steps | technical + originality | 35 | med
+- AG-11 [BOLD] | Self-healing on API failure | weather call fails → fall back to cached/previous run, log rationale, degrade confidence; demo by cutting network | technical + fit | 45 | med-high
+- AG-12 [BOLD] | Live recompute-on-new-data demo | inject new-run event mid-demo → autonomous recompute + bands update live | fit + technical | 45 | high
+- LLM-01 | Provider abstraction | one LLMClient: OpenAI / NVIDIA NIM / Ollama by env var | README | 30 | low
+- LLM-02 | Ollama default | local Qwen3 so jury runs with zero keys | README | 20 | low (install burden on jury)
+- LLM-03 | LLM response cache | disk cache keyed by prompt hash | technical | 25 | low
+- LLM-04 | Recorded transcript fallback | real LLM outputs for Feb replay stored and replayed (labelled) if no provider | README + fit | 30 | low
+- LLM-05 | Token budget guard | cap tokens/turns, log usage, fallback when exceeded | technical | 20 | low
+- LLM-06 | Retry/backoff + circuit breaker | 3× backoff on weather + LLM, then cache | technical | 25 | low
+- LLM-07 | Secrets hygiene | .env.example + dotenv; missing key → warning + deterministic mode | README | 15 | low
+- LLM-08 | Placeholder-only numbers | LLM references numbers via {{placeholders}} filled from tool output | fit | 20 | low
+- LLM-09 | LLM-optional core | numeric pipeline runs with zero LLM; LLM adds narrative only | fit | 20 | low
+- LLM-10 | Cost/latency log | provider, tokens, latency per run | technical | 25 | low
+- LLM-11 [BOLD] | Provider failover chain | NVIDIA → OpenAI → Ollama → deterministic, visible failover | technical + value | 45 | med
+- LLM-12 [BOLD] | Offline bundle | pre-pulled local model + cached weather + cached transcripts, end-to-end offline | README | 45 | med-high
+
+## Perspectives: product/UX (UX-A) + QA/reproducibility (UX-B)
+- UX-A01 | One-screen layout | turbine selector, 24–48 h chart with band, status strip (last issue, next update) | fit | 30 | low
+- UX-A02 | Provenance panel | weather source/run, issue time, model version hash | README | 20 | low
+- UX-A03 | Honesty badge | "No Feb ground truth — history backtest shown" banner | value + fit | 15 | low
+- UX-A04 | Revision diff overlay | yesterday's vs today's forecast for same target hours, dashed vs solid | technical | 40 | med
+- UX-A05 | Export | CSV + PNG of chart/table for dispatcher handoff | value | 20 | low
+- UX-A06 | Threshold alerts | banner on low-wind / ramp-rate threshold crossings | value | 30 | low
+- UX-A07 | Turbine compare toggle | overlay both turbines on one chart | fit | 25 | low
+- UX-A08 | Sortable hourly table | hour, forecast, band, weather inputs | technical | 20 | low
+- UX-A09 | Demo script card | 3-min demo mapped to agent-cycle beats | fit | 25 | low
+- UX-A10 | Confidence colour coding | points coloured by band width tier | originality | 35 | med
+- UX-A11 | Feature-importance tooltip | top-3 drivers (SHAP/importance) per hour on hover | technical | 40 | med
+- UX-A12 | Backtest scoreboard tile | Nov–Jan MAE/RMSE per turbine next to forecast | README | 25 | low
+- UX-A13 [BOLD] | Live agent pipeline view | stages light up in real time via SSE/polling from the real event log | originality + fit | 45 | high
+- UX-A14 [BOLD] | LLM daily briefing | 3-sentence summary vs yesterday atop dashboard (template fallback) | originality + value | 40 | high
+- UX-B01 | One-command run | run.ps1 / run.sh: venv, install, launch API+UI, print URLs | README | 30 | low
+- UX-B02 | Pin deps | exact versions, clean install on Windows/py3.12 | README | 15 | low
+- UX-B03 | Weather cache fallback | cache each fetch to JSON; use cache if API down | technical | 40 | med
+- UX-B04 | Smoke test | test hits /forecast → 200, schema, 24–48 rows | technical | 25 | low
+- UX-B05 | Pytest invariants | y∈[0,1], hourly monotonic timestamps, no NaN, 2 turbines | technical | 30 | low
+- UX-B06 | CI workflow | GitHub Actions pytest on push + badge | README | 30 | low
+- UX-B07 | Dockerfile optional | alt run path | README | 35 | med
+- UX-B08 | Clean-clone check script | clone to temp dir, run README steps verbatim, pass/fail | README | 35 | med
+- UX-B09 | README structure pass | prereqs, quickstart, data placement, troubleshooting, diagram | README | 40 | low
+- UX-B10 | Deterministic training | fixed seeds, fixed split dates, identical metrics on rerun | technical | 20 | low
+- UX-B11 | Config-driven paths | .env.example / config for data dir, no hardcoded paths | README | 20 | low
+- UX-B12 | Pre-flight validator | checks Python, CSV presence + SHA, ports, optional key | fit | 30 | low
+- UX-B13 [BOLD] | Golden-run hash check | committed expected hash of export/metrics; test proves bit-identical rerun | technical + README | 45 | high
+- UX-B14 [BOLD] | Fully offline demo mode | bundle pre-fetched Feb ecmwf_ifs snapshots so replay needs no internet | README + fit | 45 | high
+
+## Perspectives: compute/NVIDIA/TSFM (CMP) + startup/economic value (BIZ)
+- CMP-01 | Chronos-2 zero-shot baseline | small Chronos-2 on CPU with ECMWF covariates | fit + technical | 30 | med (download)
+- CMP-02 | LightGBM quantile ensemble | P10/P50/P90 | technical | 40 | low
+- CMP-03 | ws³ physics feature | cubic + capped terms | technical | 20 | low
+- CMP-04 | Power-curve fallback lookup | crash-proof fallback if ML path fails | fit | 25 | low
+- CMP-05 | Cache Feb Single-Runs | pre-fetch 29 issues to JSON | fit + README | 15 | low
+- CMP-06 | Cold/icing caveat flag | T<0 °C qualitative flag, no invented % loss | value | 20 | low
+- CMP-07 | Walk-forward backtest by lead bucket | MAE/RMSE per horizon bucket | README + technical | 35 | low
+- CMP-08 | Physics+ML blend | curve + GBM average/stack | technical | 25 | med
+- CMP-09 | NIM LLM narration only | NVIDIA NIM small LLM for routing/narration; numbers local | technical | 30 | low
+- CMP-10 [ROADMAP] | Brev GPU fine-tune of Chronos-2/TiRex-2 per turbine | potential | — | med-high
+- CMP-11 [ROADMAP][BOLD] | NIM multi-agent fleet across many farms | originality | — | high
+- CMP-12 [BOLD] | On-stage double issue | run the loop for two issue times live | fit | 30 | med
+- BIZ-01 | Honest imbalance framing | value = nomination accuracy backed only by backtest numbers | value | 10 | low
+- BIZ-02 | IPP / wind-farm operator as customer #1 | day-ahead schedules, penalty risk | value | 10 | low
+- BIZ-03 | KEGOC / dispatch as customer #2 | aggregated bands for reserve planning | value | 10 | low
+- BIZ-04 | Per-turbine SaaS tiering sketch | README business section, no invented prices | value + originality | 10 | low
+- BIZ-05 | Bands as the product | P10/P90 lets operator hedge nomination | value | 15 | low
+- BIZ-06 | Icing flag as maintenance value-add | demo narrative | value | 10 | low
+- BIZ-07 | Zero-key README | public Open-Meteo, no personal keys | README | 20 | low
+- BIZ-08 [BOLD] | Live recompute on stage | agent re-pulls weather mid-demo | fit | 15 | med
+- BIZ-09 | Corridor scalability | same pipeline ports to Zhanatas / Ereymentau with per-site retraining | potential | 10 | low
+- BIZ-10 | SCADA calibration as moat | site-calibrated vs generic weather-only vendors | originality | 10 | low
+- BIZ-11 [ROADMAP][BOLD] | Portfolio balancing product for KEGOC | potential | — | high
+- BIZ-12 [ROADMAP] | RES-wide layer (solar, hydro) | potential | — | med
+
