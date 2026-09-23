@@ -55,9 +55,11 @@ def test_incomplete_or_positive_uncertainty_cannot_pass_gate():
     for cutoff, end in qc.FOLDS:
         scores = {m: {"n": 500, "rmse": .3 if m != "mlp_shrink" else .2, "bias": 0} for m in qc.METHODS}
         cells.append({"status": "completed", "cutoff": cutoff, "seeds": [{"seed": s} for s in qc.dl.SEEDS],
-                      "slices": {"all": scores}})
+                      "slices": {name: scores for name in ("all", "lead1_24", "lead25_48", "wind_ge8")}})
     assert qc.gate(cells, [-.15, -.05])["eligible"]
     assert not qc.gate(cells, [-.15, .001])["eligible"]
+    cells[-1]["slices"].pop("wind_ge8")
+    assert not qc.gate(cells, [-.15, -.05])["eligible"]
     cells[-1]["seeds"].pop()
     assert not qc.gate(cells, [-.15, -.05])["eligible"]
 

@@ -145,11 +145,15 @@ def gate(cells, interval):
     for c in cells:
         for name in ("all", "lead1_24", "lead25_48", "wind_ge8"):
             score = c["slices"].get(name)
-            if score and (name == "all" or score["curve"]["n"] >= 100):
-                if score["mlp_shrink"]["rmse"] > 1.05 * score["curve"]["rmse"]:
-                    failures.append(c["cutoff"][:10] + ": " + name + " >5percent RMSE regression")
-        if abs(c["slices"]["all"]["mlp_shrink"]["bias"]) > abs(c["slices"]["all"]["curve"]["bias"]) + .01:
-            failures.append(c["cutoff"][:10] + ": absolute bias regression >.01")
+            if not score or score["curve"]["n"] < 100:
+                failures.append(c["cutoff"][:10] + ": " + name + " insufficient evidence (<100pairs)")
+                continue
+            for ref in ("curve", "curve_recent91"):
+                if score["mlp_shrink"]["rmse"] > 1.05 * score[ref]["rmse"]:
+                    failures.append(c["cutoff"][:10] + ": " + name + f" >5percent RMSE regression vs {ref}")
+        for ref in ("curve", "curve_recent91"):
+            if abs(c["slices"]["all"]["mlp_shrink"]["bias"]) > abs(c["slices"]["all"][ref]["bias"]) + .01:
+                failures.append(c["cutoff"][:10] + f": absolute bias regression >.01 vs {ref}")
     if interval is None or interval[1] >= 0:
         failures.append("descriptive delta interval upper endpoint is not negative")
     return {"eligible": not failures, "mean_fold_rmse": means, "failures": failures,
