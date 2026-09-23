@@ -19,6 +19,12 @@ ENDPOINT = "https://single-runs-api.open-meteo.com/v1/forecast"
 HOURLY = "wind_speed_100m,wind_direction_100m,temperature_2m"
 PROVIDER_DOC = "https://open-meteo.com/en/docs/single-runs-api"
 AVAILABILITY_LAG_HOURS = 9
+EXPECTED_UPSTREAM_UNITS = {
+    "time": "iso8601",
+    "wind_speed_100m": "m/s",
+    "wind_direction_100m": "°",
+    "temperature_2m": "°C",
+}
 
 
 def _parse_utc(value: str) -> datetime:
@@ -60,8 +66,13 @@ def inspect_payload(payload: bytes, *, url: str, run: str) -> tuple[dict, dict]:
         raise ValueError("Weather arrays have inconsistent lengths")
     if len(set(times)) != len(times):
         raise ValueError("Weather timestamps are duplicated")
-    if response.get("hourly_units", {}).get("wind_speed_100m", "m/s") != "m/s":
-        raise ValueError("Wind speed unit is not m/s")
+    hourly_units = response.get("hourly_units")
+    if not isinstance(hourly_units, dict):
+        raise ValueError("Missing or invalid provider hourly_units")
+    for name, expected in EXPECTED_UPSTREAM_UNITS.items():
+        actual = hourly_units.get(name)
+        if actual != expected:
+            raise ValueError(f"Unexpected provider unit for {name}: expected {expected!r}, got {actual!r}")
     run_time = _parse_utc(run)
     sha = hashlib.sha256(payload).hexdigest()
     available_at = run_time + timedelta(hours=AVAILABILITY_LAG_HOURS)
@@ -106,7 +117,7 @@ def inspect_payload(payload: bytes, *, url: str, run: str) -> tuple[dict, dict]:
         "first_valid_time": weather_rows[0]["valid_time"],
         "last_valid_time": weather_rows[-1]["valid_time"],
         "null_counts": {name: sum(value is None for value in hourly[name]) for name in names},
-        "hourly_units": response.get("hourly_units", {}),
+        "hourly_units": hourly_units,
         "provenance_limit": "HTTP response and cycle date do not prove as-issued operational field at historical issue time",
     }
     return weather_rows, report
