@@ -1,0 +1,20 @@
+{
+  "status": "no_go_before_training",
+  "protocol_commit": "4e4cd06",
+  "environment_id": "47y85unm3",
+  "cuda_readiness_confirmed_within_three_minutes": false,
+  "training_started": false,
+  "candidate_results": [],
+  "new_weights": 0,
+  "production_changed": false,
+  "starting_at_utc": "2026-09-23T12:16:12Z",
+  "running_at_utc": "2026-09-23T12:16:23Z",
+  "stop_requested_at_utc": "2026-09-23T12:19:42Z",
+  "stopped_at_utc": "2026-09-23T12:24:32Z",
+  "hard_stop_deadline_utc": "2026-09-23T12:27:59Z",
+  "provider_history_stop_confirmed": true,
+  "conservative_full_rate_cycle_estimate_usd": 0.0903,
+  "settled_cycle_cost_usd": null,
+  "displayed_account_balance_usd": 49.55,
+  "ongoing_storage_usd_per_hour": 0.02
+}
