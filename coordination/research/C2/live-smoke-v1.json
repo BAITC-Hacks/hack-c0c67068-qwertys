@@ -1,0 +1,131 @@
+{
+  "status": {
+    "status": "completed",
+    "run_id": "a4a9a157ff374d0ba137f9bda719efe1"
+  },
+  "usage": {
+    "input_tokens": 2798,
+    "output_tokens": 211,
+    "estimated_usd": 0.0014568000000000003,
+    "uncertain_request": false,
+    "model": "gpt-4.1-mini-2025-04-14",
+    "price_source": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+    "price_checked": "2026-09-23"
+  },
+  "events": [
+    {
+      "tool": "agent",
+      "state": "started",
+      "summary": "Режим LLM tool calling",
+      "stage": null
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 1",
+      "stage": null
+    },
+    {
+      "tool": "weather",
+      "state": "started",
+      "summary": "Начат инструмент weather",
+      "stage": "weather"
+    },
+    {
+      "tool": "weather",
+      "state": "ok",
+      "summary": "{\"hours\": 48, \"run_time\": \"2026-01-31T00:00:00Z\", \"provenance_status\": \"unconfirmed\", \"availability_basis\": \"inferred_run_plus_9h\", \"fetch_policy\": \"never\"}",
+      "stage": "weather"
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 2",
+      "stage": null
+    },
+    {
+      "tool": "prepare",
+      "state": "started",
+      "summary": "Начат инструмент prepare",
+      "stage": "prepare"
+    },
+    {
+      "tool": "prepare",
+      "state": "ok",
+      "summary": "{\"model_version\": \"nwp-tabular-7f1b4f31e9bb\", \"training_end_exclusive\": \"2026-01-31T00:00:00Z\", \"turbines\": [\"turbine_1\", \"turbine_2\"], \"future_scada_lags\": false}",
+      "stage": "prepare"
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 3",
+      "stage": null
+    },
+    {
+      "tool": "forecast",
+      "state": "started",
+      "summary": "Начат инструмент forecast",
+      "stage": "forecast"
+    },
+    {
+      "tool": "forecast",
+      "state": "ok",
+      "summary": "{\"rows\": 96, \"unit\": \"normalized_power\", \"min\": 0.05408477842003854, \"max\": 0.8253853704763798}",
+      "stage": "forecast"
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 4",
+      "stage": null
+    },
+    {
+      "tool": "validate",
+      "state": "started",
+      "summary": "Начат инструмент validate",
+      "stage": "validate"
+    },
+    {
+      "tool": "validate",
+      "state": "ok",
+      "summary": "{\"rows\": 96, \"coverage\": 1.0, \"warnings\": [\"Архивная погода Open-Meteo; публикация на момент выпуска не подтверждена (+9h — допущение).\", \"Часовой пояс SCADA принят как фиксированный UTC+6; подтверждения владельца нет.\", \"Мощность в исходных нормализованных единицах; это не МВт и не энергия.\", \"Февральских фактических меток нет; февральские метрики не вычислялись.\"]}",
+      "stage": "validate"
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 5",
+      "stage": null
+    },
+    {
+      "tool": "export",
+      "state": "started",
+      "summary": "Начат инструмент export",
+      "stage": "export"
+    },
+    {
+      "tool": "export",
+      "state": "ok",
+      "summary": "{\"export_id\": \"a4a9a157ff374d0ba137f9bda719efe1\", \"rows\": 96, \"formats\": [\"json\", \"csv\"], \"status\": \"staged_pending_agent_completion\"}",
+      "stage": "export"
+    },
+    {
+      "tool": "llm",
+      "state": "ok",
+      "summary": "Реальный ответ gpt-4.1-mini-2025-04-14, шаг 6",
+      "stage": null
+    },
+    {
+      "tool": "llm.summary",
+      "state": "ok",
+      "summary": "Прогноз выполнен и подготовлен к экспорту с идентификатором a4a9a157ff374d0ba137f9bda719efe1.\n\nОсновные ограничения прогноза:\n- Использована архивная погода Open-Meteo с неподтвержденной публикацией на момент выпуска (+9 часов допущение).\n- Часовой пояс данных SCADA принят фиксированным как UTC+6 без подтверждения от владельца.\n- Прогнозируемая мощность дана в нормализованных единицах, не в мегаваттах и не в энергии.\n- Для февраля нет фактических данных, поэтому февральские метрики не рассчитывались.\n\nЕсли хотите получить прогноз в определённом формате или есть вопросы — сообщите.",
+      "stage": null
+    }
+  ],
+  "evidence_kind": "real OpenAI API pass, not mocked",
+  "limitations": [
+    "historical weather cached and publication unconfirmed",
+    "SCADA timezone inferred",
+    "February no labels"
+  ]
+}
