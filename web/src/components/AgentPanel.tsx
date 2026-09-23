@@ -1,4 +1,5 @@
 import type { AgentEvent, RunStatus, Stage } from '../api/types'
+import { parseSummary } from '../lib/events'
 import { fmtIso, type DisplayTz } from '../lib/time'
 
 const STAGES: { key: Exclude<Stage, null>; label: string }[] = [
@@ -67,6 +68,7 @@ export function AgentPanel({ status, events, tz, synthetic }: Props) {
           {events.map((e) => {
             const kind = isError(e) ? 'err' : isRetry(e) ? 'retry' : ''
             const dt = t0 != null ? ((Date.parse(e.timestamp) - t0) / 1000).toFixed(1) : null
+            const ps = parseSummary(e.summary)
             return (
               <li key={e.seq} className={kind}>
                 <span className="seq">{e.seq}</span>
@@ -75,7 +77,7 @@ export function AgentPanel({ status, events, tz, synthetic }: Props) {
                     <span className="tool">{e.tool}</span>
                     <span className="state">{e.state}</span>
                     {dt != null && <time dateTime={e.timestamp}>+{dt} с</time>}
-                    <div className="sum">{e.summary}</div>
+                    <div className="sum">{ps.text}</div>
                   </summary>
                   <dl className="kv ev">
                     <dt>этап</dt>
@@ -86,6 +88,12 @@ export function AgentPanel({ status, events, tz, synthetic }: Props) {
                     <dd>
                       #{e.seq} · {e.tool} → {e.state}
                     </dd>
+                    {ps.fields?.map(([k, v]) => (
+                      <div key={k} className="ev-kv">
+                        <dt>{k}</dt>
+                        <dd>{v}</dd>
+                      </div>
+                    ))}
                   </dl>
                 </details>
               </li>
