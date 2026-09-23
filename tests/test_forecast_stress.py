@@ -28,7 +28,8 @@ def inputs(tmp_path, monkeypatch):
     rows = [{"provider": "SYNTHETIC", "model": "SYNTHETIC", "run_time": "2026-02-01T00:00:00Z",
              "available_at": "2026-02-01T09:00:00Z", "availability_basis": "inferred_run_plus_9h",
              "provenance_status": "unconfirmed", "valid_time": iso(utc(issue)+timedelta(hours=i)),
-             "source_reference": "synthetic", "variables": {"wind_speed_100m_m_s": i/3,
+             "source_reference": "synthetic", "units": {"wind_speed_100m_m_s":"m/s", "wind_direction_100m_deg":"degrees", "temperature_2m_c":"°C"},
+             "variables": {"wind_speed_100m_m_s": i/3,
                 "wind_direction_100m_deg": i*7 % 360, "temperature_2m_c": -10+i/2}}
             for i in range(1, 49)]
     def save(values):
@@ -57,8 +58,10 @@ def test_temporal_or_provenance_damage_fails_entire_horizon(inputs, fault):
     if fault == "duplicate": rows.append(copy.deepcopy(rows[20]))
     if fault == "mixed_source": rows[20]["source_reference"] = "different"
     if fault == "wrong_cycle": rows[20]["run_time"] = "2026-01-31T00:00:00Z"
-    if fault == "early_publication": rows[20]["available_at"] = "2026-02-01T08:59:59Z"
-    if fault == "late_publication": rows[20]["available_at"] = "2026-02-01T12:00:01Z"
+    if fault == "early_publication":
+        for row in rows: row["available_at"] = "2026-02-01T08:59:59Z"
+    if fault == "late_publication":
+        for row in rows: row["available_at"] = "2026-02-01T12:00:01Z"
     if fault == "missing_middle": rows.pop(20)
     inputs.save(rows)
     with pytest.raises(WeatherUnavailable): predict(inputs)
