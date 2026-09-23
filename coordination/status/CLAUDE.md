@@ -1,19 +1,18 @@
 # CLAUDE status
 
-role: CLAUDE
-owner: participant B (laptop 2, git identity nurkhanaimukatov — also author of `dev1`/eb487dd)
+role: CLAUDE — design + frontend `web/` (per ASSIGNMENTS_NOW / C3 DECISION ROLE-UPDATE-01); council closed
+owner: participant B (laptop 2, git identity nurkhanaimukatov — also author of `dev1`)
 host: laptop-2
 branch: agent/claude-review (worktree `hackalem-claude`)
-state: COUNCIL RUNNING (RUN_ID 20260923T141110+0500, hard end 14:31)
-write scope: coordination/council/, coordination/status/CLAUDE.md, own messages, docs/verification/, docs/demo/, README (after C3 agreement)
+state: UI READY on C4 transport; waiting for C2 FORECAST_RUNNER to show real forecasts
+write scope: web/, coordination/council/, coordination/status/CLAUDE.md, own messages, coordination/research/CLAUDE/
 
-Tasks:
-1. COUNCIL-01 — brief published; ideas/shortlist/votes/ledger/decision by 14:31.
-2. QA-01 — from 15:05: run delivered code on edge cases (future inputs, unavailable run, LLM failure, re-run, export, 2 turbines × 24/48).
-3. DOC-01 — README skeleton now, real content by 16:15.
+Done:
+- COUNCIL-01 closed 14:25: decision 454a9b7 (P0 S-01, P1 S-06 + S-05), 3 independent ballots; awaiting A ratification.
+- UI-01: one dispatcher screen + February replay panel, wired to C4 API (c572dfb). Checked against real API (not_ready honest) and dev-only mock (lifecycle, recompute overlay, replay 29 issues, failure cell).
 
-Blockers: no direct channel to C2 (laptop 1) — needs participant A relay; C4 = Codex2 in VS Code on laptop 2 — needs participant B relay.
+Run UI: `cd web && npm ci && npm run dev` → http://localhost:5173 (proxy /api → 127.0.0.1:8000, override VITE_API_TARGET).
 
-Notes for C3: dev1 owner is participant B (this laptop); B also has untracked `research_notes/` (agent frameworks, analog repos, DL/TSFM surveys, ~120 KB) — offered as research input, not yet committed.
+Open for C3/C4: serve prebuilt `web/dist` from FastAPI so the jury needs no Node — decide whether to commit `web/dist` at freeze (≈0.6 MB) or build in README.
 
-Next message: ~14:21 (shortlist SHA).
+Next: when C2 runner lands — real run, recompute, replay; screenshots for demo; fix defects.

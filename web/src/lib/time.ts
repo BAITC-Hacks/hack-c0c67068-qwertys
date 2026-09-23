@@ -10,7 +10,8 @@ const p2 = (n: number) => String(n).padStart(2, '0')
 
 export function fmtHour(ms: number, tz: DisplayTz): string {
   const d = shift(ms, tz)
-  return `${p2(d.getUTCHours())}:00`
+  // show the date at midnight so multi-day axes stay readable
+  return d.getUTCHours() === 0 ? `${p2(d.getUTCDate())}.${p2(d.getUTCMonth() + 1)}` : `${p2(d.getUTCHours())}:00`
 }
 export function fmtDayHour(ms: number, tz: DisplayTz): string {
   const d = shift(ms, tz)
