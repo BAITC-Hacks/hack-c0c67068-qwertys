@@ -1,7 +1,7 @@
 """Small, auditable Open-Meteo Single Runs source probe and adapter.
 
-The API's `run` is model initialization, not publication. A +6 h
-availability rule is a conservative hypothesis, not source metadata.
+The API's `run` is model initialization, not publication. A +9 h
+availability rule is an operational safety-margin hypothesis, not source metadata.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 ENDPOINT = "https://single-runs-api.open-meteo.com/v1/forecast"
 HOURLY = "wind_speed_100m,wind_direction_100m,temperature_2m"
 PROVIDER_DOC = "https://open-meteo.com/en/docs/single-runs-api"
+AVAILABILITY_LAG_HOURS = 9
 
 
 def _parse_utc(value: str) -> datetime:
@@ -63,7 +64,7 @@ def inspect_payload(payload: bytes, *, url: str, run: str) -> tuple[dict, dict]:
         raise ValueError("Wind speed unit is not m/s")
     run_time = _parse_utc(run)
     sha = hashlib.sha256(payload).hexdigest()
-    available_at = run_time + timedelta(hours=6)
+    available_at = run_time + timedelta(hours=AVAILABILITY_LAG_HOURS)
     weather_rows = []
     for index, raw_time in enumerate(times):
         valid_time = datetime.fromisoformat(raw_time)
@@ -75,8 +76,8 @@ def inspect_payload(payload: bytes, *, url: str, run: str) -> tuple[dict, dict]:
             "model": "ecmwf_ifs",
             "run_time": _iso(run_time),
             "available_at": _iso(available_at),
-            "available_at_basis": "inferred conservative run_init + 6h; not provider publication timestamp",
-            "availability_basis": "inferred_run_plus_6h",
+            "available_at_basis": "inferred run_init + 9h safety margin; not provider publication timestamp",
+            "availability_basis": "inferred_run_plus_9h",
             "provenance_status": "unconfirmed",
             "valid_time": _iso(valid_time),
             "variables": {
@@ -95,7 +96,7 @@ def inspect_payload(payload: bytes, *, url: str, run: str) -> tuple[dict, dict]:
         "run_init_utc": _iso(run_time),
         "available_at_utc_assumed": _iso(available_at),
         "availability_status": "ASSUMED, not verified historical publication",
-        "availability_basis": "inferred_run_plus_6h",
+        "availability_basis": "inferred_run_plus_9h",
         "provenance_status": "unconfirmed",
         "model": "ecmwf_ifs",
         "grid_latitude": response.get("latitude"),
@@ -149,7 +150,7 @@ def select_horizon(rows: list[dict], issue_time: str, horizon_hours: int) -> lis
         if row is None:
             raise ValueError(f"Weather run does not cover {valid}")
         if _parse_utc(row["available_at"]) > issue:
-            raise ValueError("Run unavailable under the +6h availability assumption")
+            raise ValueError("Run unavailable under the +9h availability assumption")
         if any(
             isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
             for value in row["variables"].values()
