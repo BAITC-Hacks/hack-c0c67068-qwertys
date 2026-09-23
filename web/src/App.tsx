@@ -315,6 +315,11 @@ export default function App() {
           </svg>
           <h1>Прогноз выработки ВЭС · Шелекский коридор</h1>
           <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, которые по правилу доступности (допущение) вышли до момента выпуска</p>
+          <p className="site">
+            <span><i className="pin t1" aria-hidden />Т1 43.6452° N 78.5356° E</span>
+            <span><i className="pin t2" aria-hidden />Т2 43.6432° N 78.5388° E</span>
+            <span>прогноз погоды: одна ячейка ECMWF (43.62° N 78.48° E, 555 м)</span>
+          </p>
         </div>
         <div className="chips" aria-live="polite">
           <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
