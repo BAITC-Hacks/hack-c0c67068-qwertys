@@ -16,7 +16,7 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pytest -q
 New-Item -ItemType Directory -Force models/production
 Copy-Item coordination/research/C2/model-manifest-v1.json models/production/manifest.json
-.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-02-28 --sleep-seconds 1
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-01-31 --sleep-seconds 1
 $env:FORECAST_RUNNER='src.agent.runner:run_forecast'
 $env:MODEL_DIR='models/production'
 $env:WEATHER_RUNS_DIR='artifacts/c1/weather_runs'
@@ -32,7 +32,13 @@ npm.cmd ci
 npm.cmd run dev
 ```
 
-Откройте `http://localhost:5173`. Первый сценарий: 31.01.2026, 17:00 UTC+5 (=12:00 UTC), 48ч → «Запустить агента» → таблица/события → «Скачать CSV». Кэш подготовлен для ежедневных выпусков 12:00 UTC; произвольный час может не иметь полного горизонта. Для первого одиночного расчёта достаточно загрузить только 31.01; диапазон нужен для replay. Опубликованный JSON содержит саму выбранную модель — две NWP-кривые мощности; исходные SCADA нужны для переобучения, а не этого запуска.
+Откройте `http://localhost:5173`. Первый сценарий: 31.01.2026, 17:00 UTC+5 (=12:00 UTC), 48ч → «Запустить агента» → таблица/события → «Скачать CSV». Быстрый запуск выше скачивает один погодный выпуск, достаточный для этого сценария. Кэш подготовлен для выпусков 12:00 UTC; произвольный час может не иметь полного горизонта. Опубликованный JSON содержит саму выбранную модель — две NWP-кривые мощности; исходные SCADA нужны для переобучения, а не этого запуска.
+
+Для кнопки обновления на +24 часа заранее загрузите также 01.02. Для всего февральского replay выполните команду ниже; она включает оба первых выпуска:
+
+```powershell
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-02-28 --sleep-seconds 1
+```
 
 На Windows используйте `npm.cmd`, если политика PowerShell блокирует `npm.ps1`. На Linux/macOS замените `.venv/Scripts/python.exe` на `.venv/bin/python`, `npm.cmd` на `npm`, а `$env:...` на `export ...` или локальную `.env`.
 
@@ -137,7 +143,7 @@ API: `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `/forecast`, `/eve
 - Мощность выдаётся в исходных нормализованных единицах, не в МВт или МВт·ч. API не применяет неподтверждённый clipping.
 - Временные метки API содержат offset; ответы нормализуются в UTC. SCADA UTC+6 — гипотеза, отображаемая как `inferred`.
 - `weather_available_at <= issue_time < valid_time`. Проверяются также горизонты, повторяющиеся часы и соответствие запросу. Пропуски не превращаются в нули.
-- Время инициализации погодной модели отличается от публикации. Текущая политика C1 **run + 9 часов** помечена `inferred_run_plus_9h`, `provenance_status=unconfirmed`; это запас, а не доказанное историческое время публикации. [Обоснование ограничения](coordination/research/C1/availability-correction.md).
+- Время инициализации погодной модели отличается от публикации. Текущая политика C1 **run + 9 часов** помечена `inferred_run_plus_9h`, `provenance_status=unconfirmed`; это запас, а не доказанное историческое время публикации. [Обоснование ограничения](coordination/research/C1/availability-correction.md), [финальная проверка по документации поставщика и способ устранить неопределённость](coordination/research/C1/final-provenance-note.md).
 - Метрики февраля не вычисляются без фактических наблюдений. Историческая проверка должна сравнивать модель и baseline на одинаковых часах с доступными тогда входами.
 - Транспортные события `api.*` подтверждают действия сервера, но сами по себе не доказывают LLM-agent tool calling. Реальные инструменты и режим выполнения передаёт ядро.
 
