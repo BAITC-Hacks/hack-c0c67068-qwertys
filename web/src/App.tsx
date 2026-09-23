@@ -12,6 +12,8 @@ import type {
 } from './api/types'
 import { AgentPanel } from './components/AgentPanel'
 import { EvaluationPanel, type EvaluationV1 } from './components/EvaluationPanel'
+import { HourDial } from './components/HourDial'
+import { IssueCalendar } from './components/IssueCalendar'
 import { ForecastChart } from './components/ForecastChart'
 import { ForecastTable } from './components/ForecastTable'
 import { KpiStrip } from './components/KpiStrip'
@@ -328,7 +330,7 @@ export default function App() {
     if (currentId && !current?.synthetic) qs.set('run', currentId)
     if (compareId) qs.set('compare', compareId)
     if (tz !== 'local') qs.set('tz', tz)
-    const url = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}`
+    const url = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}${window.location.hash}`
     window.history.replaceState(null, '', url)
   }, [currentId, compareId, tz, current?.synthetic])
 
@@ -362,27 +364,37 @@ export default function App() {
         : 'warn'
     : ''
 
+  const csvButton = !forecast ? (
+    <button className="btn" type="button" disabled title="CSV появится после расчёта">
+      CSV
+    </button>
+  ) : synthetic ? (
+    <button className="btn" type="button" onClick={() => downloadCsv(`${forecast.run_id}.csv`, forecast, true)}>
+      CSV (синтетика)
+    </button>
+  ) : (
+    <a className="btn" href={api.exportUrl(forecast.run_id)} download>
+      Скачать CSV
+    </a>
+  )
+
   return (
     <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <svg className="mark" viewBox="0 0 32 32" aria-hidden>
-            <circle cx="16" cy="13" r="2.2" />
-            <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
-            <path d="M16 15.2 L16 30" className="mast" />
-          </svg>
-          <h1>Прогноз выработки ВЭС · Шелекский коридор</h1>
-          <p>Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, которые по правилу доступности (допущение) вышли до момента выпуска</p>
-          <p className="site">
-            <span><i className="pin t1" aria-hidden />Т1 43.6452° N 78.5356° E</span>
-            <span><i className="pin t2" aria-hidden />Т2 43.6432° N 78.5388° E</span>
-            <span>прогноз погоды: одна ячейка ECMWF (43.62° N 78.48° E, 555 м)</span>
-          </p>
-        </div>
+      <header className="dash-head">
+        <svg className="mark" viewBox="0 0 32 32" aria-hidden>
+          <circle cx="16" cy="13" r="2.2" />
+          <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
+          <path d="M16 15.2 L16 30" className="mast" />
+        </svg>
+        <h1>Прогноз выработки ВЭС</h1>
+        <span className="dash-site" title="прогноз погоды: одна ячейка ECMWF (43.62° N 78.48° E, 555 м)">
+          Шелекский коридор · <i className="pin t1" aria-hidden />Т1 43.6452° N 78.5356° E · <i className="pin t2" aria-hidden />Т2 43.6432° N 78.5388° E
+        </span>
+        <span className="spacer" />
         <div className="chips" aria-live="polite">
           <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
             <span className="dot" />
-            {backendReady ? 'Backend готов' : health ? 'Модель ещё не подключена' : 'Backend недоступен'}
+            {backendReady ? 'backend готов' : health ? 'модель ещё не подключена' : 'backend недоступен'}
           </span>
           {status && (
             <span className={`chip ${statusChip}`}>
@@ -391,7 +403,8 @@ export default function App() {
               {status.stage ? ` · ${status.stage}` : ''}
             </span>
           )}
-          {status?.mode && <span className="chip">режим: {status.mode}</span>}
+          {status?.mode && <span className="chip">режим {status.mode}</span>}
+          <span className="chip">время {tzLabel(tz)}</span>
           {synthetic && <span className="chip synthetic">{SYNTHETIC_TAG}</span>}
         </div>
       </header>
@@ -422,104 +435,98 @@ export default function App() {
         </div>
       )}
 
-      <section className="card" aria-label="Параметры запуска">
-        <div className="controls">
-          <label className="field">
-            <span>Дата выпуска</span>
-            <select value={date} onChange={(e) => setDate(e.target.value)}>
-              {replayDates().map((d) => (
-                <option key={d} value={d}>
-                  {d.slice(8, 10)}.{d.slice(5, 7)}.{d.slice(0, 4)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>Час выпуска (UTC+5)</span>
-            <select value={CACHED_ISSUE_HOUR_LOCAL} disabled aria-describedby="origin-support">
-              <option value={CACHED_ISSUE_HOUR_LOCAL}>17:00 · 12:00 UTC</option>
-            </select>
-          </label>
-          <div className="field">
-            <span>Горизонт</span>
-            <div className="seg" role="group" aria-label="Горизонт">
-              {([24, 48] as const).map((h) => (
-                <button key={h} type="button" aria-pressed={horizon === h} onClick={() => setHorizon(h)}>
-                  {h} ч
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="field">
-            <span>Показать</span>
-            <div className="seg" role="group" aria-label="Турбины">
-              {ALL_TURBINES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  aria-pressed={shown.includes(t)}
-                  onClick={() => setShown((s) => (s.includes(t) ? (s.length > 1 ? s.filter((x) => x !== t) : s) : [...s, t]))}
-                >
-                  {t === 'turbine_1' ? 'Т1' : 'Т2'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="field">
-            <span>Время</span>
-            <div className="seg" role="group" aria-label="Часовой пояс отображения">
-              <button type="button" aria-pressed={tz === 'local'} onClick={() => setTz('local')}>
-                UTC+5
-              </button>
-              <button type="button" aria-pressed={tz === 'scada'} onClick={() => setTz('scada')} title="Часы SCADA (фиксированный UTC+6, допущение)">
-                UTC+6
-              </button>
-              <button type="button" aria-pressed={tz === 'utc'} onClick={() => setTz('utc')}>
-                UTC
-              </button>
-            </div>
-          </div>
-          <span className="spacer" />
-          <button className="btn primary" type="button" onClick={() => launch()} disabled={busy || !health}>
-            {busy ? 'Агент работает…' : 'Запустить агента'}
-          </button>
-          <button
-            className="btn"
-            type="button"
-            onClick={() => launch()}
-            disabled={busy || !health || !current || current.synthetic}
-            title="Новый запуск с параметрами формы в 17:00 UTC+5; прежний результат сохраняется"
-          >
-            Пересчитать
-          </button>
-          <button
-            className="btn"
-            type="button"
-            onClick={updateWeather}
-            disabled={busy || !backendReady || !current || current.synthetic || !nextIssueOk}
-            title={
-              nextIssueOk
-                ? 'Новый выпуск на 24 ч позже: агент берёт более свежий прогон ECMWF и пересчитывает те же целевые часы; прежний результат сохраняется и накладывается пунктиром'
-                : 'Доступно для выпусков в 17:00 UTC+5; последний выпуск — 28.02'
-            }
-          >
-            Обновить погоду (+24 ч)
-          </button>
-          {!backendReady && (
-            <button className="btn" type="button" onClick={launchSynthetic} disabled={busy}>
-              Синтетический пример
-            </button>
-          )}
-        </div>
-        <p id="origin-support" className="muted">
-          Подготовленный погодный кэш: ежедневный выпуск в 17:00 UTC+5 (12:00 UTC), 31.01–28.02,
-          горизонты 24 и 48 ч. Произвольный час не поддерживается. Пересчёт +24 ч и февральский replay
-          сохраняют этот час; переключатель часового пояса меняет только отображение.
-        </p>
-      </section>
-
       <div className="layout">
+        <aside className="ctrl-col" aria-label="Параметры запуска">
+          <IssueCalendar value={date} dates={replayDates()} onChange={setDate} />
+          <section className="card run-card">
+            <div className="run-grid">
+              <div className="field">
+                <span>Горизонт</span>
+                <div className="seg" role="group" aria-label="Горизонт">
+                  {([24, 48] as const).map((h) => (
+                    <button key={h} type="button" aria-pressed={horizon === h} onClick={() => setHorizon(h)}>
+                      {h} ч
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="field">
+                <span>Выпуск</span>
+                <output className="issue-readout">
+                  {date.slice(8, 10)}.{date.slice(5, 7)} 17:00
+                </output>
+              </div>
+            </div>
+            <button className="btn primary wide" type="button" onClick={() => launch()} disabled={busy || !health}>
+              {busy ? 'Агент работает…' : 'Запустить агента'}
+            </button>
+            <div className="run-grid">
+              <button
+                className="btn"
+                type="button"
+                onClick={() => launch()}
+                disabled={busy || !health || !current || current.synthetic}
+                title="Новый запуск с параметрами формы в 17:00 UTC+5; прежний результат сохраняется"
+              >
+                Пересчитать
+              </button>
+              {csvButton}
+            </div>
+            <button
+              className="btn wide"
+              type="button"
+              onClick={updateWeather}
+              disabled={busy || !backendReady || !current || current.synthetic || !nextIssueOk}
+              title={
+                nextIssueOk
+                  ? 'Новый выпуск на 24 ч позже: агент берёт более свежий прогон ECMWF и пересчитывает те же целевые часы; прежний результат сохраняется и накладывается пунктиром'
+                  : 'Доступно для выпусков в 17:00 UTC+5; последний выпуск — 28.02'
+              }
+            >
+              Обновить погоду (+24 ч)
+            </button>
+            {!backendReady && (
+              <button className="btn wide" type="button" onClick={launchSynthetic} disabled={busy}>
+                Синтетический пример
+              </button>
+            )}
+            <div className="run-grid">
+              <div className="field">
+                <span>Показать</span>
+                <div className="seg" role="group" aria-label="Турбины">
+                  {ALL_TURBINES.map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      aria-pressed={shown.includes(t)}
+                      onClick={() => setShown((s) => (s.includes(t) ? (s.length > 1 ? s.filter((x) => x !== t) : s) : [...s, t]))}
+                    >
+                      {t === 'turbine_1' ? 'Т1' : 'Т2'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="field">
+                <span>Время</span>
+                <div className="seg" role="group" aria-label="Часовой пояс отображения">
+                  <button type="button" aria-pressed={tz === 'local'} onClick={() => setTz('local')} title="UTC+5">
+                    +5
+                  </button>
+                  <button type="button" aria-pressed={tz === 'scada'} onClick={() => setTz('scada')} title="Часы SCADA (фиксированный UTC+6, допущение)">
+                    +6
+                  </button>
+                  <button type="button" aria-pressed={tz === 'utc'} onClick={() => setTz('utc')}>
+                    UTC
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <HourDial hour={CACHED_ISSUE_HOUR_LOCAL} />
+        </aside>
+
         <div className="main-col">
+          {forecast && <KpiStrip rows={forecast.rows} turbines={shownTurbines} tz={tz} />}
           <section className="card" aria-labelledby="fc-h">
             <h2 id="fc-h">
               Почасовой прогноз
@@ -540,7 +547,6 @@ export default function App() {
                 synthetic={synthetic}
               />
             )}
-            {forecast && <KpiStrip rows={forecast.rows} turbines={shownTurbines} tz={tz} />}
             <ForecastChart
               rows={forecast?.rows ?? []}
               previous={previous?.rows}
@@ -552,15 +558,6 @@ export default function App() {
             />
             {forecast && (
               <div className="controls" style={{ marginTop: 10 }}>
-                {synthetic ? (
-                  <button className="btn" type="button" onClick={() => downloadCsv(`${forecast.run_id}.csv`, forecast, true)}>
-                    Скачать CSV (синтетика)
-                  </button>
-                ) : (
-                  <a className="btn" href={api.exportUrl(forecast.run_id)} download style={{ display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
-                    Скачать CSV
-                  </a>
-                )}
                 {!synthetic && (
                   <label className="field compare">
                     <span>Сравнить с запуском</span>
@@ -594,7 +591,7 @@ export default function App() {
 
           {forecast && (
             <section className="card" aria-labelledby="tbl-h">
-              <h2 id="tbl-h">Таблица</h2>
+              <h2 id="tbl-h">Почасовая ведомость</h2>
               <ForecastTable rows={forecast.rows} previous={previous?.rows} turbines={shownTurbines} tz={tz} />
             </section>
           )}
@@ -645,7 +642,7 @@ export default function App() {
       </div>
 
       <footer className="foot">
-        Мощность — нормализованная, как в исходных SCADA (номинал неизвестен), не МВт. Погода: только прогнозы, отобранные по правилу доступности к моменту выпуска (время доступности — допущение, не подтверждённый журнал публикации). Данные Open-Meteo (CC BY 4.0).
+        Агентный почасовой прогноз на 24–48 ч по архивным прогнозам погоды, которые по правилу доступности (допущение) вышли до момента выпуска. Мощность — нормализованная, как в исходных SCADA (номинал неизвестен), не МВт. Погода: одна ячейка ECMWF (43.62° N 78.48° E, 555 м), только прогнозы, отобранные по правилу доступности к моменту выпуска (время доступности — допущение, не подтверждённый журнал публикации). Данные Open-Meteo (CC BY 4.0).
       </footer>
     </div>
   )

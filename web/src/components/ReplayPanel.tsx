@@ -212,7 +212,7 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen, saved,
                   cursor={{ stroke: 'var(--ink-2)', strokeWidth: 1, strokeDasharray: '2 3' }}
                 />
                 {turbines.map((t) => (
-                  <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={1.5} dot={false} isAnimationActive={false} connectNulls={false} />
+                  <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls={false} />
                 ))}
               </LineChart>
             </ResponsiveContainer>

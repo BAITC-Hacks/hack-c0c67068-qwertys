@@ -30,7 +30,7 @@ export function ProvenanceCard({ metadata: m, status, issueTime, tz }: Props) {
         </dd>
         <dt>Проверка времени</dt>
         <dd>
-          {gateOk == null ? <U /> : gateOk ? '✓ доступен до выпуска' : '✕ позже выпуска — утечка!'}
+          {gateOk == null ? <U /> : gateOk ? 'По допущению +9 ч — до выпуска; публикация не подтверждена' : 'Позже выпуска — входы не проходят временную проверку'}
         </dd>
         <dt>Модель</dt>
         <dd>{m?.model_version ?? <U />}</dd>
