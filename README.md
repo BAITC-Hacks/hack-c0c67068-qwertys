@@ -2,7 +2,7 @@
 
 HackAlem AI 2026. Система для диспетчера двух ветротурбин в Шелекском коридоре: получить прогноз на 24/48 часов, проверить происхождение погодного выпуска, просмотреть действия расчёта и выгрузить CSV.
 
-**Состояние на 23.09.2026, 14:40 UTC+5:** подготовка SCADA, погодный адаптер, HTTP API и интерфейс реализованы отдельными компонентами; подключение численной модели и полный февральский расчёт ещё выполняются. Без подключённого ядра API возвращает `503 not_ready`. Синтетический пример UI не является прогнозом. Метрики модели пока не опубликованы.
+**Проверено на ноутбуке 2, 23.09.2026:** реальный детерминированный прогноз через API и Chrome, совпадение таблицы/CSV/API, независимое обучение и пересчёт январских метрик, февральский replay. Историческая публикация погоды и часовой пояс SCADA не подтверждены; успешный live LLM/GPU-проход пока не проверен. Без готовой модели/кэша API возвращает `503 not_ready`. Синтетический пример UI явно помечен и не является прогнозом.
 
 ## Быстрый запуск
 
@@ -12,6 +12,13 @@ HackAlem AI 2026. Система для диспетчера двух ветро
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements-lock.txt
 .venv/Scripts/python.exe -m pytest -q
+New-Item -ItemType Directory -Force models/production
+Copy-Item coordination/research/C2/model-manifest-v1.json models/production/manifest.json
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-02-27 --sleep-seconds 1
+$env:FORECAST_RUNNER='src.agent.runner:run_forecast'
+$env:MODEL_DIR='models/production'
+$env:WEATHER_RUNS_DIR='artifacts/c1/weather_runs'
+$env:AGENT_MODE='deterministic'
 .venv/Scripts/python.exe -m uvicorn src.api.main:app --host 127.0.0.1 --port 8000
 ```
 
@@ -23,7 +30,9 @@ npm.cmd ci
 npm.cmd run dev
 ```
 
-Откройте `http://localhost:5173`. На Windows используйте `npm.cmd`, если политика PowerShell блокирует `npm.ps1`. На Linux/macOS замените `.venv/Scripts/python.exe` на `.venv/bin/python`, а `npm.cmd` на `npm`.
+Откройте `http://localhost:5173`. Первый сценарий: 31.01.2026, 17:00 UTC+5 (=12:00 UTC), 48ч → «Запустить агента» → таблица/события → «Скачать CSV». Кэш подготовлен для ежедневных выпусков 12:00 UTC; произвольный час может не иметь полного горизонта. Для первого одиночного расчёта достаточно загрузить только 31.01; диапазон нужен для replay. Опубликованный JSON содержит саму выбранную модель — две NWP-кривые мощности; исходные SCADA нужны для переобучения, а не этого запуска.
+
+На Windows используйте `npm.cmd`, если политика PowerShell блокирует `npm.ps1`. На Linux/macOS замените `.venv/Scripts/python.exe` на `.venv/bin/python`, `npm.cmd` на `npm`, а `$env:...` на `export ...` или локальную `.env`.
 
 Проверка сервера: `http://127.0.0.1:8000/api/health`. Схемы и интерактивные запросы: `/docs`; JSON OpenAPI: `/openapi.json`. В режиме разработки Vite перенаправляет `/api` на порт 8000. После `npm.cmd run build` из `web/` перезапустите backend: при наличии `web/dist` он обслуживает UI на `http://127.0.0.1:8000/`.
 
@@ -43,13 +52,41 @@ npm.cmd run dev
 
 | Переменная | Назначение |
 |---|---|
-| `DATA_DIR` | Каталог официальных локальных CSV; используется ядром после подключения |
+| `MODEL_DIR` | Каталог с manifest.json; по умолчанию models/production |
+| `WEATHER_RUNS_DIR` | Для приведённых команд C1: artifacts/c1/weather_runs |
+| `AGENT_MODE` | deterministic для проверенного сценария; live/auto требуют согласованного доступа и расходов |
 | `RUN_STORE_PATH` | SQLite-журнал; по умолчанию `.local/runs.sqlite3` |
-| `FORECAST_RUNNER` | Согласованный адаптер `src.agent.module:function`; пусто — честный `not_ready` |
+| `FORECAST_RUNNER` | `src.agent.runner:run_forecast`; пусто — честный `not_ready` |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | Только для реализованного LLM-режима ядра; не требуются для запуска HTTP API |
 | `NVIDIA_API_KEY` | Только при фактическом подключении соответствующего провайдера |
+| `EVALUATION_PATH` | JSON исторических метрик; по умолчанию coordination/research/C2/evaluation-v1.json |
 
-Ключи не передаются в браузер и не коммитятся. Точный модуль расчёта и команда обучения будут добавлены после передачи проверенного ядра C2; произвольный пример имени адаптера не является готовой командой запуска модели.
+Ключи не передаются в браузер и не коммитятся. Детерминированному режиму API-ключ не нужен. Health проверяет наличие модели/погодного кэша; покрытие конкретной даты проверяется в расчёте.
+
+## Обучение, метрики и февральский replay
+
+```powershell
+.venv/Scripts/python.exe -m src.data.scada --input "PATH_TO_TURBINE_1.csv" --turbine-id turbine_1 --output artifacts/c1/scada-t1-hourly.jsonl --report artifacts/c1/scada-t1-report.json
+.venv/Scripts/python.exe -m src.data.scada --input "PATH_TO_TURBINE_2.csv" --turbine-id turbine_2 --output artifacts/c1/scada-t2-hourly.jsonl --report artifacts/c1/scada-t2-report.json
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2025-11-01 --end-date 2026-02-27 --sleep-seconds 1
+.venv/Scripts/python.exe -m src.weather.verify_archive --start-date 2025-11-01 --end-date 2026-02-27
+.venv/Scripts/python.exe -m src.ml.train --scada-dir artifacts/c1 --weather-dir artifacts/c1/weather_runs --output-dir models/production --report artifacts/evaluation.json
+.venv/Scripts/python.exe scripts/verify_evaluation.py --report artifacts/evaluation.json --scada-dir artifacts/c1 --weather-dir artifacts/c1/weather_runs --output artifacts/independent-metrics.json
+.venv/Scripts/python.exe -m src.cli.replay --model-dir models/production --weather-dir artifacts/c1/weather_runs --output-dir artifacts/replay
+```
+
+Два расширяющихся временных validation-fold до января сравнивают baseline NWP→power с тремя фиксированными вариантами CatBoost. В обоих случаях выбран baseline. Январь открывается после выбора; затем production-модель переобучается на всех пригодных парах до 31.01.2026. Признаки не используют будущую SCADA. Единица метрик — пара (issue_time, target_hour), вес каждой пары 1; перекрывающиеся выпуски сохранены.
+
+Независимо воспроизведено: обучение 15,328с; 1390 январских пар на турбину, 707 уникальных целевых часов. Метрики в исходных нормализованных единицах:
+
+| Турбина | Baseline MAE | Baseline RMSE | CatBoost RMSE | Bias baseline (прогноз−факт) |
+|---|---:|---:|---:|---:|
+| Т1 | 0,190351 | 0,243279 | 0,253398 | +0,074741 |
+| Т2 | 0,190407 | 0,243430 | 0,254650 | +0,073179 |
+
+[Независимые метрики](docs/verification/independent-metrics.json) включают lead 1–24/25–48 и SHA. Проверяющий скрипт не импортирует модель: сам пересчитывает метрики из CSV, сверяет labels с SCADA, покрытие и времена. [Отчёт C2](coordination/research/C2/evaluation-v1.json) содержит validation/trials. Численные метрики совпали в пределах 1e-12; SHA повторно загруженных HTTP-ответов и model_version могут отличаться из-за служебных полей, что не доказывает различие численных данных.
+
+Replay независимо дал 28 реальных детерминированных запусков, 2688 строк полного журнала и 1344 уникальных прогноза (672 часа × 2 турбины). В новом UUID-каталоге — manifest.json, all-issues.csv, february.csv и отдельные запуски. Календарь февраля использует гипотезу UTC+6; для каждого часа выбран самый новый сохранённый выпуск с lead≥1. Правило предложено командой, не подтверждено организатором. Это прогноз/replay, **не измеренная точность февраля**.
 
 ## Устройство
 
@@ -57,7 +94,7 @@ npm.cmd run dev
 flowchart LR
     UI[React UI] --> API[FastAPI /api]
     API --> Store[(SQLite: запуски и события)]
-    API -. подключаемый адаптер .-> Core[Модель и агентный цикл C2]
+    API --> Core[Модель и агентный цикл C2]
     Core --> Weather[Архивный погодный адаптер C1]
     CSV[Официальные CSV] --> Data[Почасовая подготовка C1]
     Data --> Core
@@ -72,9 +109,9 @@ flowchart LR
 | Контракты | `src/contracts/schemas.py`: часовой пояс, горизонты, идентификаторы, проверка будущих входов |
 | HTTP и хранение | `src/api/`: очередь, состояние, журнал, прогноз, экспорт, сохранение прежних запусков |
 | Интерфейс | `web/`: выбор параметров, график, таблица, события, происхождение, явно помеченная синтетика |
-| Модель и агент | `src/ml/`, `src/agent/`, `src/cli/` — ожидаются от C2; до интеграции численный сценарий недоступен |
+| Модель и агент | `src/ml/`, `src/agent/`, `src/cli/`: обучение, численный прогноз, инструменты, replay |
 
-API: `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `/forecast`, `/events`, `/export.csv`. Ошибки имеют вид `{"error":{"code":"not_ready","message":"…","retryable":false}}`. Новый POST создаёт отдельный запуск и сохраняет предыдущие результаты. [Контракт подключения ядра](docs/verification/C4-api-handoff.md).
+API: `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `/forecast`, `/events`, `/export.csv`, `GET /api/evaluation`. Ошибки имеют вид `{"error":{"code":"not_ready","message":"…","retryable":false}}`. Новый POST создаёт отдельный запуск и сохраняет предыдущие результаты. [Контракт подключения ядра](docs/verification/C4-api-handoff.md).
 
 ## Как проверяется достоверность
 
@@ -87,10 +124,10 @@ API: `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `/forecast`, `/eve
 
 ## Проверки и ограничения
 
-На ноутбуке 2: `python -m pytest -q` — **21 проверка прошла** (19 API + 2 C1); `pip check` — без конфликтов. API-тесты используют **инъецированный синтетический stub**, а не реальные результаты модели. Проверены 24/48 часов, CSV, повторный запуск, перезапуск сервера, переполненная очередь, недопустимые даты, будущая погода, ошибки модели и отсутствие ключей в сообщениях об ошибках.
+На чистой среде ноутбука 2: `python -m pytest -q` — **34 проверки прошли**; `pip check` — без конфликтов. Часть тестов использует явные синтетические fixtures для проверки границ. Отдельно `python scripts/smoke_api.py` создаёт три настоящих запуска готовой модели, сверяет CSV/API и сохранность прежнего результата.
 
-Версия UI Claude проверена отдельно в Chrome: реальный health/503, помеченная синтетика, горизонты 24/48, скачивание CSV, узкий экран; ошибок JavaScript не обнаружено. Сквозной реальный прогноз и обучение пока не проверены. HTTP manifest/lock пока не включают ещё не переданные зависимости ML.
+Реальный Chrome подтвердил 24/48ч, совпадение всех табличных значений (округление 3 знака) и точных CSV/API, отсутствие JS-ошибок, ширину 390px без переполнения. Три реальных API-прогона заняли 0,135–0,143с на данном ноутбуке в детерминированном режиме; это не обещание скорости LLM/сети. Manifest/lock включает ML-зависимости и проверен в новой venv. [Матрица приёмки](docs/verification/acceptance-matrix.md) отдельно фиксирует оставшиеся ограничения.
 
-Публичный хостинг, авторизация пользователей и автоматическое завершение зависшей функции обучения не реализованы. Тайм-ауты внешних вызовов обеспечивает ядро. Перед сдачей требуется чистый запуск согласованной версии с фактической моделью и погодными входами.
+Публичный хостинг, авторизация пользователей и автоматическое завершение зависшего Python-потока не реализованы. Тайм-ауты внешних вызовов обеспечивает ядро. Проверенный режим — deterministic с настоящими weather→prepare→forecast→validate→export, он не означает LLM-вызов; live LLM и фактическая GPU job требуют отдельного evidence C2.
 
 Исследования: [анализ данных](docs/analysis.md), [реестр проверенных и открытых фактов](coordination/RESEARCH.md). Организация командной работы: [START_HERE](coordination/START_HERE.md). Ссылки и сравнения в исследовательских заметках не являются измеренными результатами продукта.

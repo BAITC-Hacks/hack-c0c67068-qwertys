@@ -1,6 +1,7 @@
 """Transport tests use an injected, explicitly synthetic numeric stub (never production fallback)."""
 import csv
 import io
+import json
 import time
 from datetime import timedelta
 from threading import Event
@@ -166,5 +167,19 @@ def test_readiness_failure_is_safe(tmp_path):
     with TestClient(create_app(synthetic_stub, tmp_path / 'runs.db', readiness=unavailable)) as client:
         assert client.get('/api/health').json()['forecast_ready'] is False
         response = client.post('/api/runs', json=BODY)
+        assert response.status_code == 503
+        assert 'private' not in response.text
+
+
+def test_evaluation_is_exact_published_report_or_explicitly_unavailable(tmp_path, monkeypatch):
+    path = tmp_path / 'evaluation.json'
+    monkeypatch.setenv('EVALUATION_PATH', str(path))
+    with TestClient(create_app(store_path=tmp_path / 'runs.db')) as client:
+        assert client.get('/api/evaluation').status_code == 404
+        report = {'unit': 'normalized_power', 'turbines': {}, 'february_metrics': None}
+        path.write_text(json.dumps(report), encoding='utf-8')
+        assert client.get('/api/evaluation').json() == report
+        path.write_text('not json private-value', encoding='utf-8')
+        response = client.get('/api/evaluation')
         assert response.status_code == 503
         assert 'private' not in response.text

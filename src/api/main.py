@@ -6,6 +6,7 @@ No synthetic fallback. Without an attached adapter POST returns 503.
 import csv
 import importlib
 import io
+import json
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
@@ -129,6 +130,19 @@ def create_app(runner: Runner | None = None, store_path: Path | None = None, sta
     @app.get("/api/health")
     def health():
         return {"status": "ok", "forecast_ready": forecast_ready(), "version": app.version}
+
+    @app.get("/api/evaluation")
+    def evaluation():
+        path = Path(os.getenv("EVALUATION_PATH", "coordination/research/C2/evaluation-v1.json"))
+        if not path.is_file():
+            problem(404, "not_found", "Отчёт исторической проверки ещё не опубликован")
+        try:
+            report = json.loads(path.read_text(encoding="utf-8-sig"))
+            if not isinstance(report, dict):
+                raise ValueError("Expected report object")
+            return JSONResponse(report)
+        except (OSError, ValueError, TypeError):
+            problem(503, "evaluation_unavailable", "Не удалось прочитать отчёт исторической проверки", True)
 
     @app.post("/api/runs", response_model=RunStatus, status_code=202)
     def start_run(body: ForecastRequest):
