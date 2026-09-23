@@ -11,7 +11,7 @@ def main():
     parser.add_argument("--model-dir")
     parser.add_argument("--weather-dir")
     parser.add_argument("--output-dir")
-    parser.add_argument("--agent-mode",choices=("auto","live","deterministic"),default="auto")
+    parser.add_argument("--agent-mode",choices=("auto","live","deterministic"),help="Overrides AGENT_MODE; otherwise environment or auto")
     args=parser.parse_args()
     def emit(event): print(json.dumps(event,ensure_ascii=True))
     try:

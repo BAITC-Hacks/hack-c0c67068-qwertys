@@ -48,6 +48,11 @@ class ForecastTests(unittest.TestCase):
         self.manifest["training_end_exclusive"]="2026-02-02T00:00:00Z"; write_json(self.model/"manifest.json",self.manifest)
         with self.assertRaises(InvalidForecastRequest): self.predict()
 
+    def test_malformed_model_is_not_ready(self):
+        self.manifest["turbines"]["turbine_1"]["curve"]["wind"]=[20,0]
+        write_json(self.model/"manifest.json",self.manifest)
+        with self.assertRaises(CoreNotReady): self.predict()
+
     def test_naive_time_rejected(self):
         self.request["issue_time"]="2026-02-01T12:00:00"
         with self.assertRaises(ValueError): self.predict()
