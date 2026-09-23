@@ -438,7 +438,6 @@ export default function App() {
       <div className="layout">
         <aside className="ctrl-col" aria-label="Параметры запуска">
           <IssueCalendar value={date} dates={replayDates()} onChange={setDate} />
-          <HourDial hour={CACHED_ISSUE_HOUR_LOCAL} />
           <section className="card run-card">
             <div className="run-grid">
               <div className="field">
@@ -523,6 +522,7 @@ export default function App() {
               </div>
             </div>
           </section>
+          <HourDial hour={CACHED_ISSUE_HOUR_LOCAL} />
         </aside>
 
         <div className="main-col">
