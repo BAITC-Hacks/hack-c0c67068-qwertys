@@ -47,9 +47,11 @@ export function HourDial({ hour }: { hour: number }) {
           <circle className="dial-hub" cx="50" cy="50" r="2.5" />
         </svg>
         <p className="dial-note">
-          <span>24-часовой циферблат</span>
-          <span>00 сверху, 12 снизу</span>
-          <span>серым — ночь (≈ зима)</span>
+          <b>Выпуск фиксирован</b>
+          <span>
+            {hh(hour)}:00 UTC+5 ({hh(utc)}:00 UTC)
+          </span>
+          <span>серым — ночь</span>
         </p>
       </div>
       <div className="hour-strip" aria-hidden>

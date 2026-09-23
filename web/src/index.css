@@ -354,7 +354,7 @@ tr.day-break td { border-top: 2px solid var(--accent); }
 .pipeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; position: relative; }
 .stage {
   position: relative; display: grid; justify-items: center; gap: 6px; padding: 2px 2px 0;
-  text-align: center; font-size: 11px; letter-spacing: -0.01em; color: var(--muted); font-weight: 500; overflow-wrap: anywhere;
+  text-align: center; font-size: 11px; letter-spacing: -0.01em; color: var(--muted); font-weight: 500; overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; /* «Подго-товка», not a mid-word break */
   transition: color 0.25s;
 }
 .stage::before { /* connector to the next stage */

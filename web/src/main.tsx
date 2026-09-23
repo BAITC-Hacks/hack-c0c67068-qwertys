@@ -23,7 +23,7 @@ function Root() {
   }, [dashboard])
   return dashboard ? (
     <>
-      <SiteHeader href="#/" label="Home" />
+      <SiteHeader href="#/" label="Главная" />
       <App />
     </>
   ) : (
