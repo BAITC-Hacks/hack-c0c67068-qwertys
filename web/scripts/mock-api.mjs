@@ -29,8 +29,10 @@ http
     const p = url.pathname
     if (p === '/api/health') return json(res, 200, { status: 'ok', forecast_ready: true })
     // MOCK_EVAL=<path to a real C2 evaluation json> lets the UI panel be checked against real file shape
-    if (p === '/api/evaluation')
-      return process.env.MOCK_EVAL ? json(res, 200, JSON.parse(fs.readFileSync(process.env.MOCK_EVAL, 'utf8'))) : json(res, 404, { error: { code: 'not_found', message: 'no evaluation', retryable: false } })
+    if (p === '/api/evaluation') {
+      const f = url.searchParams.get('variant') === 'v2' ? process.env.MOCK_EVAL_V2 : process.env.MOCK_EVAL
+      return f ? json(res, 200, JSON.parse(fs.readFileSync(f, 'utf8'))) : json(res, 404, { error: { code: 'not_found', message: 'no evaluation', retryable: false } })
+    }
     if (p === '/api/runs' && req.method === 'POST') {
       let body = ''
       req.on('data', (c) => (body += c))

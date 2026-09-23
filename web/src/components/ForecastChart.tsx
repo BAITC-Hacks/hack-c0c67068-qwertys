@@ -75,7 +75,7 @@ export function buildPoints(rows: ForecastRow[], previous?: ForecastRow[] | null
   return [...byT.values()].sort((a, b) => a.t - b.t)
 }
 
-const STAGE_RU: Record<string, string> = { weather: 'получение погоды', prepare: 'подготовка данных', forecast: 'расчёт модели', validate: 'анализ результата', export: 'экспорт' }
+const STAGE_RU: Record<string, string> = { weather: 'получение погоды', prepare: 'загрузка и проверка модели', forecast: 'расчёт модели', validate: 'анализ результата', export: 'экспорт' }
 
 export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthetic, loadingStage }: Props) {
   if (!rows.length) {
