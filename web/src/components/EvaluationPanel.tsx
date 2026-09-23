@@ -33,7 +33,7 @@ const TURBINE_RU: Record<string, string> = { turbine_1: 'Турбина 1', turb
 const d10 = (s?: string) => (s ? s.slice(0, 10) : '?')
 const f3 = (v?: number) => (v == null ? '—' : v.toFixed(3))
 
-export function EvaluationPanel({ evaluation }: { evaluation: EvaluationV1 | null }) {
+export function EvaluationPanel({ evaluation, currentModel }: { evaluation: EvaluationV1 | null; currentModel?: string | null }) {
   const turbines = evaluation?.turbines ? Object.entries(evaluation.turbines) : []
   const split = evaluation?.target_split
   return (
@@ -50,6 +50,12 @@ export function EvaluationPanel({ evaluation }: { evaluation: EvaluationV1 | nul
             Тест: {d10(split?.validation_end_exclusive)} — {d10(split?.test_end_exclusive)} (не использовался для выбора) · обучение до{' '}
             {d10(split?.train_end_exclusive)} · модель {evaluation?.model_version ?? '?'} · единица {evaluation?.unit ?? '?'} · bias = прогноз − факт
           </p>
+          {currentModel && evaluation?.model_version && currentModel !== evaluation.model_version && (
+            <p className="eval-note">
+              ⚠ Версии различаются: текущий прогноз построен моделью {currentModel}, а метрики выше относятся к модели {evaluation.model_version} (обучение до{' '}
+              {d10(split?.train_end_exclusive)}). Сопоставление версий — в отчёте C2 (model-manifest).
+            </p>
+          )}
           <div className="eval-grid">
             {turbines.map(([tid, t]) => (
               <div key={tid} className="table-scroll">

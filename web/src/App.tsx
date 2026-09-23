@@ -535,7 +535,7 @@ export default function App() {
             }}
           />
 
-          <EvaluationPanel evaluation={evaluation} />
+          <EvaluationPanel evaluation={evaluation} currentModel={forecast?.metadata.model_version ?? null} />
         </div>
 
         <aside className="side-col">
