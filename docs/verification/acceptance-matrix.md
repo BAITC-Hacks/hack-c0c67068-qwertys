@@ -1,6 +1,6 @@
 # Independent product acceptance — C4 / Codex2
 
-Updated 2026-09-23 14:58 UTC+5. This is an evidence ledger, not a declaration that every case requirement is proven. PASS applies only to the stated scope. BLOCKED means required evidence is absent; NOT_RUN means evidence has not yet been collected. Author claims alone do not qualify as evidence.
+Updated 2026-09-23 15:12 UTC+5. This is an evidence ledger, not a declaration that every case requirement is proven. PASS applies only to the stated scope. BLOCKED means required evidence is absent; NOT_RUN means evidence has not yet been collected. Author claims alone do not qualify as evidence.
 
 Environment: Windows, Python 3.12.10, Node 24.21.0, npm 11.19.0. API `c572dfb` + readiness `6b75570`; C1 `261c47d`; C2 `4cc62ec` + `3e47cad`; real browser snapshot Claude `b3592d7` (contains cb21098). Subsequent Claude visual redesign `e4245fc` has not yet been independently checked. Real model checks below are separate from synthetic boundary fixtures.
 
@@ -31,7 +31,9 @@ Environment: Windows, Python 3.12.10, Node 24.21.0, npm 11.19.0. API `c572dfb` +
 | Actual latency | scripts/smoke_api.py; training report | Measured real durations | Training15.328s; API+poll0.1362/0.1430/0.1348s for48/24/48h | Local real model and local weather cache; no network/LLM latency claim | PASS |
 | February replay integrity | Latest src.cli.replay; independently inspect exports |672hours/turbine, unique final targets, retained issue journal |29runs,2784journal rows,1344final rows; no missing hour under proposed UTC+6 calendar and newest-issue lead>=1 rule | C2d7d8a68; artifacts/replay/d5ab53c683384ca5a3e93ae4de14f91d | PASS |
 | Secret handling | Inject exception/event secrets | No keys in API status/events | Tested token patterns redacted, exception sanitized | `test_core_exception_and_event_secrets_are_not_exposed` | PASS |
+| Exact integrated branch | Export bca8c5b into new directory; npm ci/build, matching clean venv, real API/browser | Integration works without local source patches |35tests PASS; full24/48h table/API/CSV equality; model7f1b4f31e9bb; no JS errors or mobile overflow | integrated-bca8c5b.json, full commit and run IDs | PASS |
+| Fresh network input refresh | Two real refreshes through API/actual C2 runner, owned empty cache | Consult source, retain two versions, do not invent changed values |2actual HTTP probes; new input hashes, zero numerical changes; separate retained run IDs | refresh-evidence.json | PASS |
 
-Current conclusion: the deterministic prototype works end to end; real model metrics, API/UI/CSV and February replay are independently reproduced. C2 real LLM evidence is reviewed and explicitly attributed. Strict historical-provenance/timezone compliance remains BLOCKED. Full UX interaction audit and final integrated commit retest remain NOT_RUN. No February accuracy or GPU training success is claimed.
+Current conclusion: the deterministic prototype and exact integrated commit bca8c5b work end to end; real model metrics, API/UI/CSV and February replay are independently reproduced. C2 real LLM evidence is reviewed and explicitly attributed. Strict historical-provenance/timezone compliance remains BLOCKED. Full accessibility audit and any later post-testv2 remain NOT_RUN. No February accuracy or GPU training success is claimed.
 
 Local QA artifacts under `.local/` are intentionally ignored; they can be regenerated on this laptop. Durable evidence is the listed source tests/commits and their recorded observed outcomes. Final acceptance will replace pending entries with exact artifact hashes, commands and measurements.

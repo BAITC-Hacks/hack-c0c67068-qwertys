@@ -1,0 +1,27 @@
+{
+  "commit": "bca8c5b1ac0276fdbab69036c282bd13f9aea27c",
+  "branch": "coord/hackalem-start",
+  "reviewer": "C4 / Codex2, laptop 2",
+  "method": "git archive exact integrated commit into a new ignored directory; no source edits in that directory",
+  "runtime": {"python": "3.12.10", "node": "24.21.0", "mode": "deterministic"},
+  "environment": "Fresh venv already installed from pinned lock; every integrated lock entry independently matched installed version",
+  "tests": {"passed": 35, "seconds": 1.49},
+  "frontend": {"npm_ci": "PASS", "build": "PASS", "warning": "JS bundle exceeds Vite 500 kB advisory; not a build failure"},
+  "server": "isolated real Uvicorn on port 8001, exact integrated web/dist",
+  "model_version": "nwp-tabular-7f1b4f31e9bb",
+  "model_source": "Integrated coordination/research/C2/model-manifest-v1.json copied to local models/production/manifest.json",
+  "weather": "Previously independently downloaded and verified C1 cache on laptop 2; no synthetic data",
+  "browser_runs": [
+    {"run_id": "4a02887f36d54bf6998dfa3143f50e3f", "horizon": 48, "rows": 96},
+    {"run_id": "828aed42dd13471daf0847d3731ab3be", "horizon": 24, "rows": 48}
+  ],
+  "browser_checks": {"all_table_values_match_api_3_decimal_rounding": true, "all_csv_predictions_match_api_exactly": true, "javascript_errors": [], "mobile_viewport_width": 390, "document_width": 390},
+  "api_runs": [
+    {"run_id": "a4c7f0b9a1b04f8f98429352326b55c8", "horizon": 48, "seconds": 0.1357},
+    {"run_id": "79c2352a7480476c939c57df16b26fe8", "horizon": 24, "seconds": 0.1556},
+    {"run_id": "f406491ee85f42a7ae2e1f814357b291", "horizon": 48, "seconds": 0.1419}
+  ],
+  "rerun": "Distinct IDs; first result unchanged after further runs",
+  "tools_observed": ["weather", "prepare", "forecast", "validate", "export", "api.validate", "api.persist"],
+  "limitations": ["Historical weather publication and SCADA timezone remain inferred", "No independent paid LLM call on laptop2; separate C2 live evidence reviewed", "Later commits and post-test v2 are not covered by this exact-commit acceptance"]
+}
