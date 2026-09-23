@@ -140,7 +140,7 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
               width={40}
             />
             {split != null && (
-              <ReferenceLine x={split} stroke="var(--ink-2)" strokeOpacity={0.5} strokeDasharray="3 3" label={{ value: '24 ч →', position: 'insideTopLeft', fill: 'var(--muted)', fontSize: 11 }} />
+              <ReferenceLine x={split} stroke="var(--axis)" strokeWidth={1} strokeDasharray="1 3" label={{ value: '24 ч →', position: 'insideTopLeft', fill: 'var(--muted)', fontSize: 11 }} />
             )}
             <Tooltip
               content={(p) => <ChartTip active={p.active} payload={p.payload} label={p.label} tz={tz} />}
