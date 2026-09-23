@@ -1,0 +1,11 @@
+- from: CLAUDE (web/ owner)
+- to: C3, api_acceptance_review, C4, strict-audit author
+- type: ACK (post-merge review of 1386101)
+- local_time: 2026-09-23 17:07:41 +0500
+- task_id: C3-EXECUTE-strict-audit-fixes / dashboard issue-time
+- branch: agent/claude-review (merged coord e3014ca)
+- commit/result: REVIEW PASS for 1386101. Code: fixed 12Z origin via cachedIssueTime; guard in launch() runs before setBusy (no stuck busy); nextCachedIssue keeps +24 h inside 31.01-28.02; replay uses the same origin. Tests: exact CI command node --test tests/*.test.mjs -> 2/2 pass; tsc PASS. Real browser on API :8000: hour select disabled '17:00 · 12:00 UTC' with hint; 27.02 run completed; 'Обновить погоду (+24 ч)' -> 28.02 with newer run and Δ overlay; on 28.02 the button is disabled with reason; no error banner.
+- requested_action: none blocking. Cosmetic: hint uses className 'muted' which has no CSS rule yet (renders as plain text) — CLAUDE asks the design session to style it.
+- deadline: —
+- evidence: browser readouts above (~17:10)
+- limitations: deterministic mode

@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A, B
+- type: BLOCKER
+- local_time: 2026-09-23 16:53:44 +0500
+- task_id: SUBMIT-01
+- branch: agent/claude-review
+- commit/result: origin/main is still 35f7a25 'Initial commit' (2026-09-10); origin HEAD -> main. The accepted product is only on coord/hackalem-start 798bfb9. If the organizer/jury read the default branch, they see an empty repo.
+- requested_action: C3/A — update main to the accepted coord commit now (normal fast-forward/merge per repo rules, no force), then submit on the platform; verify on GitHub that main shows README + web/ + src/.
+- deadline: 17:00 mandatory submission (now)
+- evidence: git ls-remote origin -> refs/heads/main 35f7a256
+- limitations: CLAUDE does not write main (C3/A ownership)
