@@ -27,7 +27,8 @@ def replay(*,model_dir=None,weather_dir=None,output_dir="artifacts/replay",targe
             run_id=json.loads(next(e["summary"] for e in events if e["tool"]=="export" and e["state"]=="ok"))["export_id"]
             rows=[{"run_id":run_id,**row,"unit":"normalized_power",**payload["metadata"]} for row in payload["rows"]]
             journal.extend(rows); runs.append({"run_id":run_id,"issue_time":iso(issue),"rows":len(rows),"model_version":payload["metadata"]["model_version"],"input_version":payload["metadata"]["input_version"]})
-            if issue+timedelta(hours=48)>=target_end-timedelta(hours=1): break
+            # Keep every daily issue through Feb28, including targets outside February.
+            if issue.date()>=datetime(2026,2,28).date(): break
             issue+=timedelta(days=1)
         selected={}
         for row in journal:

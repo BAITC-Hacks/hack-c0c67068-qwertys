@@ -54,7 +54,7 @@ class ForecastTools:
         try:
             if name=="weather":
                 self.weather=load_weather(iso(self.issue),self.request["horizon_hours"],self.weather_dir)
-                result={"hours":len(self.weather),"run_time":self.weather[0]["run_time"],"provenance_status":self.weather[0]["provenance_status"],"availability_basis":self.weather[0]["availability_basis"]}
+                result={"hours":len(self.weather),"run_time":self.weather[0]["run_time"],"provenance_status":self.weather[0]["provenance_status"],"availability_basis":self.weather[0]["availability_basis"],"fetch_policy":os.getenv("WEATHER_FETCH_POLICY","never")}
             elif name=="prepare":
                 _,manifest=load_model(self.model_dir)
                 if utc(manifest["training_end_exclusive"])>self.issue: raise InvalidForecastRequest("Model training cutoff is after issue_time")
