@@ -1,0 +1,37 @@
+{
+  "reviewed_commit": "525f035fd01a9237501e26535ab11b66197496c6",
+  "base_commit": "f0d9ea52367f5afe5ed66c8d47414f406ffbda24",
+  "checks": {
+    "history_storage": true,
+    "api_history_and_health": true,
+    "comparison_and_polling": true,
+    "update_deeplink_and_exports": true,
+    "openRun_logic_preserved": true,
+    "launch_logic_preserved": true,
+    "web/src/api/client.ts": true,
+    "web/src/api/types.ts": true,
+    "web/src/lib/time.ts": true,
+    "web/src/lib/events.ts": true,
+    "web/src/components/ReplayPanel.tsx": true,
+    "web/src/components/TrustStrip.tsx": true,
+    "web/src/components/ProvenanceCard.tsx": true,
+    "web/src/components/AgentPanel.tsx": true,
+    "web/src/components/EvaluationPanel.tsx": true,
+    "web/src/components/ForecastTable.tsx": true,
+    "web/src/components/ForecastChart.tsx": true,
+    "web/src/components/HourDial.tsx": true,
+    "web/src/components/IssueCalendar.tsx": true,
+    "web/tests/issue-origin.test.mjs": true,
+    "backend_unchanged": true,
+    "guard_on_retry_present": true,
+    "replay_kept_mounted": true,
+    "history_all_records_visible": true
+  },
+  "pass": true,
+  "comparison_note": "Trailing blank lines ignored for extracted update/deeplink/export block; all other compared bodies use exact text.",
+  "node_issue_origin_tests": {
+    "passed": 2,
+    "failed": 0,
+    "file_identical_to_reviewed_commit": true
+  }
+}

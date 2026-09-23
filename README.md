@@ -10,9 +10,9 @@ SAMAL соединяет архивный погодный прогноз, об�
 
 3D-сцена главной страницы — иллюстрация. Рабочий экран ниже показывает настоящий результат API и сравнение двух погодных выпусков.
 
-![SAMAL: прогноз и сравнение выпусков](docs/demo/SAMAL-dashboard-desktop-1440.png)
+![SAMAL: прогноз и сравнение выпусков](docs/demo/SAMAL-workspace-desktop-1440.png)
 
-[Лендинг на телефоне, 390 px](docs/demo/SAMAL-sunset-landing-mobile-390.png) · [Рабочий экран на телефоне, 390 px](docs/demo/SAMAL-dashboard-mobile-390.png) · [Проверка подключения финального интерфейса к API](coordination/messages/20260923T174100+0500-CLAUDE-READY-samal-backend-final.md).
+[Лендинг на телефоне, 390 px](docs/demo/SAMAL-sunset-landing-mobile-390.png) · [Рабочий экран на телефоне, 390 px](docs/demo/SAMAL-workspace-mobile-390.png) · [Проверка подключения финального интерфейса к API](coordination/messages/20260923T174100+0500-CLAUDE-READY-samal-backend-final.md).
 
 ## Кейс
 
@@ -115,6 +115,24 @@ Pop-Location
 
 [Отчёт обучения](coordination/research/C2/FINAL_QUALITY_REPORT_RU.md) · [Независимый аудит GPU-кандидата](docs/verification/model-quality/C5-V4-final.md). Финальный дополнительный V5-цикл не дал обученной модели; GPU остановлена, статус проверен по истории Brev в 17:24:32 UTC+5. Для запуска продукта исследовательские веса и GPU не нужны.
 
+## Технологии и интеграции
+
+| Слой | Используемые технологии |
+|---|---|
+| Backend | Python 3.12, FastAPI, Uvicorn, Pydantic, SQLite |
+| Данные и ML | pandas, NumPy, scikit-learn, CatBoost; рабочая V1 — обученные NWP-кривые мощности |
+| Нейросетевые исследования | PyTorch, residual MLP, Transformer по числовым признакам; NVIDIA T4 через Brev |
+| Агент | Собственный цикл инструментов; OpenAI API в live-режиме, модель по умолчанию `gpt-4.1-mini-2025-04-14` из `.env.example` |
+| Frontend | TypeScript, React 19, Vite, Recharts, Three.js |
+| Внешние данные | Официальная SCADA организаторов; Open-Meteo Single Runs / ECMWF IFS, CC BY 4.0 |
+| Проверки | pytest, Node test runner, TypeScript, oxlint, GitHub Actions |
+
+Версии Python-пакетов закреплены в `requirements-lock.txt`, frontend — в `web/package-lock.json`. Настройки API и локальных каталогов описаны в `.env.example` и [воспроизводимости](docs/REPRODUCIBILITY.md).
+
+## Развёртывание
+
+Публичной deployed-версии нет. Решение запускается локально одним сервером по инструкции выше: `http://127.0.0.1:8000/`. На демонстрационном ноутбуке команды используется порт 8010; этот адрес доступен только на соответствующей машине. Схема обслуживания UI и API одинаковая.
+
 ## Архитектура
 
 ```mermaid
@@ -148,9 +166,9 @@ flowchart LR
 |---|---|
 | Полный Python-набор с исследовательскими зависимостями | **94 теста + 15 подтестов PASS** |
 | Повторный строгий аудит ядра `746a0a8` | **30/30 адресных проверок PASS**, семь программных нарушений закрыты |
-| Финальный frontend `1d415b7`, ноутбук 2 и интеграционная сборка | Чистый `npm ci`, **2/2 Node-теста**, TypeScript/Vite build, lint exit 0 |
+| Финальный dashboard `525f035` и правка скрытых графиков C3 | Чистый `npm ci`, **2/2 Node-теста**, TypeScript/Vite build, lint exit 0 |
 | Браузерная приёмка ядра | 24/48 ч → +24 ч → сравнение → CSV; replay **29/29** |
-| Финальный SAMAL в Chrome | Реальные 96 строк, CSV доступен, предупреждение о допущениях видно; console errors/warnings: **0** |
+| Финальный SAMAL в Chrome | Реальные 96 строк, CSV доступен, предупреждение о допущениях видно; ошибок JavaScript: **0**; исправлены предупреждения скрытого графика |
 
 [Строгий повторный аудит](coordination/research/C3/strict-reaudit-746a0a8.md) · [Проверка финального frontend другим ноутбуком](coordination/messages/20260923T173511+0500-CLAUDE-VERIFY-final-main-6ceab13.md) · [Чистая установка ядра](coordination/research/C2/clean-core-1895090.md).
 
@@ -163,9 +181,9 @@ npm.cmd run lint
 Pop-Location
 ```
 
-Базовый Python lock не устанавливает Torch: optional-тесты нейросетей могут пропускаться. Синтетические fixtures проверяют поведение программы, а не точность прогнозирования. GitHub Actions настроен на тесты, сборку и lint без ключей и исходных датасетов; hosted-результат пока не подтверждён. В финальной сборке остаются **7 предупреждений lint** и предупреждения о размере JS-бандлов, ошибок сборки нет.
+Базовый Python lock не устанавливает Torch: optional-тесты нейросетей могут пропускаться. Синтетические fixtures проверяют поведение программы, а не точность прогнозирования. GitHub Actions настроен на тесты, сборку и lint без ключей и исходных датасетов; hosted-результат пока не подтверждён. В финальной сборке остаются **10 предупреждений lint** и предупреждения о размере JS-бандлов, ошибок сборки нет.
 
-## Условия интерпретации результатов
+## Ограничения и условия интерпретации результатов
 
 - **Историческая доступность погоды не подтверждена.** Политика `run + 9 часов` — явно обозначенное допущение, не доказательство времени публикации. [Разбор источника](coordination/research/C1/final-provenance-note.md).
 - **UTC+6 для исходной SCADA — гипотеза.** Отображение интерфейса UTC+5 отдельно от интерпретации исходных данных.
@@ -177,3 +195,5 @@ Pop-Location
 Исходные CSV, API-ключи, локальные базы и тяжёлые исследовательские артефакты не публикуются в Git. Манифест официальных файлов: [DATA_MANIFEST.json](coordination/DATA_MANIFEST.json).
 
 **Ветка сдачи — `main`.** Сценарий защиты и описание для платформы: [FINAL_DELIVERY.md](coordination/FINAL_DELIVERY.md). Публикация кода в GitHub не означает, что на платформе хакатона нажата кнопка сдачи.
+
+Последняя приёмка нового рабочего пространства: [браузер и сборка](docs/verification/workspace-final-acceptance.md), [независимый анализ изменений](docs/verification/workspace-525f035-review.md).

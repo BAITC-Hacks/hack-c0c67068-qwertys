@@ -628,7 +628,7 @@ export default function App() {
             </div>
           )}
 
-          {mainView === 'forecast' && (
+          {mainView === 'forecast' && !(mobile && (view === 'params' || view === 'agent')) && (
             <section className="view view-forecast" aria-labelledby="fc-h">
               <div className="view-head">
                 <h2 id="fc-h">
@@ -746,6 +746,7 @@ export default function App() {
           {/* stateful panels stay mounted so a running February replay survives switching sections */}
           <div className="view" hidden={mainView !== 'replay'}>
             <ReplayPanel
+              visible={mainView === 'replay'}
               saved={runs}
               autoLoadSaved={new URLSearchParams(window.location.search).get('replay') === 'saved'}
               hour={CACHED_ISSUE_HOUR_LOCAL}

@@ -22,6 +22,7 @@ const COLOR: Record<TurbineId, string> = { turbine_1: 'var(--t1)', turbine_2: 'v
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 interface Props {
+  visible?: boolean
   hour: number
   tz: DisplayTz
   turbines: TurbineId[]
@@ -58,7 +59,7 @@ function stitch(cells: Cell[]) {
   return { points: [...byT.values()].sort((a, b) => a.t - b.t), covered }
 }
 
-export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen, saved, autoLoadSaved }: Props) {
+export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen, saved, autoLoadSaved, visible = true }: Props) {
   const [cells, setCells] = useState<Cell[]>(() => replayDates().map((date) => ({ date, state: 'pending' })))
   const [running, setRunning] = useState(false)
   const stopRef = useRef(false)
@@ -190,7 +191,7 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen, saved,
         ))}
       </div>
 
-      {points.length > 0 && (
+      {visible && points.length > 0 && (
         <>
           <div className="chart-wrap" style={{ height: 260, marginTop: 10 }} role="img" aria-label="Склеенный прогноз на февраль">
             <ResponsiveContainer width="100%" height="100%">
