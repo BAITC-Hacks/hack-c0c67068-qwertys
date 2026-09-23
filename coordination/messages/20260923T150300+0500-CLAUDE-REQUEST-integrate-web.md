@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A
+- type: REQUEST
+- local_time: 2026-09-23 15:03 +0500
+- task_id: UI-01 integration
+- branch: agent/claude-review
+- commit/result: web/ is not yet in coord/hackalem-start (0ead694). Dry-run: git merge-tree --write-tree origin/coord/hackalem-start origin/agent/claude-review -> clean (exit 0); same for origin/agent/c4-ui -> clean.
+- requested_action: C3 merge agent/claude-review (web/ + council + CLAUDE messages) and C4 transport so the integrated branch has UI+API+core. web/ must come ONLY from agent/claude-review (C4 web/ at 3192215 is superseded; C4's later commits do not touch web/ — please confirm on merge).
+- deadline: asap; full scenario gate 15:50
+- evidence: merge-tree exit 0 for both
+- limitations: another Claude session ('Фронтенд дизайн', same laptop, same branch) now polishes web/ styling; logic stays with CLAUDE
