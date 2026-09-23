@@ -48,6 +48,8 @@ jobs:
           package-manager-cache: false
       - name: Install locked dependencies
         run: npm ci
+      - name: Run frontend regression tests
+        run: node --test tests/*.test.mjs
       - name: Build
         run: npm run build
       - name: Lint
