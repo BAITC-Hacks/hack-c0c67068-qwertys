@@ -1,0 +1,131 @@
+{
+  "status": "PASS",
+  "unit": "normalized_power",
+  "bias_definition": "prediction minus actual",
+  "report_sha256": "564d6139f8a008435c413db5e599f4eba9739f710b541507d39981fb75a9e67c",
+  "provenance": "Conditional on inferred UTC+6 and weather run+9h, not verified historical availability",
+  "turbines": {
+    "turbine_1": {
+      "prediction_sha256": "8d489b0e1ad64bbb1e0f47b8d47a15662091bc5b42c6653581ae44230bd05ba8",
+      "metrics": {
+        "nwp_curve": {
+          "all_48": {
+            "n": 1390,
+            "mae": 0.18389931885452573,
+            "rmse": 0.23279640125253823,
+            "bias": 0.04711881232907298
+          },
+          "hours_1_24": {
+            "n": 707,
+            "mae": 0.17071504414935826,
+            "rmse": 0.21414807606913916,
+            "bias": 0.040184851019340266
+          },
+          "hours_25_48": {
+            "n": 683,
+            "mae": 0.19754687700467713,
+            "rmse": 0.2506427866461342,
+            "bias": 0.054296426744857795
+          }
+        },
+        "catboost": {
+          "all_48": {
+            "n": 1390,
+            "mae": 0.18885535765079223,
+            "rmse": 0.24369014009195342,
+            "bias": 0.08716041064623366
+          },
+          "hours_1_24": {
+            "n": 707,
+            "mae": 0.17379728173098927,
+            "rmse": 0.224449002742941,
+            "bias": 0.07944039899362541
+          },
+          "hours_25_48": {
+            "n": 683,
+            "mae": 0.20444256068929986,
+            "rmse": 0.2621238835652604,
+            "bias": 0.09515169650039768
+          }
+        },
+        "persistence": {
+          "available_only": {
+            "n": 1390,
+            "mae": 0.34317865707434053,
+            "rmse": 0.4545052540721797,
+            "bias": 0.0304736211031175
+          }
+        }
+      },
+      "candidate_rmse_delta": 0.01089373883941519,
+      "labelled_pairs": 1390,
+      "possible_pairs": 1390,
+      "coverage": 1.0,
+      "unique_target_hours": 707,
+      "overlapping_origins_preserved": true
+    },
+    "turbine_2": {
+      "prediction_sha256": "8b1efa870d0d4fefa618fe42e184d9658b0b2edf18084bad970fbb4765db106c",
+      "metrics": {
+        "nwp_curve": {
+          "all_48": {
+            "n": 1390,
+            "mae": 0.18525841344772934,
+            "rmse": 0.23418261489432854,
+            "bias": 0.05220418204372906
+          },
+          "hours_1_24": {
+            "n": 707,
+            "mae": 0.1726282308635897,
+            "rmse": 0.21682472347395662,
+            "bias": 0.04497558423328458
+          },
+          "hours_25_48": {
+            "n": 683,
+            "mae": 0.19833240918270262,
+            "rmse": 0.25088866293820566,
+            "bias": 0.05968678621940144
+          }
+        },
+        "catboost": {
+          "all_48": {
+            "n": 1390,
+            "mae": 0.19042664565012174,
+            "rmse": 0.24606384554022165,
+            "bias": 0.08721998670803426
+          },
+          "hours_1_24": {
+            "n": 707,
+            "mae": 0.17612577412123354,
+            "rmse": 0.22855275929103752,
+            "bias": 0.07783828983283465
+          },
+          "hours_25_48": {
+            "n": 683,
+            "mae": 0.20523003682277757,
+            "rmse": 0.2629648478751618,
+            "bias": 0.09693134789510031
+          }
+        },
+        "persistence": {
+          "available_only": {
+            "n": 1390,
+            "mae": 0.34257194244604317,
+            "rmse": 0.45232891223547134,
+            "bias": 0.04969424460431655
+          }
+        }
+      },
+      "candidate_rmse_delta": 0.01188123064589311,
+      "labelled_pairs": 1390,
+      "possible_pairs": 1390,
+      "coverage": 1.0,
+      "unique_target_hours": 707,
+      "overlapping_origins_preserved": true
+    }
+  },
+  "reference_report_sha256": "e590439d78d06f9b151cc18f9f1df7f575e33fcb78b914070b809fb8231cb7a8",
+  "reference_metrics_selection_counts_match": true,
+  "experiment_label": "post-test-extended-history",
+  "january_test_previously_viewed": true
+}

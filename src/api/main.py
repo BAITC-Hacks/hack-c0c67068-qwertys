@@ -132,8 +132,15 @@ def create_app(runner: Runner | None = None, store_path: Path | None = None, sta
         return {"status": "ok", "forecast_ready": forecast_ready(), "version": app.version}
 
     @app.get("/api/evaluation")
-    def evaluation():
-        path = Path(os.getenv("EVALUATION_PATH", "coordination/research/C2/evaluation-v1.json"))
+    def evaluation(variant: str = "v1"):
+        sources = {
+            "v1": ("EVALUATION_PATH", "coordination/research/C2/evaluation-v1.json"),
+            "v2": ("EVALUATION_V2_PATH", "coordination/research/C2/evaluation-v2-posttest.json"),
+        }
+        if variant not in sources:
+            problem(422, "invalid_variant", "Допустимые варианты отчёта: v1 или v2")
+        variable, default_path = sources[variant]
+        path = Path(os.getenv(variable, default_path))
         if not path.is_file():
             problem(404, "not_found", "Отчёт исторической проверки ещё не опубликован")
         try:

@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "network_probes": 2,
+  "runs": [
+    {
+      "run_id": "a27a8550401f433cb0a28f2e0eaeb718",
+      "seconds": 0.7979365999999573,
+      "input_version": "5e993ba85c66136e68353969e967fa220fcac13e30af089f4785a5226f901b56"
+    },
+    {
+      "run_id": "0dbdc44d1fb74e75a6591c0a671f9897",
+      "seconds": 0.52675040000031,
+      "input_version": "a7d4821383153fe6f62433ada14fd5c07039419717427fe4121db780c2409ce4"
+    }
+  ],
+  "numerical_rows_changed": 0,
+  "input_version_changed": true,
+  "interpretation": "Two real HTTP refreshes and separate retained runs; a new raw response hash alone is not proof that meteorological values changed. No invented forecast changes.",
+  "llm_called": false
+}

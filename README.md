@@ -2,7 +2,7 @@
 
 HackAlem AI 2026. Система для диспетчера двух ветротурбин в Шелекском коридоре: получить прогноз на 24/48 часов, проверить происхождение погодного выпуска, просмотреть действия расчёта и выгрузить CSV.
 
-**Проверено на ноутбуке 2, 23.09.2026:** реальный детерминированный прогноз через API и Chrome, совпадение таблицы/CSV/API, независимое обучение и пересчёт январских метрик, февральский replay. Историческая публикация погоды и часовой пояс SCADA не подтверждены; успешный live LLM/GPU-проход пока не проверен. Без готовой модели/кэша API возвращает `503 not_ready`. Синтетический пример UI явно помечен и не является прогнозом.
+**Проверено на ноутбуке 2, 23.09.2026:** реальный детерминированный прогноз через API и Chrome, совпадение таблицы/CSV/API, независимое обучение и пересчёт январских метрик, февральский replay. Общая версия `bca8c5b` отдельно проверена из чистого экспорта Git: 35 тестов, сборка, реальный24/48ч сценарий. C2 опубликовал журнал реального LLM-прохода; C4 проверил его согласованность. Историческая публикация погоды и часовой пояс SCADA не подтверждены; GPU job пока не подтверждена. Без готовой модели/кэша API возвращает `503 not_ready`. Синтетический пример UI явно помечен и не является прогнозом.
 
 ## Быстрый запуск
 
@@ -14,7 +14,7 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pytest -q
 New-Item -ItemType Directory -Force models/production
 Copy-Item coordination/research/C2/model-manifest-v1.json models/production/manifest.json
-.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-02-27 --sleep-seconds 1
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2026-01-31 --end-date 2026-02-28 --sleep-seconds 1
 $env:FORECAST_RUNNER='src.agent.runner:run_forecast'
 $env:MODEL_DIR='models/production'
 $env:WEATHER_RUNS_DIR='artifacts/c1/weather_runs'
@@ -38,6 +38,8 @@ npm.cmd run dev
 
 Сервер запускается **одним worker**. Одновременно выполняется один расчёт, очередь ограничена четырьмя запросами. Журнал и результаты хранятся локально в `.local/runs.sqlite3`; после перезапуска завершённые результаты сохраняются, незавершённые помечаются ошибкой.
 
+После подготовки модели, кэша и сборки `web/` можно запускать одной командой `.venv/Scripts/python.exe scripts/run_local.py`. Она использует порт 8000, `models/production`, `artifacts/c1/weather_runs` и явный deterministic-режим. `--check` проверяет готовность без сервера; `--model-dir`/`--weather-dir` задают свои каталоги. Для осознанного реального LLM-режима предусмотрен `--agent-mode live` с локально настроенным ключом и лимитом расходов.
+
 ## Данные и настройки
 
 Получите два исходных CSV из официальной выдачи организаторов. Не загружайте их в Git. Файлы содержат 142 360 и 149 499 строк с шагом около 10 минут за 11.03.2023–31.01.2026. Факта за февраль 2026 нет, хотя февраль указан в названиях файлов.
@@ -58,7 +60,8 @@ npm.cmd run dev
 | `RUN_STORE_PATH` | SQLite-журнал; по умолчанию `.local/runs.sqlite3` |
 | `FORECAST_RUNNER` | `src.agent.runner:run_forecast`; пусто — честный `not_ready` |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | Только для реализованного LLM-режима ядра; не требуются для запуска HTTP API |
-| `NVIDIA_API_KEY` | Только при фактическом подключении соответствующего провайдера |
+| `WEATHER_FETCH_POLICY` | never — проверенный локальный кэш; missing/refresh — явное обращение к погодному источнику |
+| `OPENAI_SESSION_BUDGET_USD` | Локальный лимит агента; по умолчанию1USD, в пределах согласованного общего бюджета |
 | `EVALUATION_PATH` | JSON исторических метрик; по умолчанию coordination/research/C2/evaluation-v1.json |
 
 Ключи не передаются в браузер и не коммитятся. Детерминированному режиму API-ключ не нужен. Health проверяет наличие модели/погодного кэша; покрытие конкретной даты проверяется в расчёте.
@@ -68,8 +71,8 @@ npm.cmd run dev
 ```powershell
 .venv/Scripts/python.exe -m src.data.scada --input "PATH_TO_TURBINE_1.csv" --turbine-id turbine_1 --output artifacts/c1/scada-t1-hourly.jsonl --report artifacts/c1/scada-t1-report.json
 .venv/Scripts/python.exe -m src.data.scada --input "PATH_TO_TURBINE_2.csv" --turbine-id turbine_2 --output artifacts/c1/scada-t2-hourly.jsonl --report artifacts/c1/scada-t2-report.json
-.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2025-11-01 --end-date 2026-02-27 --sleep-seconds 1
-.venv/Scripts/python.exe -m src.weather.verify_archive --start-date 2025-11-01 --end-date 2026-02-27
+.venv/Scripts/python.exe -m src.weather.batch_archive --start-date 2025-11-01 --end-date 2026-02-28 --sleep-seconds 1
+.venv/Scripts/python.exe -m src.weather.verify_archive --start-date 2025-11-01 --end-date 2026-02-28
 .venv/Scripts/python.exe -m src.ml.train --scada-dir artifacts/c1 --weather-dir artifacts/c1/weather_runs --output-dir models/production --report artifacts/evaluation.json
 .venv/Scripts/python.exe scripts/verify_evaluation.py --report artifacts/evaluation.json --scada-dir artifacts/c1 --weather-dir artifacts/c1/weather_runs --output artifacts/independent-metrics.json
 .venv/Scripts/python.exe -m src.cli.replay --model-dir models/production --weather-dir artifacts/c1/weather_runs --output-dir artifacts/replay
@@ -86,7 +89,11 @@ npm.cmd run dev
 
 [Независимые метрики](docs/verification/independent-metrics.json) включают lead 1–24/25–48 и SHA. Проверяющий скрипт не импортирует модель: сам пересчитывает метрики из CSV, сверяет labels с SCADA, покрытие и времена. [Отчёт C2](coordination/research/C2/evaluation-v1.json) содержит validation/trials. Численные метрики совпали в пределах 1e-12; SHA повторно загруженных HTTP-ответов и model_version могут отличаться из-за служебных полей, что не доказывает различие численных данных.
 
-Replay независимо дал 28 реальных детерминированных запусков, 2688 строк полного журнала и 1344 уникальных прогноза (672 часа × 2 турбины). В новом UUID-каталоге — manifest.json, all-issues.csv, february.csv и отдельные запуски. Календарь февраля использует гипотезу UTC+6; для каждого часа выбран самый новый сохранённый выпуск с lead≥1. Правило предложено командой, не подтверждено организатором. Это прогноз/replay, **не измеренная точность февраля**.
+Актуальный replay C2 включает 29 ежедневных выпусков 31.01–28.02. Независимо воспроизведены 2784 строки полного журнала и 1344 уникальных прогноза (672 часа × 2 турбины). В новом UUID-каталоге — manifest.json, all-issues.csv, february.csv и отдельные запуски. Календарь февраля использует гипотезу UTC+6; для каждого часа выбран самый новый сохранённый выпуск с lead≥1. Правило предложено командой, не подтверждено организатором. Это прогноз/replay, **не измеренная точность февраля**.
+
+Отдельная v2 использует 440 погодных выпусков за 2024-11-12–2026-01-30 и один зафиксированный вариант CatBoost depth4/full. Она выполнена после просмотра января, поэтому её январские числа — **post-test диагностика**, не новая независимая оценка. C4 воспроизвёл обучение за61,656с и независимо сверил все метрики/выбор с отчётом C2. Преимущество на всех проверках не показано; принятая v1 остаётся по умолчанию. [Точные команды и результаты v2](docs/verification/v2-reproduction.md). Для исполнения v2 нужны обученные `.cbm`, одного model-manifest-v2.json недостаточно.
+
+В интерфейсе отчёты разделены на «v1 · независимая оценка» и «v2 · post-test эксперимент»; переключение вкладки не меняет рабочую модель. `GET /api/evaluation?variant=v2` читает `EVALUATION_V2_PATH`, по умолчанию `coordination/research/C2/evaluation-v2-posttest.json`.
 
 ## Устройство
 
@@ -124,10 +131,10 @@ API: `POST /api/runs`, `GET /api/runs`, `GET /api/runs/{id}`, `/forecast`, `/eve
 
 ## Проверки и ограничения
 
-На чистой среде ноутбука 2: `python -m pytest -q` — **34 проверки прошли**; `pip check` — без конфликтов. Часть тестов использует явные синтетические fixtures для проверки границ. Отдельно `python scripts/smoke_api.py` создаёт три настоящих запуска готовой модели, сверяет CSV/API и сохранность прежнего результата.
+На чистой среде ноутбука 2 для общей версии bca8c5b: `python -m pytest -q` — **35 проверок прошли**; все установленные версии совпадают с lock. Часть тестов использует явные синтетические fixtures для проверки границ. Отдельно `python scripts/smoke_api.py` создаёт три настоящих запуска готовой модели, сверяет CSV/API и сохранность прежнего результата. [Результат приёмки общей версии](docs/verification/integrated-bca8c5b.json).
 
 Реальный Chrome подтвердил 24/48ч, совпадение всех табличных значений (округление 3 знака) и точных CSV/API, отсутствие JS-ошибок, ширину 390px без переполнения. Три реальных API-прогона заняли 0,135–0,143с на данном ноутбуке в детерминированном режиме; это не обещание скорости LLM/сети. Manifest/lock включает ML-зависимости и проверен в новой venv. [Матрица приёмки](docs/verification/acceptance-matrix.md) отдельно фиксирует оставшиеся ограничения.
 
-Публичный хостинг, авторизация пользователей и автоматическое завершение зависшего Python-потока не реализованы. Тайм-ауты внешних вызовов обеспечивает ядро. Проверенный режим — deterministic с настоящими weather→prepare→forecast→validate→export, он не означает LLM-вызов; live LLM и фактическая GPU job требуют отдельного evidence C2.
+Публичный хостинг, авторизация пользователей и автоматическое завершение зависшего Python-потока не реализованы. Тайм-ауты внешних вызовов обеспечивает ядро. Независимо проверенный здесь режим — deterministic с настоящими weather→prepare→forecast→validate→export, он не означает LLM-вызов. C2 опубликовал [журнал реального LLM-прохода с сетевой погодой](coordination/research/C2/live-network-smoke-v2.json): 6 ответов, 5 инструментов, 48 численных строк, 11,297с. C4 сверил согласованность событий/usage, но не повторял платный вызов с личным ключом на ноутбуке2. Фактическая GPU job пока не подтверждена.
 
 Исследования: [анализ данных](docs/analysis.md), [реестр проверенных и открытых фактов](coordination/RESEARCH.md). Организация командной работы: [START_HERE](coordination/START_HERE.md). Ссылки и сравнения в исследовательских заметках не являются измеренными результатами продукта.
