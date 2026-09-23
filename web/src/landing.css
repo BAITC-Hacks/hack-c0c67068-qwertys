@@ -12,17 +12,23 @@
 .hero-stage canvas { display: block; width: 100%; height: 100%; }
 .hero-fade { position: absolute; inset: 0; background: #0a0f1a; opacity: 1; pointer-events: none; transition: opacity 0.9s ease; }
 .hero.no-webgl .hero-fade { opacity: 0; }
-/* the one control on the scene (user request, overrides the handoff's "nothing on top") */
-.hero-cta {
-  position: absolute; left: 0; right: 0; bottom: 0; display: grid; justify-items: center; gap: 12px;
-  padding: 90px 20px 44px; text-align: center; pointer-events: none;
-  background: linear-gradient(0deg, rgba(6, 9, 16, 0.6), rgba(6, 9, 16, 0));
+/* transparent header over the scene (user request, overrides the handoff's "nothing on top") */
+.lp-header {
+  position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 32px 28px; color: #f6f3ea; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(180deg, rgba(6, 9, 16, 0.32), rgba(6, 9, 16, 0));
 }
-.hero-cta > * { pointer-events: auto; }
-.hero-cta p {
-  margin: 0; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.02em;
-  color: #f6f3ea; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+.lp-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; letter-spacing: 0.14em; }
+.lp-header .lp-mark { width: 30px; height: 30px; stroke: currentColor; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.3)); }
+.lp-header .lp-mark circle { fill: currentColor; }
+.lp-header .lp-mark .mast { stroke: currentColor; }
+.lp-header .lp-mark path:not(.mast) { transform-box: view-box; transform-origin: 16px 13px; animation: rotor 7s linear infinite; }
+.lp-nav {
+  color: inherit; text-decoration: none; font-size: 12.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  padding-bottom: 3px; border-bottom: 1px solid rgba(246, 243, 234, 0.5); transition: border-color 0.15s;
 }
+.lp-nav:hover { border-bottom-color: #f6f3ea; }
+.lp-nav:focus-visible { outline: 2px solid #f6f3ea; outline-offset: 4px; border-radius: 2px; }
 
 .lp { max-width: 1120px; margin: 0 auto; padding: 56px 20px 32px; display: grid; gap: 28px; }
 .lp-eyebrow {
@@ -76,6 +82,7 @@
   .lp-steps li:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 560px) {
+  .lp-header { padding: 14px 16px 24px; }
   .lp { padding-top: 36px; gap: 24px; }
   .lp-steps { grid-template-columns: 1fr; }
   .lp-lead { font-size: 15.5px; }

@@ -9,6 +9,15 @@ const STEPS = [
   { title: 'Экспорт', text: 'Таблица, журнал действий агента и CSV для диспетчера' },
 ]
 
+/** Turbine mark shared with the dashboard masthead */
+const Mark = () => (
+  <svg className="lp-mark" viewBox="0 0 32 32" aria-hidden>
+    <circle cx="16" cy="13" r="2.2" />
+    <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
+    <path d="M16 15.2 L16 30" className="mast" />
+  </svg>
+)
+
 /** Hero: variant 3a from design_handoff_wind_landing — full-screen 3D scene, nothing on top by design. */
 function Hero() {
   const stageRef = useRef<HTMLDivElement>(null)
@@ -49,12 +58,15 @@ function Hero() {
     <section className={`hero${failed ? ' no-webgl' : ''}`}>
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly ветропарк в степи, над ним дует ветер" />
       <div ref={fadeRef} className="hero-fade" />
-      <div className="hero-cta">
-        <p>Шелекский коридор · прогноз выработки ВЭС на 24–48 ч</p>
-        <a className="btn primary lp-go" href="#/dashboard">
-          Открыть дашборд <span aria-hidden>→</span>
+      <header className="lp-header">
+        <span className="lp-logo">
+          <Mark />
+          JELIQ
+        </span>
+        <a className="lp-nav" href="#/dashboard">
+          Дашборд
         </a>
-      </div>
+      </header>
     </section>
   )
 }
@@ -65,11 +77,7 @@ export default function Landing() {
       <Hero />
       <section className="lp">
         <p className="lp-eyebrow">
-          <svg className="lp-mark" viewBox="0 0 32 32" aria-hidden>
-            <circle cx="16" cy="13" r="2.2" />
-            <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
-            <path d="M16 15.2 L16 30" className="mast" />
-          </svg>
+          <Mark />
           Шелекский коридор · HackAlem AI 2026 · QwertyS
         </p>
         <h1>Почасовой прогноз выработки двух ветротурбин на 24–48 часов</h1>
