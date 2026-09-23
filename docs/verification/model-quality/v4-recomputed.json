@@ -1,0 +1,95 @@
+{
+  "archive_sha256": "908498c58a3c41d913a0258565e5f3c507200a2da5bd031373668de5cea3b67e",
+  "archive_bytes": 5707082,
+  "archive_files_verified": 62,
+  "runtime_seconds": 107.970075641,
+  "hardware_reported": "Tesla T4",
+  "weights_verified": 36,
+  "catboost_models_verified": 12,
+  "prediction_rows": 13842,
+  "slice_metric_sets_verified": 820,
+  "max_cpu_replay_absolute_difference": 1.4156103134155273e-07,
+  "max_catboost_restore_difference": 0.0,
+  "turbines": {
+    "turbine_1": {
+      "gate": {
+        "eligible": false,
+        "mean_fold_rmse": {
+          "curve": 0.2553775189327187,
+          "curve_recent91": 0.2566194177586725,
+          "catboost": 0.25042769181011865,
+          "mlp_raw": 0.2497644203860224,
+          "mlp_shrink": 0.24889839331121075
+        },
+        "failures": [
+          "less than2percent mean RMSE gain vs catboost",
+          "2025-12-01: absolute bias regression >.01 vs curve_recent91",
+          "2025-12-15: wind_ge8 >5percent RMSE regression vs curve",
+          "descriptive delta interval upper endpoint is not negative"
+        ],
+        "descriptive_95pct_block_interval_shrink_minus_curve": [
+          -0.01253661033183211,
+          0.00010119428791062329
+        ]
+      },
+      "missing_calendar_days_in_bootstrap_folds": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "turbine_2": {
+      "gate": {
+        "eligible": false,
+        "mean_fold_rmse": {
+          "curve": 0.2536854669551229,
+          "curve_recent91": 0.2559319400033709,
+          "catboost": 0.2560359834476548,
+          "mlp_raw": 0.24969814902074713,
+          "mlp_shrink": 0.24910720072576079
+        },
+        "failures": [
+          "less than2percent mean RMSE gain vs curve",
+          "2025-03-01: wind_ge8 >5percent RMSE regression vs curve",
+          "2025-03-01: wind_ge8 >5percent RMSE regression vs curve_recent91",
+          "2025-03-01: absolute bias regression >.01 vs curve",
+          "2025-03-01: absolute bias regression >.01 vs curve_recent91",
+          "2025-06-01: absolute bias regression >.01 vs curve_recent91",
+          "2025-12-01: absolute bias regression >.01 vs curve",
+          "2025-12-01: absolute bias regression >.01 vs curve_recent91",
+          "descriptive delta interval upper endpoint is not negative"
+        ],
+        "descriptive_95pct_block_interval_shrink_minus_curve": [
+          -0.010125787202198736,
+          0.0015041122286490695
+        ]
+      },
+      "missing_calendar_days_in_bootstrap_folds": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "promotion_eligible": false,
+  "decision": "research-only; retain V1; stop model search",
+  "verified_scope": "independent hashes, data/splits, 36weights+12CBrestore, 12CSV metrics, CI and frozen gates; no fitting",
+  "alpha_limit": "Frozen source implements inner-only formula; stored alpha/masks/epoch choices/application checked. Inner-fit calibration predictions are not exported, so numerical alpha optimum cannot be independently recomputed without re-training. No such re-training performed.",
+  "cross_device_note": "Maximum discrepancy reported, not a claim of bitwise equality across CPU/CUDA",
+  "v3_same_cuda_restore": {
+    "file_sha256": "13d5ba68ccc437089aa64926c26ee2e219546ce62f0eb005ea170ad870f53391",
+    "reported": {
+      "weights": 24,
+      "same_cuda_max_abs_error": 0.0,
+      "hardware": "Tesla T4",
+      "status": "measured"
+    },
+    "evidence_level": "C2-produced local measurement JSON inspected; C5 did not run CUDA or independently reproduce this measurement; JSON does not bind per-weight hashes"
+  }
+}
