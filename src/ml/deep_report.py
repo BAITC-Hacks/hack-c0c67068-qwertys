@@ -2,10 +2,46 @@
 from __future__ import annotations
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
 import numpy as np
 from src.ml.common import write_json
+
+
+def verify_cell(directory, turbine, family, cutoff, cell, seeds):
+    """Reject stale/corrupted evidence before presenting completed scores."""
+    if tuple(seeds) != (42, 137, 2026) or sorted(s["seed"] for s in cell["seeds"]) != sorted(seeds):
+        raise ValueError("Completed DL cell must contain all three frozen seeds exactly once")
+    stem = f"{turbine}-{family}-{cutoff[:10]}"
+    path = directory / f"{stem}-predictions.csv"
+    if hashlib.sha256(path.read_bytes()).hexdigest() != cell["predictions_sha256"]:
+        raise ValueError("DL prediction evidence SHA mismatch")
+    for seed in cell["seeds"]:
+        weight = directory / f"{stem}-{seed['seed']}.pt"
+        if hashlib.sha256(weight.read_bytes()).hexdigest() != seed["weight_sha256"]:
+            raise ValueError("DL checkpoint evidence SHA mismatch")
+    with path.open(encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
+    if len(rows) != cell["validation_rows"] or not rows:
+        raise ValueError("DL prediction evidence row count mismatch")
+    if len({(r["issue_time"], r["valid_time"]) for r in rows}) != len(rows):
+        raise ValueError("Duplicate DL issue/target evidence")
+    columns = ["actual", "curve", "ensemble", *[f"seed_{s}" for s in seeds]]
+    values = np.array([[float(r[k]) for k in columns] for r in rows])
+    if not np.isfinite(values).all():
+        raise ValueError("Nonfinite DL evidence")
+    if not np.allclose(values[:, 2], values[:, 3:].mean(axis=1), rtol=0, atol=1e-12):
+        raise ValueError("DL ensemble is not the mean of all frozen seeds")
+    for index, name in ((1, "baseline"), (2, "ensemble")):
+        residual = values[:, index] - values[:, 0]
+        computed = {"n": len(rows), "rmse": np.sqrt(np.mean(residual ** 2)),
+                    "mae": np.abs(residual).mean(), "bias": residual.mean()}
+        reported = cell[name]["all_48"]
+        if any(not np.isclose(value, reported[key], rtol=0, atol=1e-12)
+               for key, value in computed.items()):
+            raise ValueError("DL reported metrics differ from prediction evidence")
+    return path
 
 
 def uncertainty(paths, replicates=2000):
@@ -54,12 +90,15 @@ def summarize(directory, comparison, destination):
             if len(cells) != 2 or not all(c["status"] == "completed" for c in cells.values()):
                 details[family] = {"status": "incomplete"}
                 continue
+            paths = []
             for cutoff, cell in cells.items():
                 expected = reference["folds"][cutoff]
-                assert cell["validation_rows"] == expected["validation_rows"]
-                assert abs(cell["baseline"]["all_48"]["rmse"] - expected["baseline"]["all_48"]["rmse"]) < 1e-12
+                if cell["validation_rows"] != expected["validation_rows"]:
+                    raise ValueError("DL and reference validation row counts differ")
+                if abs(cell["baseline"]["all_48"]["rmse"] - expected["baseline"]["all_48"]["rmse"]) >= 1e-12:
+                    raise ValueError("DL and reference baseline RMSE differ")
+                paths.append(verify_cell(directory, turbine, family, cutoff, cell, raw["seeds"]))
             scores[family] = float(np.mean([c["ensemble"]["all_48"]["rmse"] for c in cells.values()]))
-            paths = [directory / f"{turbine}-{family}-{cutoff[:10]}-predictions.csv" for cutoff in cells]
             details[family] = {"status": "completed", "ensemble_seeds": raw["seeds"],
                               "delta_vs_curve": scores[family] - scores["curve"],
                               "delta_vs_catboost": scores[family] - scores["catboost_depth4"],
