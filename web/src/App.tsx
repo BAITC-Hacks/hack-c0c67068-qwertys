@@ -16,6 +16,7 @@ import { EvaluationPanel } from './components/EvaluationPanel'
 import { ForecastChart } from './components/ForecastChart'
 import { ForecastTable } from './components/ForecastTable'
 import { ProvenanceCard } from './components/ProvenanceCard'
+import { ReplayPanel } from './components/ReplayPanel'
 import { fmtIso, issueTimeFromLocal, replayDates, tzLabel, type DisplayTz } from './lib/time'
 
 const ALL_TURBINES: TurbineId[] = ['turbine_1', 'turbine_2']
@@ -111,6 +112,8 @@ export default function App() {
   }, [])
 
   useEffect(() => saveRuns(runs), [runs])
+  const runsRef = useRef(runs)
+  runsRef.current = runs
 
   const stopPolling = () => {
     if (pollRef.current != null) window.clearTimeout(pollRef.current)
@@ -399,6 +402,18 @@ export default function App() {
               <ForecastTable rows={forecast.rows} previous={previous?.rows} turbines={shownTurbines} tz={tz} />
             </section>
           )}
+
+          <ReplayPanel
+            hour={hour}
+            tz={tz}
+            turbines={shownTurbines}
+            enabled={!!health && !busy}
+            onRun={(rec) => setRuns((rs) => [rec, ...rs])}
+            onOpen={(id) => {
+              const rec = runsRef.current.find((r) => r.run_id === id)
+              if (rec) openRun(rec, runsRef.current)
+            }}
+          />
 
           <EvaluationPanel evaluation={evaluation} />
         </div>
