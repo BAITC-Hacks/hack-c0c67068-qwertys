@@ -1,93 +1,103 @@
-// UI-side view of the backend contract (coordination/CONTRACTS.md + C4 proposed routes).
-// All timestamps are ISO 8601 strings WITH offset. Power is normalized (0..1), never MW/MWh.
+// UI view of coordination/API_CONTRACT_V1.md (C3). snake_case JSON, RFC3339 timestamps
+// with offset (responses in UTC "Z"). Power is `normalized_power`, never MW/MWh.
 
-export type RunState = 'queued' | 'running' | 'succeeded' | 'degraded' | 'failed' | 'not_ready'
-export type RunMode = 'live' | 'saved' | 'synthetic'
-export type LlmMode = 'llm' | 'deterministic'
-export type FallbackStatus = 'none' | 'power_curve' | 'previous_run'
+export type TurbineId = 'turbine_1' | 'turbine_2'
+export type RunStatusValue = 'queued' | 'running' | 'completed' | 'failed'
+export type Stage = 'weather' | 'prepare' | 'forecast' | 'validate' | 'export' | null
+export type RunMode = 'live' | 'cached' | 'deterministic'
 
-export interface WeatherRef {
-  provider: string // "open-meteo"
-  model: string // "ecmwf_ifs"
-  run_init: string // model initialisation time (UTC)
-  available_at: string // conservative availability time used by the gate
-  available_at_rule: string // e.g. "run_init + 6h"
-  source_url?: string
-  response_sha256?: string
+export interface ApiError {
+  code: string
+  message: string
+  retryable: boolean
 }
 
-export interface RunSummary {
-  run_id: string
+export interface Health {
+  status: string
+  forecast_ready: boolean
+}
+
+export interface RunRequest {
   issue_time: string
-  turbine_ids: string[]
+  turbine_ids: TurbineId[]
   horizon_hours: 24 | 48
-  state: RunState
+}
+
+export interface RunStatus {
+  run_id: string
+  status: RunStatusValue
+  stage: Stage
   mode: RunMode
-  llm_mode: LlmMode
-  started_at: string
-  updated_at: string
-  model_version: string
-  weather: WeatherRef | null
-  supersedes?: string | null // previous run_id of the same issue (recompute)
+  forecast_available: boolean
   warnings: string[]
-  safe_errors: string[]
+  error: ApiError | null
+  // Not in V1 but tolerated if the backend adds them:
+  issue_time?: string
+  horizon_hours?: 24 | 48
+  turbine_ids?: TurbineId[]
 }
 
 export interface ForecastRow {
-  run_id: string
-  turbine_id: string
+  turbine_id: TurbineId
   issue_time: string
   valid_time: string
   lead_hours: number
   y_pred: number
-  y_p10?: number | null
-  y_p90?: number | null
-  unit: string // "normalized_power"
-  model_version: string
-  weather_run_init?: string | null
-  fallback_status: FallbackStatus
+}
+
+export interface ForecastMetadata {
+  model_version: string | null
+  input_version: string | null
+  weather_provider: string | null
+  weather_model: string | null
+  weather_run_time: string | null
+  weather_available_at: string | null
+  availability_basis: string | null
+  scada_timezone: string | null
+  timezone_status: string | null
+  provenance_status: string | null
+}
+
+export interface ForecastResponse {
+  run_id: string
+  unit: string
+  rows: ForecastRow[]
+  metadata: ForecastMetadata
 }
 
 export interface AgentEvent {
-  run_id: string
   seq: number
-  ts: string
-  tool_name: string
-  state_transition: string // e.g. "FETCH->VALIDATE"
-  safe_input_summary: string
-  result_summary: string
-  status: 'ok' | 'retry' | 'error' | 'skipped' | 'decision'
-  retry_count: number
-  duration_ms?: number | null
+  timestamp: string
+  tool: string
+  state: string
+  summary: string
 }
 
+export interface EventsResponse {
+  run_id: string
+  events: AgentEvent[]
+}
+
+/** Optional (not in V1): history backtest table. UI shows "недоступно" when absent. */
 export interface EvaluationRow {
   model: string
   turbine_id: string
-  lead_bucket: string // "1-24" | "25-48"
+  lead_bucket: string
   mae: number
   rmse: number
   n: number
 }
-
 export interface Evaluation {
-  source: 'history_backtest'
   period_start: string
   period_end: string
   protocol: string
   rows: EvaluationRow[]
 }
 
-export interface Health {
-  status: 'ok' | 'not_ready' | 'error'
-  version?: string
-  data_ready?: boolean
-  message?: string
-}
-
-export interface RunRequest {
-  issue_time: string
-  turbine_ids: string[]
-  horizon_hours: 24 | 48
-  force_recompute?: boolean
+/** A run as the UI remembers it (params are what the UI sent). */
+export interface RunRecord {
+  run_id: string
+  request: RunRequest
+  created_at: string
+  synthetic: boolean
 }
