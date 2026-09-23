@@ -1,0 +1,14 @@
+{
+  "csv_files": 8,
+  "weights": 24,
+  "prediction_rows": 5496,
+  "january_rows": 0,
+  "max_gpu_to_cpu_inference_error": 3.4362077713012695e-05,
+  "status": "integrity_and_stored_metrics_PASS",
+  "source": "actual CUDA V3 export; saved weights reloaded on CPU; cross-device difference measured separately",
+  "archive_sha256": "4f804e9d6f062f500e359a80c4d56c4a76ab565fda397474cebd8b447292a409",
+  "device": "cuda",
+  "hardware": "Tesla T4",
+  "torch_version": "2.14.0+cu126",
+  "runtime_seconds": 115.41844137300006
+}
