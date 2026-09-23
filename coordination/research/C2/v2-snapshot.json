@@ -1,0 +1,1777 @@
+{
+  "run_count": 440,
+  "snapshot_sha256": "37f6e9e1b362d8530b76f37675aea415291fa508e57b6487ce786f95773af43a",
+  "first_run": "2024-11-12",
+  "last_run": "2026-01-30",
+  "excluded_hindcast_dates": "2024-11-01..11",
+  "failed_dates": [
+    "2025-08-05",
+    "2025-08-06",
+    "2025-08-07",
+    "2025-08-08",
+    "2025-08-09"
+  ],
+  "experiment": "post-test-extended-history; v1 untouched",
+  "files": [
+    {
+      "date": "2024-11-12",
+      "sha256": "cac00f0bcc99bb1411172d93dd51e49b2c61c95de729b4e34956aa12e90ac4f0"
+    },
+    {
+      "date": "2024-11-13",
+      "sha256": "48bc7983521b4e56caa5d8c23e6e5ab76cb3eb20bb29bf53b990e8cf8d1404dd"
+    },
+    {
+      "date": "2024-11-14",
+      "sha256": "d3b631deaf14523b49d4c87df26dd425ad07412ea411320acf680b36a21da220"
+    },
+    {
+      "date": "2024-11-15",
+      "sha256": "61d2d7abc5b03a62ddf5946cdec3371904ea0237c96bb28c820b58166b7374f5"
+    },
+    {
+      "date": "2024-11-16",
+      "sha256": "a8a81e9971c18656c8a30bfba8d947ea0c56c54c4277bc0c819d5e0cfe217197"
+    },
+    {
+      "date": "2024-11-17",
+      "sha256": "e6a5fd7cff1e9c710f813f3800b0b0f8e82bfcdd88cb72019a2894ecfcfe60a6"
+    },
+    {
+      "date": "2024-11-18",
+      "sha256": "2a576b01b3c1d4a7f2d6f3b74740ab1b4df7c8d8bf28ca4a364d735570a9b6b0"
+    },
+    {
+      "date": "2024-11-19",
+      "sha256": "1a6aa01c0a67dfa08e3e4c813099dccf176f87395458b1fd57504964397322ad"
+    },
+    {
+      "date": "2024-11-20",
+      "sha256": "5361e7b850206e1169cc4438b268014e14c63410483babe8f09dc451aaf522d5"
+    },
+    {
+      "date": "2024-11-21",
+      "sha256": "9600a8ab2f7f77cef73be688b12f2a6f38fcdc7724875b58c0d690c9310737a7"
+    },
+    {
+      "date": "2024-11-22",
+      "sha256": "9300b4294c6af204db3112038eade8372f96206a2b131cafbe4506541c89f9ea"
+    },
+    {
+      "date": "2024-11-23",
+      "sha256": "57ef42eaa20d4cd7d6f93e523bc42f3b421f8c7adb16d9e984de4cd578ac7a19"
+    },
+    {
+      "date": "2024-11-24",
+      "sha256": "b0ebd41aa4dfded5895f5845a544ed9bf23debc7ee1d9e6093e4ee8eb2acd029"
+    },
+    {
+      "date": "2024-11-25",
+      "sha256": "aec8d4c981d529f6010be64ef9a2e5366b11858ca4f02097c539bd15e77cf267"
+    },
+    {
+      "date": "2024-11-26",
+      "sha256": "c8a49a1be9145493e2227607b09c97d1e897d5bc7e51a715eb85c0039892373f"
+    },
+    {
+      "date": "2024-11-27",
+      "sha256": "cd54649352796449805e82ef32299553f4922cf9475dda1562a63607fac85cd4"
+    },
+    {
+      "date": "2024-11-28",
+      "sha256": "20e6343b6feabd1e19d09c40944607919e9acde50f21e5dd4c0b92be24e9389c"
+    },
+    {
+      "date": "2024-11-29",
+      "sha256": "b97c4422520ae61388150b1375a65cd7af4598fdcb9dcc0a51121f9389c144cd"
+    },
+    {
+      "date": "2024-11-30",
+      "sha256": "c14ed6caeeb66155a5ed25e397a086d0fbd433ca36818a5d1ee1bcc21659e7d1"
+    },
+    {
+      "date": "2024-12-01",
+      "sha256": "e3253a0bd8f29b0a2ea780cbf6aef2214a9d5947c2ccb0fff9106c145dc13271"
+    },
+    {
+      "date": "2024-12-02",
+      "sha256": "fa5e98e39bda677a7efccf37a5da0f3c6747c9a2fdffa039e078715da8f52d88"
+    },
+    {
+      "date": "2024-12-03",
+      "sha256": "32935f078f60db0079673f3c5b5b98e7702909c9c2b0b53e74ecf58447e6fab8"
+    },
+    {
+      "date": "2024-12-04",
+      "sha256": "f8a823eb77df29f108c9d19d77b634f838f4bf25e6d463c6bcb53df9c5888291"
+    },
+    {
+      "date": "2024-12-05",
+      "sha256": "bca6bbcb71030127e8eba3015563ac2aa4eb18ee256175f95cefdba14e2ce19e"
+    },
+    {
+      "date": "2024-12-06",
+      "sha256": "2a5cd6e7b05b59e936a36d188babcbed53474d4585f8cb054c89d397c6d0526b"
+    },
+    {
+      "date": "2024-12-07",
+      "sha256": "6b6971f4989b2f85dba3ff32cb68b31f2c1bdc20e10693a3b8f6081ec00ed291"
+    },
+    {
+      "date": "2024-12-08",
+      "sha256": "e94dbac7a57ad72f8d48cdd3ea8fcfb238cb0cb52b17caee6c834fde713adb5e"
+    },
+    {
+      "date": "2024-12-09",
+      "sha256": "7efd7aa9140706dd7cb0db0daa793f2feef1c326b0d933c4d168fbfb71659526"
+    },
+    {
+      "date": "2024-12-10",
+      "sha256": "6c4ff835ecd7b8e33532f8ffa322d9fe0207d149b77352bc14ed8cfe72a5de09"
+    },
+    {
+      "date": "2024-12-11",
+      "sha256": "1081a855cdf6ff8826b0a93a1b5d022a5faf4c9a6e0cf50f2bca89ecd1f56502"
+    },
+    {
+      "date": "2024-12-12",
+      "sha256": "646a087fbfe5c7b6fbfa6b0531928a8acdb7c5c98ae00c0000c74d158e32b15f"
+    },
+    {
+      "date": "2024-12-13",
+      "sha256": "a06508b05388d3284190ea8d10e9c533704be9e612e2f5bbac0b2c03309704b0"
+    },
+    {
+      "date": "2024-12-14",
+      "sha256": "47027ae8724638d6fe816f59a3bf09a7e1ac8403d121ab6f1f816811d3783d3e"
+    },
+    {
+      "date": "2024-12-15",
+      "sha256": "b05d1918b2ae59ad994bd337c754603f3400a0f07e623bd6c69f37f9046fa5ed"
+    },
+    {
+      "date": "2024-12-16",
+      "sha256": "8a34e11d8bfe629c8146abf1b755ca58110946a1518af682064b2d629e8dbff1"
+    },
+    {
+      "date": "2024-12-17",
+      "sha256": "fe8ecc8a8bb518d11d235ed2a23283d758d5abfb591f23516c87e8353d9bc73c"
+    },
+    {
+      "date": "2024-12-18",
+      "sha256": "f7116ed672afa2adf06f44aa13dffa8bd278f08b75a18577bf44154ae40c0298"
+    },
+    {
+      "date": "2024-12-19",
+      "sha256": "b6156968659e05fcaace025970338e4fcbb436b231135eefbf820cb3feb6e465"
+    },
+    {
+      "date": "2024-12-20",
+      "sha256": "bf7f56163aa0b4f4496f33342967ea041592a73629b958e69f29f819d5bd3cda"
+    },
+    {
+      "date": "2024-12-21",
+      "sha256": "65b3e49714ca8dc109d9b0da69e634b50ccc0405ce3d0b87ced4e837b4bace14"
+    },
+    {
+      "date": "2024-12-22",
+      "sha256": "d88edf3c55ae2b93bc311988657542dbfe3adec6d8db421f90872d8b313e9a12"
+    },
+    {
+      "date": "2024-12-23",
+      "sha256": "fd9b96b4e5c080fc3775f351728fd179d2b80a2de60004b91c8728245b59766f"
+    },
+    {
+      "date": "2024-12-24",
+      "sha256": "95eebe306d9119962df0b97df12a5c9d94f48763428b87aa0b0a80b5e35b9e9e"
+    },
+    {
+      "date": "2024-12-25",
+      "sha256": "c72cb3501953421d2cf4e78a77c417cece1ee322e5a04c3fb62fda3115b3bae1"
+    },
+    {
+      "date": "2024-12-26",
+      "sha256": "3a8e995c4f8e6fb766624093c3bbeed3125603fdf60eed86879ba7a9fc19d52a"
+    },
+    {
+      "date": "2024-12-27",
+      "sha256": "314e73e227bdea0587150f370629e71ff8bd5eb0422f0ce91ea5cb5cf03f6fe0"
+    },
+    {
+      "date": "2024-12-28",
+      "sha256": "271b81affd3939432de22d5513406a60811f29dd76d541158fa00b3c92846d9b"
+    },
+    {
+      "date": "2024-12-29",
+      "sha256": "2fdc3c9d611651bb281550f9351d66ecfd6be125443ecbb4c474f392626a567a"
+    },
+    {
+      "date": "2024-12-30",
+      "sha256": "ccd4111a132296a87b38d09e8ed3e4cbc8f754c3fbb31bd7ba4baf37e6b3ae96"
+    },
+    {
+      "date": "2024-12-31",
+      "sha256": "169a166b2d75adaf5d30724eb5e652067b7a8d4442bdec98fa1297139b1540f3"
+    },
+    {
+      "date": "2025-01-01",
+      "sha256": "e3029f967b6e6c9894b2b80ee6999f7a3558f70a6ca453efb486a419772293dc"
+    },
+    {
+      "date": "2025-01-02",
+      "sha256": "1bf4c9c1d19e944a0bcdda7628d5fc1bb16547af3f7dafaade08beb96705ed94"
+    },
+    {
+      "date": "2025-01-03",
+      "sha256": "c36f0815cd51c0549909ab75b50a5580c42a7c2efd2888b87ca8c8ce2c2d8859"
+    },
+    {
+      "date": "2025-01-04",
+      "sha256": "0585ad1ea56088d456dbac60e1341f508d665c91d8512ddb28cf07ecb0659d2f"
+    },
+    {
+      "date": "2025-01-05",
+      "sha256": "da24d1928298827b8497476a00517a50941c937003036f733ee2fde7b2794627"
+    },
+    {
+      "date": "2025-01-06",
+      "sha256": "0520b01322c95ffa173ed4056a91661f2266801f0bf92e0423e0b17b91d28a3b"
+    },
+    {
+      "date": "2025-01-07",
+      "sha256": "2b61bc783af125a23fc2d31d417cc987795976929b81c0ae67cb0afdddf41749"
+    },
+    {
+      "date": "2025-01-08",
+      "sha256": "ea38c4c501c806744689a138eb2d075cbda6f680956e0fc115d9ae53c3279069"
+    },
+    {
+      "date": "2025-01-09",
+      "sha256": "42bf52d3a3bcebc96f57a33993915edc815556e85c4cefc8428311bbfa95bae9"
+    },
+    {
+      "date": "2025-01-10",
+      "sha256": "396b3722c4a6c7b9817b4cd229f18a15b9ca9320f31a42d866f9ff215ba5de07"
+    },
+    {
+      "date": "2025-01-11",
+      "sha256": "c914d2ee282596eff42bfc176b0544fdd94699b8860d635e1084bc341cada6de"
+    },
+    {
+      "date": "2025-01-12",
+      "sha256": "79eba89be24acf3b31f98e7f55a6e268df0d182bf4ef6bf62568751ac3859405"
+    },
+    {
+      "date": "2025-01-13",
+      "sha256": "50858938d475b12e141230414d95deaca1fd8d4199ef5d57851885ae1bfcf0f3"
+    },
+    {
+      "date": "2025-01-14",
+      "sha256": "f67709b80ad20b98dd56b0f4575e094ddc4eff1fea32127d1a4e6a5e6bbf0508"
+    },
+    {
+      "date": "2025-01-15",
+      "sha256": "50b7fde217f7b746b1e9f160fd67bf6ecc374cb9abb1ea3ff5407e1213cdb9d0"
+    },
+    {
+      "date": "2025-01-16",
+      "sha256": "b66808a083cdd081c79c6a8ced3019a4f5a8348d5f6687fc9112bb0c236600ee"
+    },
+    {
+      "date": "2025-01-17",
+      "sha256": "864134fc7a8c8f96e65ea15ae026cf382e5c0c7bfcdd6c14a0cebd43cd77c05e"
+    },
+    {
+      "date": "2025-01-18",
+      "sha256": "740738da3b071064be9b5776eb793f8d9c0bf941759f596b096e695fe460679e"
+    },
+    {
+      "date": "2025-01-19",
+      "sha256": "42048aba6b33cb67bc01eb52ac9a99ae72675f3eac5f643dc8098fa405a18add"
+    },
+    {
+      "date": "2025-01-20",
+      "sha256": "f05010943035f4b67c0740c2db7e5d91e4b658345acef3aaaecff89fc120b418"
+    },
+    {
+      "date": "2025-01-21",
+      "sha256": "7baccf7f06815bac5ff426ec06bb2242db4e62f1474518e2484e47acc4672461"
+    },
+    {
+      "date": "2025-01-22",
+      "sha256": "692ae8bdd1401fb05631fbe5bdc3f3d119109ccd6d23101e560f07babda56ed7"
+    },
+    {
+      "date": "2025-01-23",
+      "sha256": "abf6c6028954e5c42c334f84a2b50af30289d607c96845d882814fe7ee015bc3"
+    },
+    {
+      "date": "2025-01-24",
+      "sha256": "6d115847ca0dde541a99cd1b57bf31235c856256794c3d89b5a2950fd8136c4b"
+    },
+    {
+      "date": "2025-01-25",
+      "sha256": "e806747cd475d0024a62a460ef0ceccab27aac87f9b7439c9762af318c32167c"
+    },
+    {
+      "date": "2025-01-26",
+      "sha256": "517183e17948ecd212c72fe9b82ea421ff47a5b2e62b45266465574c2b0e64b2"
+    },
+    {
+      "date": "2025-01-27",
+      "sha256": "f548cbba89175290740e259f2caec9ec6d4a631aa7980c60c70b6187d336d98a"
+    },
+    {
+      "date": "2025-01-28",
+      "sha256": "2a477aadfa5e3f1c4c456330d2f450f10d42a7052f59c3ebdee9c7769199f30c"
+    },
+    {
+      "date": "2025-01-29",
+      "sha256": "c354fd47361ee2e336d25f1358d84638e0ce2db8fa5a27f703891fc8d0c7cba3"
+    },
+    {
+      "date": "2025-01-30",
+      "sha256": "67f71aecd50a793502aec1de9e14d76ec7af9923e3cb3d74dfdd4244eff89fff"
+    },
+    {
+      "date": "2025-01-31",
+      "sha256": "5dad6f6124ee13a02f184fdd6be202fe112ed4d62ddad857682f7791c55de225"
+    },
+    {
+      "date": "2025-02-01",
+      "sha256": "188bd388af6eb29fec2fe43a838ecefcd4b72d74c3c4fe345fd976c3eb797045"
+    },
+    {
+      "date": "2025-02-02",
+      "sha256": "48e4bcf1604e6e778e78f76129e77e117d5221567468abd01daeda80a77c83ad"
+    },
+    {
+      "date": "2025-02-03",
+      "sha256": "06e3eb4f1392dee922d1510f6c7f9b8885e717cee2eb63b7431dd3befdbb8dee"
+    },
+    {
+      "date": "2025-02-04",
+      "sha256": "c56ca0c0c96b12cc09a1e8156123fc5b31627a9001ddfb989cb0ef732072bbae"
+    },
+    {
+      "date": "2025-02-05",
+      "sha256": "26123d85a27bf51d8eaab807b3b9633664b2223d06b0444d51472145a179b697"
+    },
+    {
+      "date": "2025-02-06",
+      "sha256": "ef92281e52bd044637c47237b5dc50590d665364f9b5240066b10ac11505c8cd"
+    },
+    {
+      "date": "2025-02-07",
+      "sha256": "5789ee2c2c347556a55b7b0e4259f29cc39c60b6f15253843d90402ec4d2465b"
+    },
+    {
+      "date": "2025-02-08",
+      "sha256": "967c07b068ae37c4aaa21d894d65a1c8157461ae220f48ce841d23ac405d2e66"
+    },
+    {
+      "date": "2025-02-09",
+      "sha256": "d69ca6d1ab24c756c96884289fb57b9e045dcca07aa6856dfe6de585fd131472"
+    },
+    {
+      "date": "2025-02-10",
+      "sha256": "ed1383306c32b2d8f0a6f470e861886ad98a8486469d8368808c247a1a64406e"
+    },
+    {
+      "date": "2025-02-11",
+      "sha256": "c5ff5ccf362652a9a961f964463598060ba08d2f08a4245084907438e99eaaee"
+    },
+    {
+      "date": "2025-02-12",
+      "sha256": "9a8030128e91f4b8aa7d83bda440a5684f6a8d4901d7e35a17030c62d0607b66"
+    },
+    {
+      "date": "2025-02-13",
+      "sha256": "a8a4f47a8c59bfc0c1a68b1dc05ce2f9d233a04baa2d43b3925d3f852c5e2774"
+    },
+    {
+      "date": "2025-02-14",
+      "sha256": "a0d8028282f6604cbf9b46f16a92748253889a5a0a50c764d80d2650cd3ab080"
+    },
+    {
+      "date": "2025-02-15",
+      "sha256": "5d44b1b86de34d68be0d99ca23eed07de833edefe69c359109ca5c5996ce4be8"
+    },
+    {
+      "date": "2025-02-16",
+      "sha256": "625dba9b610323824fcf6e92aa8cfaf778527acf6e6c058fc0586f6b9549b745"
+    },
+    {
+      "date": "2025-02-17",
+      "sha256": "2aed71ec927d90817bce54c3fedcb807e4b3355ccc7b4c08d39f5ed45d0817ef"
+    },
+    {
+      "date": "2025-02-18",
+      "sha256": "d1f323951f72c332ffe118435a72660302a8ca5fb5386c57385de7a06cc6b30c"
+    },
+    {
+      "date": "2025-02-19",
+      "sha256": "143c0d3f0f6ae29382802aafb0fba0bd621cadb055cf63472acd59eb5dfde7d9"
+    },
+    {
+      "date": "2025-02-20",
+      "sha256": "862e10cad4d07595d3ae458fea7ad893a8187795e17b8253303e34dd8442eb5e"
+    },
+    {
+      "date": "2025-02-21",
+      "sha256": "da8d07c6dee4c98797bd6a04d980d5637b0d1ffff16d5650e1a814864a5d5a96"
+    },
+    {
+      "date": "2025-02-22",
+      "sha256": "84b1c62bd5025b04d7c64a3b73676be3b001be1e8d65e94a01d288eb2073244b"
+    },
+    {
+      "date": "2025-02-23",
+      "sha256": "620c8039a9f7838b461542ccb417c92568b49188cb86d08bb6dd08e7705c5e19"
+    },
+    {
+      "date": "2025-02-24",
+      "sha256": "be08feb4f54b86ae3b851637a2f0da600aa05f676ecb71403feadcbcce032a9c"
+    },
+    {
+      "date": "2025-02-25",
+      "sha256": "949dd3fd5c98632de6f12cd427a2083f4a09611e40524c4b2e5c86dba897825c"
+    },
+    {
+      "date": "2025-02-26",
+      "sha256": "0b46ae8d32030a4fb81f46a777b4f66587790e0571c56ee34dd8b6fe9563cafb"
+    },
+    {
+      "date": "2025-02-27",
+      "sha256": "866b0c6b4e57916ee63f1990ec514c4f5e659d5c2d210071ca3f762f3ba43a6c"
+    },
+    {
+      "date": "2025-02-28",
+      "sha256": "777db6075e2d7e85ce8dca4929dbbda8970dd68dc4793b848f8fb6a3afdc5b6c"
+    },
+    {
+      "date": "2025-03-01",
+      "sha256": "3e51783e12835cc9660b4e1cee71b5bbd4689a9dce11fc32a924d3dd617b8cf3"
+    },
+    {
+      "date": "2025-03-02",
+      "sha256": "77e9b5c675ee847381b2b5fc8cfe1a16e15932d19f2e0e779da9aa7ad0d4d96f"
+    },
+    {
+      "date": "2025-03-03",
+      "sha256": "25c5388449e8b8d992dd8939aa969251e89404dfa6593634585a82d077fbc401"
+    },
+    {
+      "date": "2025-03-04",
+      "sha256": "9cc077d423d673bad7dd6827349b801b1e08100af0ef88143e3c71c30b2d53a5"
+    },
+    {
+      "date": "2025-03-05",
+      "sha256": "22d9d431d5e8372c610f793ee405d5422b34a585fedbb88db72e9f9db286ec0b"
+    },
+    {
+      "date": "2025-03-06",
+      "sha256": "7958a81db60813cd2036346d8c8deae7050a1a46b12954809c76e355a1a6f339"
+    },
+    {
+      "date": "2025-03-07",
+      "sha256": "358afa2b44ded538372480219187a854ea38a37ea443a1f271bb7a557ae4a890"
+    },
+    {
+      "date": "2025-03-08",
+      "sha256": "3230cf4a7e917d57741abec08ae4ebed4e84e2bfc72d87ead91599b15a45605d"
+    },
+    {
+      "date": "2025-03-09",
+      "sha256": "dd89a6d701b5fbd0847b74c5912ccf635f0c62bf3fb4925ac51ee68921ad0607"
+    },
+    {
+      "date": "2025-03-10",
+      "sha256": "435bd4c93aa0e2226930f64ed0edb147d5dbf899543c4bd18becc3518c670a7c"
+    },
+    {
+      "date": "2025-03-11",
+      "sha256": "85dc71a362dc88550ce66e8cf5cf79cc8e01087a8236bfa6c603bc915e175cf1"
+    },
+    {
+      "date": "2025-03-12",
+      "sha256": "00702da74755da802b37748cd4b4c3e7f26ce92436bc4df13c900a8b7f118805"
+    },
+    {
+      "date": "2025-03-13",
+      "sha256": "b359b75835bdd17b3a49060acda911885942c4cdf86b396e23b6fbb0a7a8ffb9"
+    },
+    {
+      "date": "2025-03-14",
+      "sha256": "a3a30c95637c1f048b1661b93b032888cc15878f2f01bb5568184b4c14290ebd"
+    },
+    {
+      "date": "2025-03-15",
+      "sha256": "69087a66c2c6aeea6c422d2aa3a2a38f511e4d25cbd71e0fdef85a3a759bf039"
+    },
+    {
+      "date": "2025-03-16",
+      "sha256": "7eb4cc8550fad41af09d82cf6ae415904323153b3eeafd04a1027f64cd583053"
+    },
+    {
+      "date": "2025-03-17",
+      "sha256": "0b788ae038ea41a621e0e0a2fd4af97bc9c7b5560ffcdcd7c14c456c14c27a54"
+    },
+    {
+      "date": "2025-03-18",
+      "sha256": "c1213098f27ea83b6b0286ae31d26240bf2a9d810df383c9c4ccf3cfa734c3fa"
+    },
+    {
+      "date": "2025-03-19",
+      "sha256": "dcadd921fd7d403f1b564fb09d1662dd14490bfc0490e8b8a0b3d7ad5e5aa1c9"
+    },
+    {
+      "date": "2025-03-20",
+      "sha256": "8e14eec6269c57c8dff34722f03e0741171d3e8172013500a978b8598bdb341e"
+    },
+    {
+      "date": "2025-03-21",
+      "sha256": "a310c217c52e90d399445ae780994a5a463ae4b77c29121ecd666aa5d5850d3c"
+    },
+    {
+      "date": "2025-03-22",
+      "sha256": "cfa60bc75f53faaff7b12c544eccce3c49a4d88001f079eac7fd7b5b44d9b415"
+    },
+    {
+      "date": "2025-03-23",
+      "sha256": "eb5546de71813c8f600921e1fefcadd4ebb33e046f613e2319ffc8d1ca36ce6e"
+    },
+    {
+      "date": "2025-03-24",
+      "sha256": "d4e8ed9b4bdaf382459aff692ee674f14bdbf111523d9e58275b1d6f477034bc"
+    },
+    {
+      "date": "2025-03-25",
+      "sha256": "ad58cab5ef45c703c01b47894e30d259ab4e3144ee86e05555a0cdf48f10fdc9"
+    },
+    {
+      "date": "2025-03-26",
+      "sha256": "1508e13a9e15204233b88832382d286d0b21cb636b819d3bd9d693a69babe3b9"
+    },
+    {
+      "date": "2025-03-27",
+      "sha256": "b924d8111b3fc40b64ecf359c6dcf745ac2d1e2d187d8c27d7431f18d7bff90b"
+    },
+    {
+      "date": "2025-03-28",
+      "sha256": "306da2fc9525489a08b5e8e66e43a13c7189d026885b707ddf499ae6c03d8e64"
+    },
+    {
+      "date": "2025-03-29",
+      "sha256": "4614cde67c896d7c31d5bb2ee43ee188b07ee99a60bbfcf2e580c278a9bf3aaf"
+    },
+    {
+      "date": "2025-03-30",
+      "sha256": "e9a773649b61bf8b3f167a4707f31a6ff288a0833bf54c21a1527b8cb35316c2"
+    },
+    {
+      "date": "2025-03-31",
+      "sha256": "1530c7d0a6ada5ba7b6fca2e5883ac84f05e95706585a3164a14765b474f5609"
+    },
+    {
+      "date": "2025-04-01",
+      "sha256": "2a7940cb29d6adf2bf91522395bbb74bfc0be1e0fa743acefe2d4c661a959214"
+    },
+    {
+      "date": "2025-04-02",
+      "sha256": "49a94a7f9d28cbd1acce3f1f4cbfc002338c7bdc666a414ee858d1c4d358aa88"
+    },
+    {
+      "date": "2025-04-03",
+      "sha256": "3ab111a91cdde1c0a0da3434dbacd583550fa230a9543ea1f6d8a44d245870aa"
+    },
+    {
+      "date": "2025-04-04",
+      "sha256": "f44f0db36d1da771b50b0d82bea762eee0cc33807dd964b65c3c46f6f983a648"
+    },
+    {
+      "date": "2025-04-05",
+      "sha256": "a39705dc0d910c40afde65d013181093672a3411f7ac400f5ff029dab3ab78cc"
+    },
+    {
+      "date": "2025-04-06",
+      "sha256": "111a9de637c24a8a66af69f4eec0fc23d9922d75bedc621a52c8898944d1e31b"
+    },
+    {
+      "date": "2025-04-07",
+      "sha256": "157def00cbbcf5c4133cac2aa1a9049779b7aaf2a3bec01bf814c8e99d5eec64"
+    },
+    {
+      "date": "2025-04-08",
+      "sha256": "97280f567e9c5b1ec4d271a3a33036ce312a02e05c8f82590477629ac6a949be"
+    },
+    {
+      "date": "2025-04-09",
+      "sha256": "ec4cff76f608763c0868855447e069d2cfffb3c98e672eb94c03e03d1bb16f2a"
+    },
+    {
+      "date": "2025-04-10",
+      "sha256": "d275e6f0f206924b375d18d12d130848097b06787fb271dd0ee35588a3758c76"
+    },
+    {
+      "date": "2025-04-11",
+      "sha256": "5d9242bdbe5f3e2f4c57393ae1aa06572a6776c55b830849405e92d7ce3c16ad"
+    },
+    {
+      "date": "2025-04-12",
+      "sha256": "fb1b02558ab1cc6c2714f46651652d8628b28c47f6910b87d3dfa8a3048b9145"
+    },
+    {
+      "date": "2025-04-13",
+      "sha256": "d465a96653a444b097752501b8a36c4c28c97607a60f1656bd57b9371af83775"
+    },
+    {
+      "date": "2025-04-14",
+      "sha256": "900cb1da55cb0d1597387b209c9909ca292e4eb5207794471fd49d2108c81c7c"
+    },
+    {
+      "date": "2025-04-15",
+      "sha256": "e1ea6162d7cf60bf37d0fb807ce4dcda9a8121326028e836561bf68b8ecc74f3"
+    },
+    {
+      "date": "2025-04-16",
+      "sha256": "9a5bd3c08451e2d796ba564500280005b0fc204df5f01d31678601d554c60972"
+    },
+    {
+      "date": "2025-04-17",
+      "sha256": "4db116a2d9becd822d25e04d80eb0cdc813eca41123bdb474250237d85e612ca"
+    },
+    {
+      "date": "2025-04-18",
+      "sha256": "08bbc8eeecdc04f0ef8891f1ab58f65664b69348b44e2b810479677d88ba0231"
+    },
+    {
+      "date": "2025-04-19",
+      "sha256": "87267ebb466d9445019f7cb91f0e927f37e3c164924891ecf48ac5bf49ab1583"
+    },
+    {
+      "date": "2025-04-20",
+      "sha256": "db6c40d9d6079cf25b1f44d1b5223888a8cd7d37bf5b2368373805f0081a1283"
+    },
+    {
+      "date": "2025-04-21",
+      "sha256": "60e07745a9835e724d6a82a94cfabb359c66bd774224cbab83b8c3a0fdece0ea"
+    },
+    {
+      "date": "2025-04-22",
+      "sha256": "904d05dcf02137b57703651c805880ad40e8e88fcf417671cd56cfb115712f81"
+    },
+    {
+      "date": "2025-04-23",
+      "sha256": "6748738c286b335e018197b4c3eae6b865351f0d1387abf4d454a53ea303d77e"
+    },
+    {
+      "date": "2025-04-24",
+      "sha256": "6ee8bd5909fafd7e59cb259b2da1ae258ad932ba86650635b1dbde9f9c803c8e"
+    },
+    {
+      "date": "2025-04-25",
+      "sha256": "94808abbd0e6066194d2a4596f9413c8f22d1bd8f2f54adc8f8b3fa083ca9602"
+    },
+    {
+      "date": "2025-04-26",
+      "sha256": "1f2b7f7d2c79a787cc018851a1dc0491bc605bdc933cdae20e4d3d79d6fe7dcc"
+    },
+    {
+      "date": "2025-04-27",
+      "sha256": "513c1c1c86a90f6f4ba0f1dc322f4412660ea41dea443f2cc2a491fc066abcc7"
+    },
+    {
+      "date": "2025-04-28",
+      "sha256": "ed4ff7a1d1ecaee7d4bf826cd175bb6014185a7fdbc408940a01a00702a19178"
+    },
+    {
+      "date": "2025-04-29",
+      "sha256": "76c1760956e476b5cc53d11226a71e20d7f22f9089fc6775433e3ceabac3eb42"
+    },
+    {
+      "date": "2025-04-30",
+      "sha256": "37470cbd98a2fc1dc4f1092575dfb8c805601fcdee1027aa1f349fccf03ca59e"
+    },
+    {
+      "date": "2025-05-01",
+      "sha256": "63199b5f7a70b0726517cf5b5beca2b3d0eb1a319aedf3dbd0a5b1789e5974b8"
+    },
+    {
+      "date": "2025-05-02",
+      "sha256": "5cddcbc963e89523783a14538a155e6986afcfe14c6e9a7c3ccbd747a48443d5"
+    },
+    {
+      "date": "2025-05-03",
+      "sha256": "f8bd6cc4eb99cd64b695c7428e9a55cd53568702dee190f53d2be35495e24070"
+    },
+    {
+      "date": "2025-05-04",
+      "sha256": "b90ee54960cf8d3ac68b7920b5752fc15028cb74e614cefd88e970b74202035f"
+    },
+    {
+      "date": "2025-05-05",
+      "sha256": "259857415a91e74f63ee7d971c3db7f9b27ef3a40b12cad40da360cf5d826390"
+    },
+    {
+      "date": "2025-05-06",
+      "sha256": "fff1d921f495e4cde77e1fda7eb685359562ca8bb230944de348d5774793c06f"
+    },
+    {
+      "date": "2025-05-07",
+      "sha256": "291005cf9c6147341cafff02ddaa9c3b73636242f50ab67df65f31ef1faa001b"
+    },
+    {
+      "date": "2025-05-08",
+      "sha256": "7821e9579ee15d75190ed2efb684133a6f6fb9d97a93cdb0f1cc748988b96dbd"
+    },
+    {
+      "date": "2025-05-09",
+      "sha256": "3ac8b96092a01f8a39f889e6d7b6168ae909637bf9c3e5ece0ac095ed37c5ee9"
+    },
+    {
+      "date": "2025-05-10",
+      "sha256": "217172f909eaf013d2d705e5d1e58e07c52ca67dd1980437ddd71b9dcfbad85f"
+    },
+    {
+      "date": "2025-05-11",
+      "sha256": "24a3276c48d0ff4b1a3e54747721402e75b68fe2450ba8a394331101bd1110da"
+    },
+    {
+      "date": "2025-05-12",
+      "sha256": "d58b718a018471db3a6796f9f49eff8b04b076bb599a20d7019b76cb7e05a180"
+    },
+    {
+      "date": "2025-05-13",
+      "sha256": "6643d78360220f013580328520ed531f8190f1aaf06afa3aac3134b2de5ed11d"
+    },
+    {
+      "date": "2025-05-14",
+      "sha256": "0bbe93ef6dc51be99d8839112cfbaa4ed98d2a30652b3cea16f14600ddaf11b8"
+    },
+    {
+      "date": "2025-05-15",
+      "sha256": "bdb022c5c041a93a22f582b5b2d7413b65d8dc85024f866685822fc303cb8e91"
+    },
+    {
+      "date": "2025-05-16",
+      "sha256": "2e22d31c3975a5f96d390778c53fb49a77ca4fd3bbbbf3ea985587e4917ea237"
+    },
+    {
+      "date": "2025-05-17",
+      "sha256": "3fb27b5a2adcd3c51bf8b931f1bb21f21553cb36b997dc45dfa7d2f2cff979ed"
+    },
+    {
+      "date": "2025-05-18",
+      "sha256": "c874a2154f3029f74a7d862e92c084c52a8ecf7dbfbce5699195941e7a5c1ea9"
+    },
+    {
+      "date": "2025-05-19",
+      "sha256": "3bdca61cf2eac6321618edf699a7775609bcbcc3b7c6556b207f184ca71f3b88"
+    },
+    {
+      "date": "2025-05-20",
+      "sha256": "e1f227bbc3cf5e8105be90ec4583b1b9b34bf0171c1a0a39b9ec3a251b9c4bee"
+    },
+    {
+      "date": "2025-05-21",
+      "sha256": "10ecf14a750c56a642244d21e2c3f10f1de99823be5dd760312972e8fa8e7abf"
+    },
+    {
+      "date": "2025-05-22",
+      "sha256": "447000fa2fdc7e14f30ef4b4c839c1aadc26a0250a9fc94405dfd56f39e00111"
+    },
+    {
+      "date": "2025-05-23",
+      "sha256": "643f5c7caabf0f2b99f05098e84ab86fa644e59a1fea26f8a020ac3e33a97b8c"
+    },
+    {
+      "date": "2025-05-24",
+      "sha256": "baad7428e8c84d190b71bc1341bb41e2fa690cbb3a530348209eda8040e46c27"
+    },
+    {
+      "date": "2025-05-25",
+      "sha256": "d0a4f10577a5a05c4b64e4f4f14bff06f4ac7e94e5a8dac4502816ecffde61e9"
+    },
+    {
+      "date": "2025-05-26",
+      "sha256": "087451a0f71168b2f748c7fc6c85c1a286fb921a1663b6bad2545314e399eb9c"
+    },
+    {
+      "date": "2025-05-27",
+      "sha256": "ddad8fdacf0a2eb5195eb4335e2ee906f11c081f684261555781af318bd704d1"
+    },
+    {
+      "date": "2025-05-28",
+      "sha256": "6f6e0285b05562c45656b22e82f6b9a515fcbe918161db0e42cfa1d43a33b2f1"
+    },
+    {
+      "date": "2025-05-29",
+      "sha256": "07926cd360c6e60c2f8e628f3e95f3b7ac5e051a9ab24fa18652c96e0ba8d8d2"
+    },
+    {
+      "date": "2025-05-30",
+      "sha256": "be7d89975cef9332a255518b7a52b9a925f26282cdfa792b980a98ad4459223f"
+    },
+    {
+      "date": "2025-05-31",
+      "sha256": "262e2db6c6535b7673a92c33697c2526b3d45ec99775e4a19257478e3be1430b"
+    },
+    {
+      "date": "2025-06-01",
+      "sha256": "cb61e30e2fd10c66c3170104320e0fa774f2e05fcf7b298542e285c1b98649f4"
+    },
+    {
+      "date": "2025-06-02",
+      "sha256": "0ce68b2f38da89f83fa1b0cecf305ea44bf0c115459cd045b9c2f7decc5b522a"
+    },
+    {
+      "date": "2025-06-03",
+      "sha256": "155817267201912485a77070d20218f48a38ef240f12ff088416177f60e865ab"
+    },
+    {
+      "date": "2025-06-04",
+      "sha256": "321fce464498b25019914adf2410507facf554470dafdef70f4b3d67da48c139"
+    },
+    {
+      "date": "2025-06-05",
+      "sha256": "effa2efb9907dfc2860e766edcdff4e49964dc33f07d2dd2227b8f6ff793d411"
+    },
+    {
+      "date": "2025-06-06",
+      "sha256": "a0c30556b7d6face6a4fe69039e00e2ab0326e3f0a2cd9be5a8601cdd751b666"
+    },
+    {
+      "date": "2025-06-07",
+      "sha256": "1bc444a55e9e1b61a33f7cff00a32d720fdd5b69933db3aeb8aff86a862334f9"
+    },
+    {
+      "date": "2025-06-08",
+      "sha256": "e98941c99428e75abaa15e47636a64aab72d8e6449a9538e2ab0d05d6101b618"
+    },
+    {
+      "date": "2025-06-09",
+      "sha256": "c18f477447bc9a45603c47cb136539e7a84cd11fdbf79f01865679d023653424"
+    },
+    {
+      "date": "2025-06-10",
+      "sha256": "3358585a470470b741b0f78a173adea779c40d42379aa9f411bbdcdaa8b5c873"
+    },
+    {
+      "date": "2025-06-11",
+      "sha256": "6cdd7ac9d5987968b939fbe3635427ae1019756bce6308a81bd2b0c337d5cb18"
+    },
+    {
+      "date": "2025-06-12",
+      "sha256": "0a5f7c0686a96db0d034ba081de1ec96f1ec3fd27b7b8a13be3584f7b0a39201"
+    },
+    {
+      "date": "2025-06-13",
+      "sha256": "9420c226e4e9d8565b3abaa7b56b88b8994b59f7cf1b901a57b9d8e293f4681b"
+    },
+    {
+      "date": "2025-06-14",
+      "sha256": "9f3422c94cbbce7501a286ce6897b2dc04d8464785b126854e165b4ac1b1f13d"
+    },
+    {
+      "date": "2025-06-15",
+      "sha256": "407707d3313405935147d6728e7d82e4a70e128d9299abd2b4b43367cea00b52"
+    },
+    {
+      "date": "2025-06-16",
+      "sha256": "289818d692a9af1bc3ef87ed52326ee1bf55395232d35fb660c9d6bd316e1d41"
+    },
+    {
+      "date": "2025-06-17",
+      "sha256": "d05061202e57ac354aa6367a2bd863cae2a06ec319243df90e0c5f50f2e31422"
+    },
+    {
+      "date": "2025-06-18",
+      "sha256": "a082123047907e56e1c7d047c2d151b643cd032c421b127169f3a0c7e76ee470"
+    },
+    {
+      "date": "2025-06-19",
+      "sha256": "0284c1d5520e2fd4409db692517f8c8da13dbd98d21e4e5773ca31481d115296"
+    },
+    {
+      "date": "2025-06-20",
+      "sha256": "a0b83dbfe6e434779ea0d2b370b8f9737bb6691cedd49607f1ae6915d9e3a48b"
+    },
+    {
+      "date": "2025-06-21",
+      "sha256": "0a42eee66403c1c10180257b7f438c4a7e53ec167ff46572dc7e86f8a595142c"
+    },
+    {
+      "date": "2025-06-22",
+      "sha256": "ec23f50d7c815df2ce4dfa5855f88cac80c62fac1e013e55e300239b3da94442"
+    },
+    {
+      "date": "2025-06-23",
+      "sha256": "f93d500245d84fbfdbd9f9e042bba3cf5607807957b4c72dfb4abcb5fd286af7"
+    },
+    {
+      "date": "2025-06-24",
+      "sha256": "e2f6e72a0e807e9c637072e567214be20750e66d91500433dc591eddaba52905"
+    },
+    {
+      "date": "2025-06-25",
+      "sha256": "504e0e2fb48086cb3f08428cec2ed63880db4686c40ab22d603b6088c260e668"
+    },
+    {
+      "date": "2025-06-26",
+      "sha256": "bea49850bc58c0557042a3c79a6b13806c3508719b8abf115d93de1877824740"
+    },
+    {
+      "date": "2025-06-27",
+      "sha256": "96d01944ca4d9f73d206bb1a23ff3c56aece2fd99153fff9ca486c428e8bd3bb"
+    },
+    {
+      "date": "2025-06-28",
+      "sha256": "1320c6ad7c0ae57dd885663defa50e1d0e6b2114a29d7277a68635f6cd9b5ba7"
+    },
+    {
+      "date": "2025-06-29",
+      "sha256": "6238e20f0dc767358ee4f255aa604a09dd839b74f0ad6b3498bbb30aaefc568e"
+    },
+    {
+      "date": "2025-06-30",
+      "sha256": "1fed359c2f1d1651a26c9562200a7adf66df39880fffdb94b865a2362d05e21b"
+    },
+    {
+      "date": "2025-07-01",
+      "sha256": "7a87131a1fb3c4aed1636c110bb60a7801715060d4eb38332de24499f2b58e4a"
+    },
+    {
+      "date": "2025-07-02",
+      "sha256": "bca4d9ff298cef7ebb310eb2106bbe4bd6ea5f0d08e539570776d98f1d9a70cd"
+    },
+    {
+      "date": "2025-07-03",
+      "sha256": "2dcf37313130c9de72ffe11f38ae3e6cc7f502ecdc7dbd97fa8a336febabee1b"
+    },
+    {
+      "date": "2025-07-04",
+      "sha256": "ef5587e191d7bb574e85a62fe2c190196d2f67e659e3f9fd4b7214f035aac321"
+    },
+    {
+      "date": "2025-07-05",
+      "sha256": "ba699aa404a8e85faaa869bce3c22ab7575e9902afa52e7d82272f5d078262ef"
+    },
+    {
+      "date": "2025-07-06",
+      "sha256": "14108bcfba69efa7676e888d97145cb319cc2650ee7ec238080a2335695b2bb5"
+    },
+    {
+      "date": "2025-07-07",
+      "sha256": "aa10a6c910e50f293c22a685a5e5b9b6f2bcbfadf7fcb0c19e3eed000f51fe67"
+    },
+    {
+      "date": "2025-07-08",
+      "sha256": "8153ebf0b26d516b04c052feeaf0bda236f865a447bf3892a5f8f77b40f97c12"
+    },
+    {
+      "date": "2025-07-09",
+      "sha256": "b2a5946e9b666def25753650f4c6c73bd9694331a562dc8af9f6e03906c2ded7"
+    },
+    {
+      "date": "2025-07-10",
+      "sha256": "44b7ff82b8f066add8d35726910fed947df7f4a41ea4251f6cf42999d8e09079"
+    },
+    {
+      "date": "2025-07-11",
+      "sha256": "c3dbe5a081a47ede487c9077b52b43f1b6c15543f5054af280d7de4259e85ab8"
+    },
+    {
+      "date": "2025-07-12",
+      "sha256": "b79fa6191835d27d331acd2a13985e4239020fabfdd57ca6715a8907ae33ebad"
+    },
+    {
+      "date": "2025-07-13",
+      "sha256": "c40f05db0a9d6212582ee71fc114f471c29e0900e958d54c6fa62d19525262e2"
+    },
+    {
+      "date": "2025-07-14",
+      "sha256": "2c44f0f150c92f5df4d5945913e07a3453b620a2aaf713d85534a8f52facfb5c"
+    },
+    {
+      "date": "2025-07-15",
+      "sha256": "a410ba91dc4a66a6082c4ebeedef1d28b7dd061d78e8a85ea3e90e30e5464e36"
+    },
+    {
+      "date": "2025-07-16",
+      "sha256": "a5d53a55af2866aae78b1e4915a066d96c29387954a080f18c4d5c83a0ef575f"
+    },
+    {
+      "date": "2025-07-17",
+      "sha256": "dff259c915a51cdc14f32b9290f02ac02346895037c5458f6a1ec50f59c9662c"
+    },
+    {
+      "date": "2025-07-18",
+      "sha256": "70a00e4a2a2c68cfb2be8d6d9952beb5d1b9f4c2ba097318f49eaf1ffd4d0b29"
+    },
+    {
+      "date": "2025-07-19",
+      "sha256": "06103b68cd783fc5e35513a3b14bc9c1304d850bad9c8497ded7dd965b39b759"
+    },
+    {
+      "date": "2025-07-20",
+      "sha256": "1d17f9f90525ecf1e1c64ab8ffa4d62a04782daf85882c7177c931034d9e604c"
+    },
+    {
+      "date": "2025-07-21",
+      "sha256": "5d63a63e1b1faaf969d793b381d453db2dc9c413e38fd6ac6593324452fdf8a1"
+    },
+    {
+      "date": "2025-07-22",
+      "sha256": "3f7bd588b83e74b01c56e29f1e7ce4fc1937b8ff6408aab51bbad694e3a69c52"
+    },
+    {
+      "date": "2025-07-23",
+      "sha256": "0908559a2be9a09989bad10e36b6f1ad4f57e99c78df4f3a302f6e555e22c8fd"
+    },
+    {
+      "date": "2025-07-24",
+      "sha256": "0ec0be0d2624247a4406a2da75fda482770dc7f4b09d915ba5a12028ea776fc1"
+    },
+    {
+      "date": "2025-07-25",
+      "sha256": "0600f7e7eb2d9cffb3ae1ee6e6def03bb228cd3fb5ef680ae86b430d4b0144e7"
+    },
+    {
+      "date": "2025-07-26",
+      "sha256": "c151da6967a95145fe2107290ae03ba3c0ab73974ffe7e45fd4996c6bd4f4465"
+    },
+    {
+      "date": "2025-07-27",
+      "sha256": "3ecc05651d561d84165cbc4bc47d0a4fc842f9aae12b042a58cb494747fa427e"
+    },
+    {
+      "date": "2025-07-28",
+      "sha256": "a6875a58aa4a3baeee0d6ab8bce19039ff2b52da3450d148998eb4660b5a076f"
+    },
+    {
+      "date": "2025-07-29",
+      "sha256": "51017883547c51eb590ed38c24e3abc9481456ce3241be316d0304f47119fbc6"
+    },
+    {
+      "date": "2025-07-30",
+      "sha256": "b037a35fac0d536c96f164fb032927ebecdf5d16c53836fc021416fff264a175"
+    },
+    {
+      "date": "2025-07-31",
+      "sha256": "0d3d35e4482c0d2a03bce3b8e6c4a26a083841b770b33434abd18c1eb9caba77"
+    },
+    {
+      "date": "2025-08-01",
+      "sha256": "b26defe981febb685acf53474435224792d2c0276795eb958b42b1a81c11b898"
+    },
+    {
+      "date": "2025-08-02",
+      "sha256": "5ebf589c5642b5261234e36fda8e3cf89244ac4b6bfcfc9be7c324f84c1c77f8"
+    },
+    {
+      "date": "2025-08-03",
+      "sha256": "ab9b695a6c9d8c635c673bdc602c26a0f131c66466355e7e40e5f4af32d7ee30"
+    },
+    {
+      "date": "2025-08-04",
+      "sha256": "559fa8c51e96a55186c1d84966bf64049512b3c55c9504608c46da0a90d0c90c"
+    },
+    {
+      "date": "2025-08-10",
+      "sha256": "4bafb938ecce4b7d640e222ffcf44be9c158701745ed4c635eb87b8049d4593a"
+    },
+    {
+      "date": "2025-08-11",
+      "sha256": "2a15a299bb26a6a480b034e7a667107b30ff4a998cd84003ad49ff809b74004a"
+    },
+    {
+      "date": "2025-08-12",
+      "sha256": "5b54d40f4b705c6e3e22af0dda0f61e1a20d2f6e1a2e894d0eca24d6536e5170"
+    },
+    {
+      "date": "2025-08-13",
+      "sha256": "c9bade2080c5bec1130ee05ff5c43d1900df94db1387f786a17d6e8f9aa9d3bd"
+    },
+    {
+      "date": "2025-08-14",
+      "sha256": "a823031e99ed92e78b65afdd2d09d9a6078d383d99ed1be0e64f978edc4adcdd"
+    },
+    {
+      "date": "2025-08-15",
+      "sha256": "30154b900899e347b3e634fe691f14320e350f7f7d52314545cd7c0bb6952b60"
+    },
+    {
+      "date": "2025-08-16",
+      "sha256": "ca154a6362bb209e849c606ceb428454ef77fd76df4fa8cd47f685db124c59c9"
+    },
+    {
+      "date": "2025-08-17",
+      "sha256": "67f44dc9ea875b338d5838188f4184d79451af2fba1291a54c1214acba06c640"
+    },
+    {
+      "date": "2025-08-18",
+      "sha256": "c97b60d52fbf7b09b4f45becc167dc3a52cc55ddd0f8fd1ce84f1be1eb8b8c4a"
+    },
+    {
+      "date": "2025-08-19",
+      "sha256": "f63fb33757ae86728654f1312196d9ca7bf5f7e6ed176f3d1fb57cfddc5645a4"
+    },
+    {
+      "date": "2025-08-20",
+      "sha256": "429f0c1b392008cef0c7390388ceef78de5bb04c6b9ccc7472cceda80856d36d"
+    },
+    {
+      "date": "2025-08-21",
+      "sha256": "11b3138b4a2d4785f9857a889d7b901e8f462527ed62405e945c9716cb033b1c"
+    },
+    {
+      "date": "2025-08-22",
+      "sha256": "2150f49b0cc6fbf61536e70007ebf9cc6cf6c171fbc77e15a27161abe2ac1ea9"
+    },
+    {
+      "date": "2025-08-23",
+      "sha256": "ffaadde522e58facbae461468463019090036f7ee55d4e2ea70d02bba6e1226d"
+    },
+    {
+      "date": "2025-08-24",
+      "sha256": "af43a1a0eaeeefffb91afa553aef3bc3451fb6c2f21f90af3e57478edfef0d97"
+    },
+    {
+      "date": "2025-08-25",
+      "sha256": "c3e321d9a04eec76577b9cf11c0a5aae7e737e0177e4e97dbe9b1465261ace08"
+    },
+    {
+      "date": "2025-08-26",
+      "sha256": "667902a7f5afcd4064eb19bf96a1b7be3ed64ba54cc170ba669ba039c3b788ee"
+    },
+    {
+      "date": "2025-08-27",
+      "sha256": "aa0895c995caac9d1126f15a6a93b5ca105ff58340bfbbe2aff93d26a0204261"
+    },
+    {
+      "date": "2025-08-28",
+      "sha256": "dae6b135f5a10eaa2be81252faf51d0fa998aead23458232db60ac4325da9daf"
+    },
+    {
+      "date": "2025-08-29",
+      "sha256": "4b6eaef0ae25503e5f643887d266f1fbd3592b02abbbf678832b3a1dc6aa04c1"
+    },
+    {
+      "date": "2025-08-30",
+      "sha256": "089ee153b03ee78b9bc721cede2336a4e3d612b77cdd30d8a715f9e76bf9b86e"
+    },
+    {
+      "date": "2025-08-31",
+      "sha256": "99778753efb1a8d7a828c695ec34a0cb933b02b1aed0bb29701b681eaf1e52c1"
+    },
+    {
+      "date": "2025-09-01",
+      "sha256": "924f6ab37cbb3a8a61e04913240b720278482e3aeccb2381c9ec73e0741723a6"
+    },
+    {
+      "date": "2025-09-02",
+      "sha256": "34837c3bea2f1d8d23467be42a19524d82042c19bbfcf27263adb6512cec6e0c"
+    },
+    {
+      "date": "2025-09-03",
+      "sha256": "efc79a1e6b34da6501a94c8d82929f273b9816309e82ba336a3eabc5a6302ba5"
+    },
+    {
+      "date": "2025-09-04",
+      "sha256": "8b2fb399062412941ffafaa76d5ba7c862d6a30e6a9eecefd7a29d237a28d0dd"
+    },
+    {
+      "date": "2025-09-05",
+      "sha256": "b8be5747e59e839a0d472d493fb0398d08572a682735ce21ba06a8b66c5dd066"
+    },
+    {
+      "date": "2025-09-06",
+      "sha256": "c70986c08c370c08e831e3a5aba66caa688064ebf5940f459fab41e366a405d6"
+    },
+    {
+      "date": "2025-09-07",
+      "sha256": "344c9ac3861a3d470dcedd2f672f64ff97a8abd9c7198883ed16dc93b7ef65bb"
+    },
+    {
+      "date": "2025-09-08",
+      "sha256": "6c58c10613beeceec360ed5af8523c556da1eaa390bc878b71586c78a651133d"
+    },
+    {
+      "date": "2025-09-09",
+      "sha256": "96b91637b6de7e0d155177d7206653b9a4ed196554735adeff1c0da99d894427"
+    },
+    {
+      "date": "2025-09-10",
+      "sha256": "64e7b53acc699b962962194f88e1092bf053a095c26dc9137024e4dac2a14828"
+    },
+    {
+      "date": "2025-09-11",
+      "sha256": "e9625c5560d256d861286a336c9f3ba6c1747d9dd44a69c3a5d6d522d721e948"
+    },
+    {
+      "date": "2025-09-12",
+      "sha256": "a5449119c533b405572ec4f6ec9fe8555c8481ef3071df9fae339cfd56ac71ad"
+    },
+    {
+      "date": "2025-09-13",
+      "sha256": "2f0b3d5f27f13b1bc15b1b66585562243be3952b258ef8271da266a092bc372d"
+    },
+    {
+      "date": "2025-09-14",
+      "sha256": "8daa294e3b3388e74c52dd53e8533f420fd55e205a7913226660d3a88cd07506"
+    },
+    {
+      "date": "2025-09-15",
+      "sha256": "1546ba80da1d8cdbc1f38f830b5ee8ac5d788effba9a182f6be5b2a4b4691bb8"
+    },
+    {
+      "date": "2025-09-16",
+      "sha256": "a5bd4fd3e761c1d1eb9d3917198032f47a149be928eb5d053726b53c65b4ff92"
+    },
+    {
+      "date": "2025-09-17",
+      "sha256": "7d063cb640573a0530a7274b3d1c367707bca2c4f14b33c19150d2109c03c3b0"
+    },
+    {
+      "date": "2025-09-18",
+      "sha256": "c3e69fbb05191cf84314eb884f71a3f6039076097540aa05abfb0ad3b1fbd5de"
+    },
+    {
+      "date": "2025-09-19",
+      "sha256": "d3726d0ed31cbf1636d9e9e53261c69d62019425f6d8340ed66fec33c96355d4"
+    },
+    {
+      "date": "2025-09-20",
+      "sha256": "67522eddf2c7ca83410aba828561f9b38403ddc8376993f9572812a159d672a6"
+    },
+    {
+      "date": "2025-09-21",
+      "sha256": "5c9ff2126ff27023cadc4a09ddc682808f01441ed6d4fc6093b005108c53bad4"
+    },
+    {
+      "date": "2025-09-22",
+      "sha256": "b4df543f9a5f97abcd59deee049d0e71ce019e1c8cbdac586114761b9975347f"
+    },
+    {
+      "date": "2025-09-23",
+      "sha256": "e7fe7efa0d7600db82793047cea30b82fe9921853c0a55918ac6f84cc53130e5"
+    },
+    {
+      "date": "2025-09-24",
+      "sha256": "e6beb94dd3cf447cf2f60b3ccaa7302071a14c06970c3e921a10d2e2e13e982b"
+    },
+    {
+      "date": "2025-09-25",
+      "sha256": "c52bd6592f0c8d08212a5dfb3d6aea69e45650b51214e1fd5fd8de6f77b09fdb"
+    },
+    {
+      "date": "2025-09-26",
+      "sha256": "557028cb9a4e70b74ede27a34ad233a9b8833bca838a6482e56f69bd72b01e9e"
+    },
+    {
+      "date": "2025-09-27",
+      "sha256": "9978a387c42ef046924d62b975eea03cc812b56dccbcf628268fb5ab3ef3707c"
+    },
+    {
+      "date": "2025-09-28",
+      "sha256": "b2dada3689b5223c67a5bbb3ae56af1fac1f6c04ecf64fdba34988d0934d4dc9"
+    },
+    {
+      "date": "2025-09-29",
+      "sha256": "a342bc1effcf67202346a508ca88985d5ad09eb59d81303b166b40468f487c56"
+    },
+    {
+      "date": "2025-09-30",
+      "sha256": "1a42fe5bbfc9fa221694179fa6c45aa76a689b4170d9c26d752a27c9b1d27b77"
+    },
+    {
+      "date": "2025-10-01",
+      "sha256": "c9ea836c092568472bb51da5585eca2ce2c71b4301ebf753cec562a26a956cf8"
+    },
+    {
+      "date": "2025-10-02",
+      "sha256": "9dff5c9ad5723adb2ccc76afc9eb218334cbe25914a643cc02eedc178202b6e0"
+    },
+    {
+      "date": "2025-10-03",
+      "sha256": "375e1ff8cd226f9eb648f54f3211493e460893fea3cce9dfd0a9a021b5543698"
+    },
+    {
+      "date": "2025-10-04",
+      "sha256": "f03f0a9e8b79c5f1457c633688760e42d1f0689a5e1aaa2c12d942a80c6f767f"
+    },
+    {
+      "date": "2025-10-05",
+      "sha256": "c8d05b604ec8f8ed560de79805a5cdb88757f986acb088262ee63896a7200f33"
+    },
+    {
+      "date": "2025-10-06",
+      "sha256": "6bdff6b45e6ea5f3c609cd5b856c0aaec01a1bb32c9246d9df3790a0d29a90ac"
+    },
+    {
+      "date": "2025-10-07",
+      "sha256": "5fdffbade0b11991479592a87e2ff2f3e1d98ecf4e9163468043d15c6e154ae8"
+    },
+    {
+      "date": "2025-10-08",
+      "sha256": "afacb4ce211f249459edc8cdd7ec8d5eedcd5303b1f8b39846f4297c191db8ce"
+    },
+    {
+      "date": "2025-10-09",
+      "sha256": "fb275256988b82766349ac5c13067cd28ada232329dd7398648d8157044c4e8f"
+    },
+    {
+      "date": "2025-10-10",
+      "sha256": "b2ced86a2c064ad6d3cfa54682b5b28ea818a113f3559b3456acd60e02d8187e"
+    },
+    {
+      "date": "2025-10-11",
+      "sha256": "775e6baf02ee6f96f26287708ad001ed5a3fe32e4dfd0a3438f1fbedfbef21d9"
+    },
+    {
+      "date": "2025-10-12",
+      "sha256": "89e9d4d2effd6179317c62caf38cc67ad70a3903a5c827f00ede377a91a46728"
+    },
+    {
+      "date": "2025-10-13",
+      "sha256": "9f0ca5e82014ce89cc0f2c43c5c9f717b3a527eb0cd6c52b7501a72dbe09d001"
+    },
+    {
+      "date": "2025-10-14",
+      "sha256": "3a26d4244fdeb2c79c9dae40a5979022d5b96e54b8a1424d3fc2f6e10797cf86"
+    },
+    {
+      "date": "2025-10-15",
+      "sha256": "6c23c11af4b3a17db655d1403610dc0391088bb5be56f8d72064dcf91672b42b"
+    },
+    {
+      "date": "2025-10-16",
+      "sha256": "fe852037eb9d53428780dd064a09299f0d05ff67bff618166cc56b872755af30"
+    },
+    {
+      "date": "2025-10-17",
+      "sha256": "95962e15b066f0479a3f9629501e5a0eaba8b4cbbda76e9d31215fa08a6df810"
+    },
+    {
+      "date": "2025-10-18",
+      "sha256": "0715947982d11af078e05627e1efd8c91ad404758f3c7a1f8dd42d4f6c28a216"
+    },
+    {
+      "date": "2025-10-19",
+      "sha256": "db0f51dc8874e8ea36f5b63e12b0e098dd74ba95c157bd998ee725d15271ec5b"
+    },
+    {
+      "date": "2025-10-20",
+      "sha256": "1def8618e8e0389f34427432235126e9f266017dd37ddd04b3a9057a8c2d6b9f"
+    },
+    {
+      "date": "2025-10-21",
+      "sha256": "3d5947100c47b4eb1ec9af185c5f552a3138a8f4dde5e4cb7d4bd167fc99ad10"
+    },
+    {
+      "date": "2025-10-22",
+      "sha256": "240aeff6b03776b7c6dd94200d80ad6b04ce116b8e31a2a908704ea026904d44"
+    },
+    {
+      "date": "2025-10-23",
+      "sha256": "27c79fa82c5a113d800fb16584affd9513c29f899784fca2ad8f37979f327e1f"
+    },
+    {
+      "date": "2025-10-24",
+      "sha256": "6f578d469082d0b5d6975fd7d0bd6128afa9e5d9d545c10002bc08c715f05c12"
+    },
+    {
+      "date": "2025-10-25",
+      "sha256": "ef8f84ce4d0365bf05732d022a1b30813394ccaa48a40df2a057bd464b16985d"
+    },
+    {
+      "date": "2025-10-26",
+      "sha256": "4060359b2d4527858708416a0e6cb670cf804992c88cd6d8cf052c28f0223ac5"
+    },
+    {
+      "date": "2025-10-27",
+      "sha256": "54308b5e3562a27455b281164913c4b37ed132eb0e6ecb2458a9e12c026d5c23"
+    },
+    {
+      "date": "2025-10-28",
+      "sha256": "e745c016eb5f776dfd80fbac34c3f506538c535c7d42a6961ef75bc31c3e4062"
+    },
+    {
+      "date": "2025-10-29",
+      "sha256": "64a6f92d4bdfd68afd8bcd7ff5194ee0cada215b932a71386c7d00fc6d80df9a"
+    },
+    {
+      "date": "2025-10-30",
+      "sha256": "6658ab8a87615034db9816fdf820f5f809ff9cc8b69d9b678d9aa9fd554cb215"
+    },
+    {
+      "date": "2025-10-31",
+      "sha256": "d37ed8a866b8c71b3442efd2f02a0d485aa2f1b19178d9487781ff92429f9619"
+    },
+    {
+      "date": "2025-11-01",
+      "sha256": "16eea842901b52bdd32743e35f4bc9540967281eddd4172f3942d161bf9afad8"
+    },
+    {
+      "date": "2025-11-02",
+      "sha256": "ccd01cb97e41fec02b39f55843864f4314383ae354d54569c387bb7938f2e0cb"
+    },
+    {
+      "date": "2025-11-03",
+      "sha256": "27bdf9eaffcbf8504e0559caad90a2714ed637d2e83772ee62247017a7023036"
+    },
+    {
+      "date": "2025-11-04",
+      "sha256": "26b5b3e3ceaa548311c4ccbb9db5ca7f4d3ad8bf223050d977fdd13d726769bd"
+    },
+    {
+      "date": "2025-11-05",
+      "sha256": "a019419660e7a3a424540fdc1b88d9b15692537baf622864ff00b8517c53c2ce"
+    },
+    {
+      "date": "2025-11-06",
+      "sha256": "5762d29b7126bb4af373fad38c4bc7a365b18c557a92a15a32eed0e6e55b5a83"
+    },
+    {
+      "date": "2025-11-07",
+      "sha256": "a089934fc9e05b9d84149d73ce43905d0f944871f568798e1cb2209a1ead7445"
+    },
+    {
+      "date": "2025-11-08",
+      "sha256": "4612ae69bdcee5434a5416c2878fe4ce4c5eedb8593a6304e575fe50e8a5504e"
+    },
+    {
+      "date": "2025-11-09",
+      "sha256": "a42c8d9f9e99abe88af3a081499cbae869fff9eb5fbf2ebb801c80d59f09504b"
+    },
+    {
+      "date": "2025-11-10",
+      "sha256": "79ace64ee7da84a7657a7ad14d2208c455c95afb8c0af6d8780b7ce4185715b9"
+    },
+    {
+      "date": "2025-11-11",
+      "sha256": "f02f2426057e73fe459579e09963cdebfd80ca08eddc41fa06285906484dbd43"
+    },
+    {
+      "date": "2025-11-12",
+      "sha256": "c88018986a44ff7789a334fa3d1caeec80623b3d2a90c895af8eca5572544e87"
+    },
+    {
+      "date": "2025-11-13",
+      "sha256": "ce790a02541f92e82f5839aaf7671b465da7484250e922bebef5d60368065e98"
+    },
+    {
+      "date": "2025-11-14",
+      "sha256": "ff654df5e98d4b290bc7b4077a6ca5136fded603985fe95f39a452a9693b69d5"
+    },
+    {
+      "date": "2025-11-15",
+      "sha256": "e8a6f29762fdde1348e576480bce0861e179457d5ace45bc141571c48d9418a2"
+    },
+    {
+      "date": "2025-11-16",
+      "sha256": "8bffcba371170df51a5d85eb49b84af17802c4071ccd6f6dc1e023fbd9c572c9"
+    },
+    {
+      "date": "2025-11-17",
+      "sha256": "dbf7d29723de161c033502b6d365f5c950506852f32a799ff22a5abcc0c9864f"
+    },
+    {
+      "date": "2025-11-18",
+      "sha256": "f1ef8bc8a6b6cc48da45c7d45a6403a979bf12e4da16d99cee8eb7a2bf127c27"
+    },
+    {
+      "date": "2025-11-19",
+      "sha256": "2d1288c5753355aac935bde207d099b94230f7981538fba8073a3b2273a3ec1e"
+    },
+    {
+      "date": "2025-11-20",
+      "sha256": "5047029a70c99153fe746fbcda7f58c2e89ba65561e708cb49224ca6ad06f704"
+    },
+    {
+      "date": "2025-11-21",
+      "sha256": "40f6f1edd6b66b5ec051006c3cb68f14e84213b04a731e46b2b0a99362c3e1e0"
+    },
+    {
+      "date": "2025-11-22",
+      "sha256": "9ca0956fc0616c0f2a8d40f54832104e6f8bb26e7eeba1eb56cd2e93fe7f08ef"
+    },
+    {
+      "date": "2025-11-23",
+      "sha256": "37b23bde4dd45939b0c4e48d57c8ad9f9b9ba76af78154853dbfac0e5917d41a"
+    },
+    {
+      "date": "2025-11-24",
+      "sha256": "ab83f7fb5e65eedeb21be3c6b86f28ee118cdac2600bfd55ac32a6a38b70eee6"
+    },
+    {
+      "date": "2025-11-25",
+      "sha256": "f9970b716db0fbf0260e5ee92064aaf1c8690b2905d4fa19322ffff5bfcb739b"
+    },
+    {
+      "date": "2025-11-26",
+      "sha256": "d5543f89550e811cdd60f37ebf246b0043c7337172e9574cbe35155e0c40f433"
+    },
+    {
+      "date": "2025-11-27",
+      "sha256": "b059f5933ee9ee320fac02e36b464f108eac0e35d6db3717390d1bd443c31812"
+    },
+    {
+      "date": "2025-11-28",
+      "sha256": "bee46b58d5b9ad186f4cff83e232e41bc8fccced256c6f8db20ef70935cc3521"
+    },
+    {
+      "date": "2025-11-29",
+      "sha256": "ebd5718ed18dfe74f24c9e49d56e6966bd05975fe0ca836166150e43619c6ba9"
+    },
+    {
+      "date": "2025-11-30",
+      "sha256": "725d142c1460200a37ea72cf504bdf1236651adeed5fe8b05c7806c18cced4f3"
+    },
+    {
+      "date": "2025-12-01",
+      "sha256": "509799c2ede91a19262f836ce6d0aa08fa7f7e7cd39245ac34c173ac1f0924a8"
+    },
+    {
+      "date": "2025-12-02",
+      "sha256": "67a3367608f881015fe5a1be8942376eba27f1e9075812a95b66eba9382b76d9"
+    },
+    {
+      "date": "2025-12-03",
+      "sha256": "14bebc149cfdb16a073b305e21136c9ed4331a51b58c8424f6d98cc0acecc238"
+    },
+    {
+      "date": "2025-12-04",
+      "sha256": "125276bf5da4306440df77e13d23d956cc26d7527077a2f84e41d57c1ea697b8"
+    },
+    {
+      "date": "2025-12-05",
+      "sha256": "7ce27f181544756dd448a87ca49cae849a99ce838631fac314c697c16263112a"
+    },
+    {
+      "date": "2025-12-06",
+      "sha256": "75bee392bed82c1ad7cda525df1b706a397f01769f3973c00ab910212624ba92"
+    },
+    {
+      "date": "2025-12-07",
+      "sha256": "00eda4ce5d36e9fa6d1dafe0aaec55b1852668229311037965b944a4ea4de9e2"
+    },
+    {
+      "date": "2025-12-08",
+      "sha256": "97fef024b0c58ce0b3c4155d3c34b23577c326c1800cbe421c2aca5207721a50"
+    },
+    {
+      "date": "2025-12-09",
+      "sha256": "d5c9e526bca6ab7e5842e5d3591aa935ed7611b2133944a05cc19e230df54b89"
+    },
+    {
+      "date": "2025-12-10",
+      "sha256": "91b8752e99a076955cd80950653377f0cdfc4078ab702fc222ab0c6a2a0da52c"
+    },
+    {
+      "date": "2025-12-11",
+      "sha256": "ab406fa802af776413aa33062faf611f891d5b0db056102442ccd1580cc53a5d"
+    },
+    {
+      "date": "2025-12-12",
+      "sha256": "783d9bb5354188648945e59b5704ea08f2ea9862f78f99e25e49425b89210171"
+    },
+    {
+      "date": "2025-12-13",
+      "sha256": "ec4f50a87ac2ab141425e40c93afa5fdce140f908b0dcbda4f37d6608c2d368c"
+    },
+    {
+      "date": "2025-12-14",
+      "sha256": "cc8adb5a550e3fc168717dd7d4861133cd73be6c5ca09c241c482def2e30cf73"
+    },
+    {
+      "date": "2025-12-15",
+      "sha256": "993a8c4110a2890c274c91f61463eb5ccaafc00a883128df45f75b497082e70d"
+    },
+    {
+      "date": "2025-12-16",
+      "sha256": "bd5276e803ada7141ffb2fe720d91b583b1f0a8fdc71509d99e4b6be54f7db63"
+    },
+    {
+      "date": "2025-12-17",
+      "sha256": "18f21c22d014e1c8dc8277c9b4f171e4326b3ea7f14770c433c42c62d09bc827"
+    },
+    {
+      "date": "2025-12-18",
+      "sha256": "7a39a023ae17a9bc80b660a651c7f22eb6c2a4619cddf5a1604a0194d74e1f63"
+    },
+    {
+      "date": "2025-12-19",
+      "sha256": "41cce097d2220ba9fe93b0f28f6e6ef4783ea6a27fe3fbfb6b154170a6e52aea"
+    },
+    {
+      "date": "2025-12-20",
+      "sha256": "493e27510d13548f735e746ec067d48c31070449520e6d74c90b0b95945473fc"
+    },
+    {
+      "date": "2025-12-21",
+      "sha256": "8dfe17c0cf12d29f99009e0d1c9a7485eb3a5d15d4f365cf69cf8c83f2142f0d"
+    },
+    {
+      "date": "2025-12-22",
+      "sha256": "94bdf41b07713bbe076cbe2b446a2b2bdb0b06fbaf7b71459a06130b82de0a58"
+    },
+    {
+      "date": "2025-12-23",
+      "sha256": "57a0ee6d33a3d7be8470d511c75fd0e44d346c6e57dc26c5065129bb5092569c"
+    },
+    {
+      "date": "2025-12-24",
+      "sha256": "4ff66ac32b926d83327675d57a9b9c699b356889cb172949c4f8d82f77a95df9"
+    },
+    {
+      "date": "2025-12-25",
+      "sha256": "c9f645a7f5dd40f6326d1ee5481081d6ac62f6ff6765d703a5d496cd576243a6"
+    },
+    {
+      "date": "2025-12-26",
+      "sha256": "ef6e389d6822cd1662895183b15ba1b4bb4eaaa4e35bdb06013b4b694a068367"
+    },
+    {
+      "date": "2025-12-27",
+      "sha256": "ebc93d4788e6c58c1242d967bcd671737fa5fce377bf84d8e1e4dea5ce2fc451"
+    },
+    {
+      "date": "2025-12-28",
+      "sha256": "6ff90e5752ad2e86baa5b2cd7d998d7d2f341f9fc1f2ce26260a523e329b3b78"
+    },
+    {
+      "date": "2025-12-29",
+      "sha256": "f641c5424ca6e1d0fb21aace49f7e97382d446c4e03bfea41ddc63bf923a0c82"
+    },
+    {
+      "date": "2025-12-30",
+      "sha256": "16bed5bcac7a23631b1b7d344e31b477d7d499e6641884d96f4d5238690b1ea7"
+    },
+    {
+      "date": "2025-12-31",
+      "sha256": "c9cac12b4ff56f03901b8187a27575d7d9cb584eaa0654722da7d67e0482aed9"
+    },
+    {
+      "date": "2026-01-01",
+      "sha256": "2e1ae1b355d4229941d6bdd3a9a5bbdd09eed4e3c38afcf5891daf6f4c5d4f21"
+    },
+    {
+      "date": "2026-01-02",
+      "sha256": "646122431fafe365bd5e7347af79f24297ccd4f142ed1f3a726867cbf0d178b2"
+    },
+    {
+      "date": "2026-01-03",
+      "sha256": "e0ff71a580ef5cacd2572cdf6b54500f3bf28bc82cc667c6806762d600cec244"
+    },
+    {
+      "date": "2026-01-04",
+      "sha256": "455ea7cd786e2ace3840059e3ad32933dc4923164ec383bd3e5cb5afaa9a5a89"
+    },
+    {
+      "date": "2026-01-05",
+      "sha256": "bae1595d91d841ec34121bceb7a346a5d07bead6a993769f48d36f8e32ee2283"
+    },
+    {
+      "date": "2026-01-06",
+      "sha256": "d0a9690b5096e30497ff37ccfd421c597ae41da253dff230b6bb3cf4df02b587"
+    },
+    {
+      "date": "2026-01-07",
+      "sha256": "ff6fd8f5d2d01b50f15e049c5056061dd65fe8d118d2714c2a1b552278e66de3"
+    },
+    {
+      "date": "2026-01-08",
+      "sha256": "95cd2d90964ca878561b21513201a8cd14ff0dac91adca78ade2a1918918f265"
+    },
+    {
+      "date": "2026-01-09",
+      "sha256": "d39076b79b816ae555a8d91fa4ec76efc333b7ec093e6b5f7aec958e90caec84"
+    },
+    {
+      "date": "2026-01-10",
+      "sha256": "9a68d668de50d68d2844822ac99e902c03b8cb6c055201749933bbaf5d4edd47"
+    },
+    {
+      "date": "2026-01-11",
+      "sha256": "11467b8c0eb005d01e96f5164385e4dfa91b82b8f21243210f0c02f818fcac56"
+    },
+    {
+      "date": "2026-01-12",
+      "sha256": "bb3db9898f6615469c78bdb95398eb149cfa21b651d70a9af3be842a0361f2a3"
+    },
+    {
+      "date": "2026-01-13",
+      "sha256": "7f210bb0fee7dc72a523ce9fa2527eeb1c0ce1ae522ce4d24e8024b2cb558ae0"
+    },
+    {
+      "date": "2026-01-14",
+      "sha256": "a76c7bdd599a9b7340c46d3c7b497b528df971b84abfc8589ed953d85a69dbf0"
+    },
+    {
+      "date": "2026-01-15",
+      "sha256": "f0f1e7a242d18db3d5d519d6c198e7ce9dec1a99115a45d8feaa655336f4889e"
+    },
+    {
+      "date": "2026-01-16",
+      "sha256": "9defe0e869b009bb701487ea28c27942cd6821da171458ec1a9ab87c9cd7f171"
+    },
+    {
+      "date": "2026-01-17",
+      "sha256": "835c2ef671000c9a2fd3d8e625745b237a5ae96e78b197f8a3de6873d5365fb1"
+    },
+    {
+      "date": "2026-01-18",
+      "sha256": "d770bd0e8e25ac327be6d4e1afa32dc9d9806f5c1a2353651187603c49e84f03"
+    },
+    {
+      "date": "2026-01-19",
+      "sha256": "7a2e940fdcefaa027b80a579092c9d030206629b1c42493a00d3339582748e25"
+    },
+    {
+      "date": "2026-01-20",
+      "sha256": "0809c4a30ca51546ec5bdc0acdcb421cdd135c131a5748a1a06afd517dd183a0"
+    },
+    {
+      "date": "2026-01-21",
+      "sha256": "a819de9cd03840c058b8db1466f85be7ed39b27f683171a07fd8020a3f991b5f"
+    },
+    {
+      "date": "2026-01-22",
+      "sha256": "4cffd989b298f388e324e1b3c9db11c39dcddebe4aa03ef7580f7862c52adf2d"
+    },
+    {
+      "date": "2026-01-23",
+      "sha256": "a49d970f68962a4f15e987a4436f25de18f2dbc29209e0e258ce0679f8bd9647"
+    },
+    {
+      "date": "2026-01-24",
+      "sha256": "949bc0b504b2bfa16f18f4adfc0c106ba8986c5b81ced356f8cbeaeb0b8ddf6b"
+    },
+    {
+      "date": "2026-01-25",
+      "sha256": "01469dd0dd7dd66c77bb0780eef4b249a750ea9027dbc8b2f8523d8f128e7d9a"
+    },
+    {
+      "date": "2026-01-26",
+      "sha256": "399ad9554494db57fcd7c88d7430bb2abf48eb8a67d54a6b045890b86343b9e0"
+    },
+    {
+      "date": "2026-01-27",
+      "sha256": "412aaac848081f3e5535d6dab7468bbeeeece175f431525f965b76d4f28b1df0"
+    },
+    {
+      "date": "2026-01-28",
+      "sha256": "ce4c1b872d2640a45ace9a805c4bb2ce5998773459a6de56ab4510814c2a9633"
+    },
+    {
+      "date": "2026-01-29",
+      "sha256": "779dfba9c7af78c055814a09040535a84aaa211b174a09d730487afbbf0bb6f9"
+    },
+    {
+      "date": "2026-01-30",
+      "sha256": "9d372d314be90054d94d136a3cfc3f29a8502f0bf0e6045c0db36a1761bc5d5a"
+    }
+  ]
+}
