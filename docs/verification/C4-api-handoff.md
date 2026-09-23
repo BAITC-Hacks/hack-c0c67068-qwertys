@@ -45,6 +45,6 @@ Integration additions beyond V1: GET `/api/runs` lists latest 100 existing runs.
 
 - Runtime of a numerical function is governed by C2's network/model timeouts; the API cannot safely kill a Python training thread. Shutdown waits for active calculations.
 - Local interface only; no authentication or public deployment is provided.
-- Python lock currently covers HTTP transport/testing only. C2 must send actual numerical and LLM imports for the single shared manifest.
+- Python lock covers HTTP transport/testing and C2-requested numpy/pandas/catboost/openai. Imports pass on Python3.12; actual model integration remains pending.
 - Claude owns `web/`; original C4 UI handoff 3192215 used the earlier provisional schema and is not the final integrated frontend.
-- Browser and full real-data run are still pending C2 callable + Claude frontend integration.
+- Chrome checks of Claude snapshot0276529 pass for unavailable-core and explicitly synthetic 24/48h flows. Full real-data run remains pending C2 callable + final frontend integration; see acceptance-matrix.md.
