@@ -53,7 +53,7 @@ function Hero() {
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
       <h1 className="hero-title">SAMAL</h1>
-      <p style={{ position: 'absolute', bottom: 20, left: 24, zIndex: 3, fontSize: 12, color: '#333' }}>Illustration · not live weather or turbine telemetry</p>
+      <p className="hero-note">Illustration · not live weather or turbine telemetry</p>
       <SiteHeader overlay href="#/dashboard" label="Dashboard" />
     </section>
   )
