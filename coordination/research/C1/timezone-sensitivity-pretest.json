@@ -1,0 +1,158 @@
+{
+  "purpose": "pretest wind alignment diagnostic, not timezone proof",
+  "scada_local_months_allowed": "2025-11 and 2025-12 only",
+  "utc_start_inclusive": "2025-11-01T00:00:00+00:00",
+  "utc_end_exclusive": "2025-12-31T17:00:00+00:00",
+  "weather_run_range": [
+    "2025-11-01",
+    "2025-12-31"
+  ],
+  "weather_issue_rule": "00Z run, 12Z issue, 48h forecast; only valid times before end cutoff",
+  "weather_availability_basis": "inferred_run_plus_9h",
+  "weather_provenance_status": "unconfirmed",
+  "scada_timezone_status": "inferred; offsets 5, 6, 7 compared without selecting one",
+  "scada_source_sha256": {
+    "turbine_1": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+    "turbine_2": "820578cd18bb557cd30c2e102f3ae5a386dfc6c489a5a15743339c2b017305e5"
+  },
+  "coverage_rule": "unique 10-minute slots/6 == 1, no quality flags; common UTC valid hours across both turbines and all three offsets",
+  "candidate_complete_hours": {
+    "turbine_1_UTC+5": 1453,
+    "turbine_1_UTC+6": 1453,
+    "turbine_1_UTC+7": 1453,
+    "turbine_2_UTC+5": 1447,
+    "turbine_2_UTC+6": 1447,
+    "turbine_2_UTC+7": 1447
+  },
+  "common_unique_valid_hours": 1424,
+  "weather_issue_valid_pairs_before_common": 2864,
+  "common_issue_valid_pairs": 2824,
+  "overlap_note": "A valid hour can occur in two issue forecasts; all is weighted by issue+valid pair. Lead buckets are reported separately.",
+  "height_note": "NWP wind is at 100 m; SCADA anemometer height is unconfirmed, so MAE includes vertical representativeness error.",
+  "metrics": {
+    "turbine_1": {
+      "UTC+5": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.7620288455559542,
+          "mae_m_s": 2.2296948772426792,
+          "bias_nwp_minus_scada_m_s": -1.352818106704442
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7717753258746741,
+          "mae_m_s": 2.2138635299625506,
+          "bias_nwp_minus_scada_m_s": -1.3740695224719115
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7521351903896563,
+          "mae_m_s": 2.245797619047622,
+          "bias_nwp_minus_scada_m_s": -1.3312023809523814
+        }
+      },
+      "UTC+6": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.7690775312459638,
+          "mae_m_s": 2.2273176345609103,
+          "bias_nwp_minus_scada_m_s": -1.353790722379601
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7803387303458076,
+          "mae_m_s": 2.2156624531835227,
+          "bias_nwp_minus_scada_m_s": -1.3738342696629222
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7576360333064639,
+          "mae_m_s": 2.2391726190476215,
+          "bias_nwp_minus_scada_m_s": -1.3334035714285726
+        }
+      },
+      "UTC+7": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.744994178143587,
+          "mae_m_s": 2.310757200188857,
+          "bias_nwp_minus_scada_m_s": -1.3548506846081203
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7563096887497932,
+          "mae_m_s": 2.301798923220975,
+          "bias_nwp_minus_scada_m_s": -1.3754997659176027
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7334982867858867,
+          "mae_m_s": 2.319869047619044,
+          "bias_nwp_minus_scada_m_s": -1.3338476190476203
+        }
+      }
+    },
+    "turbine_2": {
+      "UTC+5": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.7608848935853493,
+          "mae_m_s": 2.269467067988668,
+          "bias_nwp_minus_scada_m_s": -1.3974970491029246
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7707261210650128,
+          "mae_m_s": 2.2543808520599273,
+          "bias_nwp_minus_scada_m_s": -1.4193902153558067
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7508909497528805,
+          "mae_m_s": 2.284811904761904,
+          "bias_nwp_minus_scada_m_s": -1.3752285714285717
+        }
+      },
+      "UTC+6": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.768097809796224,
+          "mae_m_s": 2.2707353635505165,
+          "bias_nwp_minus_scada_m_s": -1.3989754485363541
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7802911695610633,
+          "mae_m_s": 2.2585042134831435,
+          "bias_nwp_minus_scada_m_s": -1.4195763108614232
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7557012254256743,
+          "mae_m_s": 2.2831761904761936,
+          "bias_nwp_minus_scada_m_s": -1.378021428571429
+        }
+      },
+      "UTC+7": {
+        "all": {
+          "n": 2824,
+          "pearson_r": 0.7438465789830169,
+          "mae_m_s": 2.352171270066098,
+          "bias_nwp_minus_scada_m_s": -1.3985699952785628
+        },
+        "lead_1_24": {
+          "n": 1424,
+          "pearson_r": 0.7560160102066674,
+          "mae_m_s": 2.3453932584269674,
+          "bias_nwp_minus_scada_m_s": -1.419573970037453
+        },
+        "lead_25_48": {
+          "n": 1400,
+          "pearson_r": 0.7314751299600021,
+          "mae_m_s": 2.3590654761904783,
+          "bias_nwp_minus_scada_m_s": -1.3772059523809517
+        }
+      }
+    }
+  }
+}

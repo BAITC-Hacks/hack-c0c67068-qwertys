@@ -24,7 +24,7 @@ class ScadaPreparationTests(unittest.TestCase):
                 writer.writerow(["2026-01-31 0:00:00", 4, 0.2, 10])
                 writer.writerow(["2026-01-31 0:10:00", 6, 0.4, 12])
                 writer.writerow(["2026-01-31 0:10:00", 6, 0.4, 12])
-                writer.writerow(["2026-01-31 0:40:00", 100, 1.0, 100])
+                writer.writerow(["2026-01-31 0:40:00", "not-a-number", 1.0, 100])
             rows, report = prepare_hourly(
                 path,
                 "turbine_1",

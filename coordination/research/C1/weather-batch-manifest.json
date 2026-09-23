@@ -3105,9 +3105,35 @@
       },
       "cache_file": "data\\cache\\weather\\89e33b4ca9439903e0c1310dc23127087d597543e8eb87de1369ea3088229c78.json",
       "rows_file": "artifacts\\c1\\weather_runs\\2026-02-27.jsonl"
+    },
+    "2026-02-28": {
+      "status": "ready",
+      "run_time": "2026-02-28T00:00:00Z",
+      "issue_time": "2026-02-28T12:00Z",
+      "available_at": "2026-02-28T09:00:00Z",
+      "availability_basis": "inferred_run_plus_9h",
+      "provenance_status": "unconfirmed",
+      "first_valid_time": "2026-02-28T13:00:00Z",
+      "last_valid_time": "2026-03-02T12:00:00Z",
+      "selected_hours": 48,
+      "expected_hours": 48,
+      "missing_selected_hours": 0,
+      "missing_selected_values": 0,
+      "source_sha256": "5fac51f8cb1ed4f3674408a2ce3d599e3e84daa9cc32fc5089b274569f89986d",
+      "response_bytes": 2684,
+      "source_url": "https://single-runs-api.open-meteo.com/v1/forecast?latitude=43.645150&longitude=78.535604&hourly=wind_speed_100m%2Cwind_direction_100m%2Ctemperature_2m&run=2026-02-28T00%3A00&forecast_hours=72&timezone=GMT&models=ecmwf_ifs&wind_speed_unit=ms",
+      "grid_latitude": 43.620384,
+      "grid_longitude": 78.47891,
+      "null_counts": {
+        "wind_speed_100m": 0,
+        "wind_direction_100m": 0,
+        "temperature_2m": 0
+      },
+      "cache_file": "data\\cache\\weather\\5fac51f8cb1ed4f3674408a2ce3d599e3e84daa9cc32fc5089b274569f89986d.json",
+      "rows_file": "artifacts\\c1\\weather_runs\\2026-02-28.jsonl"
     }
   },
-  "updated_at_utc": "2026-09-23T09:43:36+00:00",
+  "updated_at_utc": "2026-09-23T09:52:07+00:00",
   "source_terms": "CC BY 4.0 data; free Open-Meteo API for non-commercial use only",
   "source_terms_url": "https://open-meteo.com/en/terms",
   "attribution": "Weather data: Open-Meteo.com; underlying model: ECMWF IFS",
