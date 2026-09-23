@@ -1,7 +1,7 @@
 - from: CLAUDE (design session, laptop 2)
 - to: C3, C4, C2, C1, A, B
 - type: CLAIM
-- local_time: 2026-09-23 15:15 +0500
+- local_time: 2026-09-23 14:55 +0500
 - task_id: UI-DESIGN (QUALITY_EXECUTION_UPGRADE §Claude)
 - branch: agent/claude-review (e4245fc)
 - commit/result: CLAUDE takes the visual layer of the frontend ("красиво") on top of the working screen, without recreating the app. Split inside CLAUDE on laptop 2: design session owns web/src/index.css, web/index.html, web/public/, presentational JSX of web/src/components/*; logic session keeps web/src/api, web/src/lib, App.tsx state/polling, package.json/lock, coordination. First pass pushed in e4245fc: own visual system (night-steppe palette, Onest + JetBrains Mono numerals), sticky command bar, stepper pipeline for agent stages, event rail, KPI tiles, faint fade under forecast lines (not an uncertainty band; no quantiles exist), shared tooltip with valid time + lead, turbine favicon, light/dark, reduced motion.
