@@ -2,8 +2,8 @@ import { useRef, useState } from 'react'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api, HttpError } from '../api/client'
 import type { ForecastResponse, ForecastRow, RunRecord, RunRequest, TurbineId } from '../api/types'
-import { fmtDayHour, issueTimeFromLocal, replayDates, tzLabel, type DisplayTz } from '../lib/time'
-import { TURBINE_LABEL } from './ForecastChart'
+import { fmtDayHour, issueTimeFromLocal, replayDates, type DisplayTz } from '../lib/time'
+import { ChartTip, TURBINE_LABEL } from './ForecastChart'
 
 type CellState = 'pending' | 'running' | 'completed' | 'failed'
 interface Cell {
@@ -157,7 +157,7 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Prop
           <div className="chart-wrap" style={{ height: 260, marginTop: 10 }} role="img" aria-label="Склеенный прогноз на февраль">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={points} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
-                <CartesianGrid stroke="var(--grid)" vertical={false} />
+                <CartesianGrid stroke="var(--grid)" strokeDasharray="2 4" vertical={false} />
                 <XAxis
                   dataKey="t"
                   type="number"
@@ -170,9 +170,8 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Prop
                 />
                 <YAxis domain={[0, (max: number) => Math.max(1, Math.ceil(max * 10) / 10)]} tickCount={5} stroke="var(--axis)" tick={{ fill: 'var(--muted)', fontSize: 11 }} width={40} />
                 <Tooltip
-                  labelFormatter={(v) => `${fmtDayHour(Number(v), tz)} ${tzLabel(tz)}`}
-                  formatter={(value, name) => [typeof value === 'number' ? value.toFixed(3) : String(value), String(name)]}
-                  contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                  content={(p) => <ChartTip active={p.active} payload={p.payload} label={p.label} tz={tz} />}
+                  cursor={{ stroke: 'var(--ink-2)', strokeWidth: 1, strokeDasharray: '2 3' }}
                 />
                 {turbines.map((t) => (
                   <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={1.5} dot={false} isAnimationActive={false} connectNulls={false} />

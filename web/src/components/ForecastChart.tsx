@@ -1,8 +1,9 @@
 import {
+  Area,
   Brush,
   CartesianGrid,
+  ComposedChart,
   Line,
-  LineChart,
   ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
@@ -14,7 +15,37 @@ import type { ForecastRow, TurbineId } from '../api/types'
 import { fmtDayHour, fmtHour, tzLabel, type DisplayTz } from '../lib/time'
 
 export const TURBINE_LABEL: Record<TurbineId, string> = { turbine_1: 'Турбина 1', turbine_2: 'Турбина 2' }
-const COLOR: Record<TurbineId, string> = { turbine_1: 'var(--t1)', turbine_2: 'var(--t2)' }
+export const COLOR: Record<TurbineId, string> = { turbine_1: 'var(--t1)', turbine_2: 'var(--t2)' }
+
+type TipItem = { dataKey?: unknown; name?: unknown; value?: unknown; color?: string; type?: string; payload?: { lead?: number } }
+
+/** Shared chart tooltip: time (+ lead when known), one row per series; dashed marker for the previous version. */
+export function ChartTip({ active, payload, label, tz }: { active?: boolean; payload?: readonly unknown[]; label?: unknown; tz: DisplayTz }) {
+  // drop the decorative gradient areas (tooltipType none / unnamed)
+  const items = ((payload ?? []) as readonly TipItem[]).filter((p) => p.type !== 'none' && String(p.name) !== String(p.dataKey))
+  if (!active || !items.length) return null
+  const lead = items[0]?.payload?.lead
+  return (
+    <div className="ttip">
+      <div className="ttip-h">
+        <span>
+          {fmtDayHour(Number(label), tz)} {tzLabel(tz)}
+        </span>
+        {lead != null && <b>+{lead} ч</b>}
+      </div>
+      {items.map((p) => {
+        const key = String(p.dataKey)
+        return (
+          <div key={key} className="ttip-row">
+            <i className={key.startsWith('prev_') ? 'dashed' : undefined} style={{ background: p.color, borderColor: p.color }} />
+            <span>{String(p.name)}</span>
+            <b>{typeof p.value === 'number' ? p.value.toFixed(3) : '—'}</b>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 interface Props {
   rows: ForecastRow[]
@@ -75,10 +106,19 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
     <>
       <div className="chart-wrap" role="figure" aria-label="Почасовой прогноз нормализованной мощности; те же данные — в таблице ниже">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 8, right: 16, bottom: 4, left: 0 }}>
-            <CartesianGrid stroke="var(--grid)" vertical={false} />
+          <ComposedChart data={data} margin={{ top: 10, right: 16, bottom: 4, left: 0 }}>
+            <defs>
+              {/* faint fade to baseline only — not an uncertainty band (no quantiles exist) */}
+              {turbines.map((t) => (
+                <linearGradient key={t} id={`fill-${t}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" style={{ stopColor: COLOR[t], stopOpacity: turbines.length > 1 ? 0.1 : 0.15 }} />
+                  <stop offset="100%" style={{ stopColor: COLOR[t], stopOpacity: 0 }} />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid stroke="var(--grid)" strokeDasharray="2 4" vertical={false} />
             {split != null && last != null && last > split && (
-              <ReferenceArea x1={split} x2={last} fill="var(--surface-2)" fillOpacity={0.9} ifOverflow="hidden" />
+              <ReferenceArea x1={split} x2={last} fill="var(--surface-2)" fillOpacity={0.75} ifOverflow="hidden" />
             )}
             <XAxis
               dataKey="t"
@@ -87,37 +127,39 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
               domain={['dataMin', 'dataMax']}
               tickFormatter={(v: number) => fmtHour(v, tz)}
               stroke="var(--axis)"
+              tickLine={false}
               tick={{ fill: 'var(--muted)', fontSize: 11 }}
               minTickGap={24}
             />
             <YAxis
               domain={[0, (max: number) => Math.max(1, Math.ceil(max * 10) / 10)]}
               tickCount={5}
-              stroke="var(--axis)"
+              axisLine={false}
+              tickLine={false}
               tick={{ fill: 'var(--muted)', fontSize: 11 }}
               width={40}
             />
             {split != null && (
-              <ReferenceLine x={split} stroke="var(--axis)" strokeDasharray="3 3" label={{ value: '24 ч', position: 'insideTopRight', fill: 'var(--muted)', fontSize: 11 }} />
+              <ReferenceLine x={split} stroke="var(--ink-2)" strokeOpacity={0.5} strokeDasharray="3 3" label={{ value: '24 ч →', position: 'insideTopLeft', fill: 'var(--muted)', fontSize: 11 }} />
             )}
             <Tooltip
-              labelFormatter={(v) => `${fmtDayHour(Number(v), tz)} ${tzLabel(tz)}`}
-              formatter={(value, name) => [typeof value === 'number' ? value.toFixed(3) : String(value), String(name)]}
-              contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
-              labelStyle={{ color: 'var(--ink)' }}
+              content={(p) => <ChartTip active={p.active} payload={p.payload} label={p.label} tz={tz} />}
               cursor={{ stroke: 'var(--ink-2)', strokeWidth: 1, strokeDasharray: '2 3' }}
             />
             {turbines.map((t) => (
-              <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={2} dot={false} activeDot={{ r: 4 }} isAnimationActive={false} />
+              <Area key={`area_${t}`} dataKey={t} fill={`url(#fill-${t})`} stroke="none" tooltipType="none" activeDot={false} isAnimationActive={false} connectNulls={false} />
+            ))}
+            {turbines.map((t) => (
+              <Line key={t} dataKey={t} name={TURBINE_LABEL[t]} stroke={COLOR[t]} strokeWidth={2.25} dot={false} activeDot={{ r: 4.5, strokeWidth: 2, stroke: 'var(--surface)' }} isAnimationActive={false} connectNulls={false} />
             ))}
             {hasPrev &&
               turbines.map((t) => (
                 <Line key={`prev_${t}`} dataKey={`prev_${t}`} name={`${TURBINE_LABEL[t]} — пред. версия`} stroke={COLOR[t]} strokeWidth={1.5} strokeDasharray="5 4" strokeOpacity={0.75} dot={false} isAnimationActive={false} connectNulls={false} />
               ))}
             {data.length > 12 && (
-              <Brush dataKey="t" height={22} travellerWidth={8} stroke="var(--axis)" fill="var(--surface-2)" tickFormatter={(v: number) => fmtHour(v, tz)} />
+              <Brush dataKey="t" height={22} travellerWidth={8} stroke="var(--muted)" fill="var(--surface-2)" tickFormatter={(v: number) => fmtHour(v, tz)} />
             )}
-          </LineChart>
+          </ComposedChart>
         </ResponsiveContainer>
         {synthetic && <div className="watermark">СИНТЕТИКА</div>}
       </div>
