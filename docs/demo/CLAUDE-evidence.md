@@ -1,5 +1,11 @@
 # UI evidence — real runs (CLAUDE)
 
+> **Layout note (17:40).** Frames 1–3 below were captured at 15:07 on the earlier dashboard layout. The final `main` (6ceab13) uses the SAMAL
+> layout: a landing page first, then the dashboard via «Open dashboard» / «Dashboard» or `/#/dashboard`. The issue hour is fixed at
+> 17:00 UTC+5 (12:00 UTC) per the strict-audit fix. The data flow, agent events, provenance fields, comparison and CSV are the same; current
+> screenshots: [desktop](CLAUDE-FE-dashboard-desktop.png), [narrow](CLAUDE-FE-dashboard-narrow-500.png). The time-gate row now reads
+> «По допущению +9 ч — до выпуска; публикация не подтверждена».
+
 Captured 2026-09-23 ~15:07 UTC+5 on laptop 2 with headless Edge against the **real** team stack:
 `web/` (agent/claude-review 8c054b9) → Vite proxy `/api` → C4 FastAPI on `127.0.0.1:8000` with the C2 runner
 (`FORECAST_RUNNER=src.agent.runner:run_forecast`, deterministic agent mode, model `nwp-tabular-c63564f5a8cc`) and C1 weather cache
@@ -51,7 +57,7 @@ Run IDs are local to that API database (`.local/runs.sqlite3`); on another machi
 
 ## Reproduce the scenario (≈2 min once the API is ready)
 
-1. Start the API per README (C4) and the UI: `cd web && npm ci && npm run dev` → http://localhost:5173.
+1. Start the API per README and the UI: `cd web && npm ci && npm run dev` → http://localhost:5173 → «Open dashboard» (or `/#/dashboard`).
 2. Issue 31.01.2026, 17:00 UTC+5, 48 h → «Запустить агента». Expect `completed`, 96 rows, 14 events, trust strip.
 3. «Обновить погоду (+24 ч)» → new issue 01.02 17:00 with run 01.02 00Z, dashed overlay + Δ on common hours.
 4. «Прогнать весь февраль» → 29 runs (~25 s on laptop 2), coverage 672/672; «CSV всех выпусков».
@@ -82,8 +88,8 @@ Run IDs are local to that API database (`.local/runs.sqlite3`); on another machi
 
 | Time | Click | Say (one line) |
 |---|---|---|
-| 0:00–0:20 | Open http://localhost:5173 | «Диспетчер ВЭС Шелек: почасовой прогноз двух турбин на 24–48 ч; мощность нормализованная, не МВт.» |
-| 0:20–0:50 | Дата 31.01.2026, 17:00 UTC+5, 48 ч → «Запустить агента» | «Агент сам вызывает инструменты: погода → данные → модель → анализ → экспорт; журнал справа — реальные события API, не анимация.» |
+| 0:00–0:20 | Open http://localhost:5173 → «Open dashboard» (or http://localhost:5173/#/dashboard) | «Диспетчер ВЭС Шелек: почасовой прогноз двух турбин на 24–48 ч; мощность нормализованная, не МВт.» |
+| 0:20–0:50 | Календарь 31.01.2026 (выпуск фиксирован 17:00 UTC+5), 48 ч → «Запустить агента» | «Агент сам вызывает инструменты: погода → данные → модель → анализ → экспорт; журнал справа — реальные события API, не анимация.» |
 | 0:50–1:15 | Показать полосу доверия и карточку «Происхождение» | «Погода — архивный прогон ECMWF, взятый только если он считается доступным до выпуска (прогон + 9 ч, это допущение — мы его явно показываем).» |
 | 1:15–1:45 | «Обновить погоду (+24 ч)» | «Новый прогон погоды → агент пересчитывает те же часы; пунктир — прежний выпуск, Δ в таблице — реальное изменение прогноза. Старый результат сохранён.» |
 | 1:45–2:20 | «Прогнать весь февраль» (≈25 с) или «Показать сохранённые выпуски» | «29 выпусков 31.01–28.02, каждый — отдельный запуск агента; покрытие февраля 672/672 ч на турбину; CSV со всеми перекрытиями.» |

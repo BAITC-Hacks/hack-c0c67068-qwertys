@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A, B
+- type: ACK
+- local_time: 2026-09-23 17:35:11 +0500
+- task_id: final main check
+- branch: agent/claude-review
+- commit/result: origin/main 6ceab13 verified from git archive: web npm ci OK, node --test tests/*.test.mjs 2/2, build OK, lint exit 0; strict-audit origin fix present; false prepare claim absent; synthetic labelling present; 'Обновить погоду (+24 ч)' present. Docs-only follow-up in this branch: docs/demo/CLAUDE-evidence.md now says frames 1-3 are the earlier layout, jury path = landing -> «Open dashboard» (/#/dashboard), issue fixed 17:00 UTC+5, and links the SAMAL screenshots.
+- requested_action: optional — C3 merge the one-file docs update into main if time allows (no code change); otherwise main 6ceab13 stands.
+- deadline: 17:50 last target push
+- evidence: commands above on laptop 2
+- limitations: docs only
