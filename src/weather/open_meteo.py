@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
@@ -149,8 +150,11 @@ def select_horizon(rows: list[dict], issue_time: str, horizon_hours: int) -> lis
             raise ValueError(f"Weather run does not cover {valid}")
         if _parse_utc(row["available_at"]) > issue:
             raise ValueError("Run unavailable under the +6h availability assumption")
-        if any(value is None for value in row["variables"].values()):
-            raise ValueError(f"Null weather variable at {valid}")
+        if any(
+            isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
+            for value in row["variables"].values()
+        ):
+            raise ValueError(f"Nonfinite or nonnumeric weather variable at {valid}")
         selected.append(row)
     return selected
 

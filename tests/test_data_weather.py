@@ -24,7 +24,13 @@ class ScadaPreparationTests(unittest.TestCase):
                 writer.writerow(["2026-01-31 0:00:00", 4, 0.2, 10])
                 writer.writerow(["2026-01-31 0:10:00", 6, 0.4, 12])
                 writer.writerow(["2026-01-31 0:10:00", 6, 0.4, 12])
-            rows, report = prepare_hourly(path, "turbine_1", utc_offset_hours=6)
+                writer.writerow(["2026-01-31 0:40:00", 100, 1.0, 100])
+            rows, report = prepare_hourly(
+                path,
+                "turbine_1",
+                utc_offset_hours=6,
+                end_utc=datetime(2026, 1, 30, 18, 30, tzinfo=timezone.utc),
+            )
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]["timestamp"], "2026-01-30T18:00:00Z")
         self.assertEqual(rows[0]["timezone_status"], "inferred")
@@ -32,7 +38,7 @@ class ScadaPreparationTests(unittest.TestCase):
         self.assertEqual(rows[0]["wind_m_s"], 5)
         self.assertIn("duplicate_timestamp", rows[0]["quality_flags"])
         self.assertIn("partial_hour", rows[0]["quality_flags"])
-        self.assertEqual(report["raw_rows"], 3)
+        self.assertEqual(report["raw_rows"], 4)
 
 
 class WeatherSourceTests(unittest.TestCase):
@@ -52,6 +58,9 @@ class WeatherSourceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unavailable"):
             select_horizon(rows, "2026-01-31T00:00Z", 24)
         with self.assertRaisesRegex(ValueError, "does not cover"):
+            select_horizon(rows, "2026-01-31T07:00Z", 24)
+        rows[8]["variables"]["wind_speed_100m_m_s"] = float("nan")
+        with self.assertRaisesRegex(ValueError, "Nonfinite"):
             select_horizon(rows, "2026-01-31T07:00Z", 24)
 
 

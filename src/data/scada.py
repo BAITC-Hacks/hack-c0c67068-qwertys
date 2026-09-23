@@ -66,11 +66,11 @@ def prepare_hourly(
             except (TypeError, ValueError) as error:
                 raise ValueError(f"Invalid SCADA row {line_no}: {error}") from error
             utc = (local - timedelta(hours=utc_offset_hours)).replace(tzinfo=timezone.utc)
+            if start_utc is not None and utc < start_utc:
+                continue
+            if end_utc is not None and utc >= end_utc:
+                continue
             hour = utc.replace(minute=0, second=0, microsecond=0)
-            if start_utc is not None and hour < start_utc:
-                continue
-            if end_utc is not None and hour >= end_utc:
-                continue
             buckets[hour].append((utc, wind, temp, power))
 
     result = []
