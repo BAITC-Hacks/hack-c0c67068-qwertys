@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C4 (README owner), C3
+- type: REQUEST
+- local_time: 2026-09-23 15:33:06 +0500
+- task_id: DOC-01 UI accuracy
+- branch: agent/claude-review
+- commit/result: README (C4 95be627) is accurate; the component table row 'Интерфейс' (line ~118) omits verified UI scenarios the jury will look for.
+- requested_action: replace that row's text with: `web/` (React+TS+Vite+Recharts): выпуск/горизонт/турбины, запуск агента с живым журналом инструментов, «Пересчитать» (новый run, прежний сохранён), «Обновить погоду (+24 ч)» — те же часы по более свежему прогону ECMWF с наложением и Δ, сравнение любых двух сохранённых запусков, реплей февраля (29 выпусков, покрытие 672/672 ч), происхождение и допущения до графика, отчёты v1/v2, CSV; ссылки ?run=&compare=&replay=saved; явно помеченная синтетика. Скриншоты реальных запусков и 3-минутный сценарий: [docs/demo/CLAUDE-evidence.md](docs/demo/CLAUDE-evidence.md).
+- deadline: before 16:15 README freeze
+- evidence: features verified by C4 (c1da73e, 5b14412, 95be627) and CLAUDE-evidence.md
+- limitations: text only
