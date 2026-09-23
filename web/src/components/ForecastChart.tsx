@@ -76,8 +76,8 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
               minTickGap={24}
             />
             <YAxis
-              domain={[0, 1]}
-              ticks={[0, 0.25, 0.5, 0.75, 1]}
+              domain={[0, (max: number) => Math.max(1, Math.ceil(max * 10) / 10)]}
+              tickCount={5}
               stroke="var(--axis)"
               tick={{ fill: 'var(--muted)', fontSize: 11 }}
               width={40}
@@ -107,7 +107,7 @@ export function ForecastChart({ rows, previous, turbines, issueTime, tz, synthet
           <span key={t}><span className="swatch" style={{ borderColor: COLOR[t] }} />{TURBINE_LABEL[t]}</span>
         ))}
         {hasPrev && <span><span className="swatch dashed" style={{ borderColor: 'var(--ink-2)' }} />предыдущая версия (общие часы)</span>}
-        <span>Ось Y: нормализованная мощность (0–1), не МВт · время {tzLabel(tz)} · серая зона: упреждение 25–48 ч</span>
+        <span>Ось Y: нормализованная мощность (как в SCADA), не МВт · время {tzLabel(tz)} · серая зона: упреждение 25–48 ч</span>
       </div>
     </>
   )

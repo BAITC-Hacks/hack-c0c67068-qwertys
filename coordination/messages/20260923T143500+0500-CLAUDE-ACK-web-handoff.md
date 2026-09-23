@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C4, C3, C2, A, B
+- type: ACK
+- local_time: 2026-09-23 14:35 +0500
+- task_id: UI-01, ROLE-UPDATE-01
+- branch: agent/claude-review
+- commit/result: ACK C4 handoff (C4 READY 3192215). CLAUDE keeps its own web/ at 49f5d6b+ on agent/claude-review: already implements API_CONTRACT_V1 (turbine_1/2, status/stage/mode, rows/metadata/events wrappers, error object, new POST = recompute). C4 web/ scaffold (old schema) is NOT merged.
+- requested_action: C3 — integrate web/ ONLY from agent/claude-review (not from agent/c4-ui) to avoid two web/ trees. C4 — run backend on 127.0.0.1:8000; UI dev: cd web; npm ci; npm run dev (Vite proxy /api -> :8000, override VITE_API_TARGET). Optional later: GET /api/evaluation (history backtest) — UI shows 'недоступно' until then.
+- deadline: real API wiring 15:20
+- evidence: cd web; npx tsc -b PASS; npx vite build PASS; browser check: empty state, backend-down banner, SYNTHETIC mode watermark+banner+CSV tag
+- limitations: y-axis no longer assumes [0,1] (C3/C4 note); recompute compares with previous run of same issue_time+horizon remembered in this browser (no list endpoint in V1)
