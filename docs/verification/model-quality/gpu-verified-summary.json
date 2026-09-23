@@ -1,0 +1,101 @@
+{
+  "status": "completed",
+  "device": "cuda",
+  "runtime_seconds": 115.41844137300006,
+  "january_used": false,
+  "dataset_sha256": "b4d01f11d33d485c1a36940b849ba345300698fa306ac98ffcb25749d5458dc0",
+  "turbines": {
+    "turbine_1": {
+      "mean_fold_rmse": {
+        "curve": 0.2667663853341012,
+        "catboost_depth4": 0.26294824007132195,
+        "residual_mlp": 0.26097332449816807,
+        "feature_transformer": 0.2617989174999108
+      },
+      "details": {
+        "residual_mlp": {
+          "status": "completed",
+          "ensemble_seeds": [
+            42,
+            137,
+            2026
+          ],
+          "delta_vs_curve": -0.005793060835933117,
+          "delta_vs_catboost": -0.0019749155731538792,
+          "descriptive_uncertainty": {
+            "method": "2000 paired circular moving-block resamples; blocks of3target days, independently within each outer fold; mean fold RMSE difference neural minus curve",
+            "descriptive_95pct_interval": [
+              -0.02275732613382876,
+              0.01328900664611154
+            ],
+            "limitation": "Reused pretest folds; not a fresh generalization test or multiple-comparison-adjusted significance claim"
+          }
+        },
+        "feature_transformer": {
+          "status": "completed",
+          "ensemble_seeds": [
+            42,
+            137,
+            2026
+          ],
+          "delta_vs_curve": -0.004967467834190387,
+          "delta_vs_catboost": -0.0011493225714111488,
+          "descriptive_uncertainty": {
+            "method": "2000 paired circular moving-block resamples; blocks of3target days, independently within each outer fold; mean fold RMSE difference neural minus curve",
+            "descriptive_95pct_interval": [
+              -0.022595463086655724,
+              0.014040528548866628
+            ],
+            "limitation": "Reused pretest folds; not a fresh generalization test or multiple-comparison-adjusted significance claim"
+          }
+        }
+      }
+    },
+    "turbine_2": {
+      "mean_fold_rmse": {
+        "curve": 0.26795361489618297,
+        "catboost_depth4": 0.2662616076097363,
+        "residual_mlp": 0.26505653324029044,
+        "feature_transformer": 0.26336872732726185
+      },
+      "details": {
+        "residual_mlp": {
+          "status": "completed",
+          "ensemble_seeds": [
+            42,
+            137,
+            2026
+          ],
+          "delta_vs_curve": -0.0028970816558925305,
+          "delta_vs_catboost": -0.0012050743694458355,
+          "descriptive_uncertainty": {
+            "method": "2000 paired circular moving-block resamples; blocks of3target days, independently within each outer fold; mean fold RMSE difference neural minus curve",
+            "descriptive_95pct_interval": [
+              -0.01706909123947147,
+              0.01300133819035341
+            ],
+            "limitation": "Reused pretest folds; not a fresh generalization test or multiple-comparison-adjusted significance claim"
+          }
+        },
+        "feature_transformer": {
+          "status": "completed",
+          "ensemble_seeds": [
+            42,
+            137,
+            2026
+          ],
+          "delta_vs_curve": -0.004584887568921114,
+          "delta_vs_catboost": -0.0028928802824744193,
+          "descriptive_uncertainty": {
+            "method": "2000 paired circular moving-block resamples; blocks of3target days, independently within each outer fold; mean fold RMSE difference neural minus curve",
+            "descriptive_95pct_interval": [
+              -0.017343790421849945,
+              0.009598021115493563
+            ],
+            "limitation": "Reused pretest folds; not a fresh generalization test or multiple-comparison-adjusted significance claim"
+          }
+        }
+      }
+    }
+  }
+}

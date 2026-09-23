@@ -78,6 +78,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [evaluation, setEvaluation] = useState<EvaluationV1 | null>(null)
+  const [evaluationV2, setEvaluationV2] = useState<EvaluationV1 | null>(null)
 
   const forecastCache = useRef(new Map<string, ForecastResponse>())
   const pollRef = useRef<number | null>(null)
@@ -121,6 +122,11 @@ export default function App() {
           })
           .catch(() => {})
         api.evaluation().then((e) => alive && setEvaluation(e)).catch(() => alive && setEvaluation(null))
+        api
+          .evaluationV2()
+          // only accept a report that really is a different (post-test) experiment
+          .then((e) => alive && setEvaluationV2(e?.experiment_label || e?.january_test_previously_viewed ? e : null))
+          .catch(() => alive && setEvaluationV2(null))
       } catch (e) {
         if (!alive) return
         setHealth(null)
@@ -156,6 +162,8 @@ export default function App() {
 
   /** Load any saved run as the comparison layer (only real runs; common valid hours are matched later). */
   const compareGen = useRef(0)
+  // When set, the next completed run is compared with this run instead of the default previous version.
+  const pendingCompare = useRef<string | null>(null)
   const selectCompare = useCallback(
     async (id: string | null) => {
       const gen = ++compareGen.current // only the latest comparison request may write state
@@ -197,7 +205,10 @@ export default function App() {
             const f = await getForecast(rec.run_id)
             if (stale()) return
             setForecast(f)
-            await loadPrevious(rec, all)
+            const target = pendingCompare.current
+            pendingCompare.current = null
+            if (target && target !== rec.run_id) await selectCompare(target)
+            else await loadPrevious(rec, all)
           }
           if (!stale()) setBusy(false)
           return
@@ -214,7 +225,7 @@ export default function App() {
         setError(errText(e))
       }
     },
-    [getForecast, loadPrevious],
+    [getForecast, loadPrevious, selectCompare],
   )
 
   const openRun = useCallback(
@@ -244,12 +255,13 @@ export default function App() {
     [poll, runs],
   )
 
-  const launch = async () => {
+  const launch = async (req: RunRequest = request, compareWith: string | null = null) => {
     setError(null)
     setBusy(true)
+    pendingCompare.current = compareWith
     try {
-      const s = await api.createRun(request)
-      const rec: RunRecord = { run_id: s.run_id, request, created_at: new Date().toISOString(), synthetic: false }
+      const s = await api.createRun(req)
+      const rec: RunRecord = { run_id: s.run_id, request: req, created_at: new Date().toISOString(), synthetic: false }
       const next = [rec, ...runs]
       setRuns(next)
       stopPolling()
@@ -279,13 +291,53 @@ export default function App() {
     openRun(rec, next)
   }
 
+  /** Honest input update: same target hours, later issue that can use a newer ECMWF run (cache has one 00Z run/day). */
+  const nextIssue = current && !current.synthetic ? new Date(Date.parse(current.request.issue_time) + 24 * 3600_000) : null
+  const nextIssueOk = !!nextIssue && nextIssue.getTime() <= Date.parse('2026-02-28T23:59:59Z')
+  const updateWeather = () => {
+    if (!current || !nextIssue) return
+    const req: RunRequest = { ...current.request, issue_time: nextIssue.toISOString() }
+    const loc = localDateHour(req.issue_time)
+    setDate(loc.date)
+    setHour(loc.hour)
+    launch(req, current.run_id)
+  }
+
+  // Deep links: ?run=<id>&compare=<id>&tz=local|scada|utc (reproducible demo/evidence frames)
+  const deepLinkDone = useRef(false)
+  useEffect(() => {
+    if (deepLinkDone.current || !health) return
+    const qs = new URLSearchParams(window.location.search)
+    const tzq = qs.get('tz')
+    if (tzq === 'local' || tzq === 'scada' || tzq === 'utc') setTz(tzq)
+    const rid = qs.get('run')
+    if (!rid) {
+      deepLinkDone.current = true
+      return
+    }
+    const rec = runs.find((r) => r.run_id === rid)
+    if (!rec) return // wait for server run list
+    deepLinkDone.current = true
+    pendingCompare.current = qs.get('compare')
+    openRun(rec, runs)
+  }, [health, runs, openRun])
+  useEffect(() => {
+    if (!deepLinkDone.current) return
+    const qs = new URLSearchParams()
+    if (currentId && !current?.synthetic) qs.set('run', currentId)
+    if (compareId) qs.set('compare', compareId)
+    if (tz !== 'local') qs.set('tz', tz)
+    const url = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}`
+    window.history.replaceState(null, '', url)
+  }, [currentId, compareId, tz, current?.synthetic])
+
   const retry = () => {
     if (current && !current.synthetic) {
       setDate(localDateHour(current.request.issue_time).date)
       setHour(localDateHour(current.request.issue_time).hour)
       setHorizon(current.request.horizon_hours)
-    }
-    launch()
+      launch(current.request)
+    } else launch()
   }
 
   /** Other real runs whose valid window overlaps the current one. */
@@ -432,17 +484,30 @@ export default function App() {
             </div>
           </div>
           <span className="spacer" />
-          <button className="btn primary" type="button" onClick={launch} disabled={busy || !health}>
+          <button className="btn primary" type="button" onClick={() => launch()} disabled={busy || !health}>
             {busy ? 'Агент работает…' : 'Запустить агента'}
           </button>
           <button
             className="btn"
             type="button"
-            onClick={launch}
+            onClick={() => launch()}
             disabled={busy || !health || !current || current.synthetic}
             title="Новый запуск с теми же параметрами: агент проверит, появились ли более новые входные данные; прежний результат сохраняется"
           >
             Пересчитать
+          </button>
+          <button
+            className="btn"
+            type="button"
+            onClick={updateWeather}
+            disabled={busy || !backendReady || !current || current.synthetic || !nextIssueOk}
+            title={
+              nextIssueOk
+                ? 'Новый выпуск на 24 ч позже: агент берёт более свежий прогон ECMWF и пересчитывает те же целевые часы; прежний результат сохраняется и накладывается пунктиром'
+                : 'Доступно после реального запуска в пределах 31.01–28.02'
+            }
+          >
+            Обновить погоду (+24 ч)
           </button>
           {!backendReady && (
             <button className="btn" type="button" onClick={launchSynthetic} disabled={busy}>
@@ -516,7 +581,11 @@ export default function App() {
                 )}
                 <span style={{ color: 'var(--ink-2)', fontSize: 12.5 }}>
                   {forecast.rows.length} строк · единица: {forecast.unit}
-                  {previous ? ` · пунктир и Δ: ${previous.run_id}` : sameIssueCount > 1 ? '' : ' · «Пересчитать» создаст вторую версию для сравнения'}
+                  {previous
+                    ? ` · пунктир и Δ: ${previous.run_id.slice(0, 10)} (прогон погоды ${fmtIso(previous.metadata.weather_run_time, tz) ?? '?'}) vs текущий (прогон ${fmtIso(forecast.metadata.weather_run_time, tz) ?? '?'})`
+                    : sameIssueCount > 1
+                      ? ''
+                      : ' · «Обновить погоду (+24 ч)» пересчитает те же часы по более свежему прогону'}
                 </span>
               </div>
             )}
@@ -530,6 +599,8 @@ export default function App() {
           )}
 
           <ReplayPanel
+            saved={runs}
+            autoLoadSaved={new URLSearchParams(window.location.search).get('replay') === 'saved'}
             hour={hour}
             tz={tz}
             turbines={shownTurbines}
@@ -541,7 +612,7 @@ export default function App() {
             }}
           />
 
-          <EvaluationPanel evaluation={evaluation} currentModel={forecast?.metadata.model_version ?? null} />
+          <EvaluationPanel evaluation={evaluation} evaluationV2={evaluationV2} currentModel={forecast?.metadata.model_version ?? null} />
         </div>
 
         <aside className="side-col">

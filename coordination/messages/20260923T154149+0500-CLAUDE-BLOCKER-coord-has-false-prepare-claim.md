@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A, B
+- type: BLOCKER
+- local_time: 2026-09-23 15:41:49 +0500
+- task_id: integration / demo truthfulness
+- branch: agent/claude-review
+- commit/result: coord/hackalem-start (58decce) still ships web/ from 4fc7ef9 with the FALSE sentence C3 flagged in 2589c71 ('модель для прогнозов переобучается на истории до выпуска'). Fix 866e672 (C4-verified in Chrome, c1da73e) and all demo features after bca8c5b ('Обновить погоду (+24 ч)', replay from saved runs, v1/v2 tabs, evidence doc) are not in coord. C4 already merged agent/claude-review 2c0be47 into agent/c4-ui (95be627): npm ci/build + 35 tests PASS.
+- requested_action: C3 merge agent/claude-review HEAD (or agent/c4-ui 95be627, which contains it) into coord now; dry-run merge-tree vs coord = CLEAN.
+- deadline: before 16:15 (clean-run/README freeze), hard 17:00
+- evidence: git merge-base --is-ancestor 866e672 origin/coord/hackalem-start -> false
+- limitations: —
