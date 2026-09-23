@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "device": "cuda",
+  "hardware": "Tesla T4",
+  "runtime_seconds": 107.970075641,
+  "quality_gate_passed": false,
+  "production_promoted": false,
+  "turbines": {
+    "turbine_1": {
+      "eligible": false,
+      "mean_fold_rmse": {
+        "curve": 0.2553775189327187,
+        "curve_recent91": 0.2566194177586725,
+        "catboost": 0.25042769181011865,
+        "mlp_raw": 0.2497644203860224,
+        "mlp_shrink": 0.24889839331121075
+      },
+      "failures": [
+        "less than2percent mean RMSE gain vs catboost",
+        "2025-12-01: absolute bias regression >.01 vs curve_recent91",
+        "2025-12-15: wind_ge8 >5percent RMSE regression vs curve",
+        "descriptive delta interval upper endpoint is not negative"
+      ],
+      "descriptive_95pct_block_interval_shrink_minus_curve": [
+        -0.012536610331832107,
+        0.00010119428791061879
+      ]
+    },
+    "turbine_2": {
+      "eligible": false,
+      "mean_fold_rmse": {
+        "curve": 0.2536854669551229,
+        "curve_recent91": 0.2559319400033709,
+        "catboost": 0.2560359834476548,
+        "mlp_raw": 0.24969814902074713,
+        "mlp_shrink": 0.24910720072576079
+      },
+      "failures": [
+        "less than2percent mean RMSE gain vs curve",
+        "2025-03-01: wind_ge8 >5percent RMSE regression vs curve",
+        "2025-03-01: wind_ge8 >5percent RMSE regression vs curve_recent91",
+        "2025-03-01: absolute bias regression >.01 vs curve",
+        "2025-03-01: absolute bias regression >.01 vs curve_recent91",
+        "2025-06-01: absolute bias regression >.01 vs curve_recent91",
+        "2025-12-01: absolute bias regression >.01 vs curve",
+        "2025-12-01: absolute bias regression >.01 vs curve_recent91",
+        "descriptive delta interval upper endpoint is not negative"
+      ],
+      "descriptive_95pct_block_interval_shrink_minus_curve": [
+        -0.010125787202198736,
+        0.0015041122286490692
+      ]
+    }
+  }
+}

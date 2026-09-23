@@ -1,0 +1,14 @@
+{
+  "folds": 12,
+  "weights": 36,
+  "catboost_models": 12,
+  "csv_rows": 13842,
+  "slice_metrics_checked": 820,
+  "january_rows": 0,
+  "max_saved_weight_cpu_vs_cuda_error": 1.4156103134155273e-07,
+  "max_catboost_reload_error": 0.0,
+  "status": "integrity_metrics_and_gate_verified",
+  "archive_sha256": "908498c58a3c41d913a0258565e5f3c507200a2da5bd031373668de5cea3b67e",
+  "production_promoted": false,
+  "quality_gate_passed": false
+}
