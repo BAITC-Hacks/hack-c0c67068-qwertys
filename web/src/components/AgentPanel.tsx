@@ -4,7 +4,7 @@ import { fmtIso, type DisplayTz } from '../lib/time'
 
 const STAGES: { key: Exclude<Stage, null>; label: string }[] = [
   { key: 'weather', label: 'Погода' },
-  { key: 'prepare', label: 'Данные' },
+  { key: 'prepare', label: 'Подготовка' },
   { key: 'forecast', label: 'Модель' },
   { key: 'validate', label: 'Анализ' },
   { key: 'export', label: 'Экспорт' },
