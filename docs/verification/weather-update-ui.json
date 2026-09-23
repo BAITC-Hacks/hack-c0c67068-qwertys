@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "first_run_id": "5c22cada4d3446b193c0c4f445d54519",
+  "second_run_id": "8a5b1213819149fa874cb175812b432f",
+  "first_weather_run": "2026-01-31T00:00:00Z",
+  "second_weather_run": "2026-02-01T00:00:00Z",
+  "common_rows": 48,
+  "changed_predictions": 46,
+  "all_displayed_deltas_match": true,
+  "old_result_retained": true,
+  "errors": []
+}

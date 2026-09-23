@@ -173,12 +173,21 @@ def test_readiness_failure_is_safe(tmp_path):
 
 def test_evaluation_is_exact_published_report_or_explicitly_unavailable(tmp_path, monkeypatch):
     path = tmp_path / 'evaluation.json'
+    v2_path = tmp_path / 'evaluation-v2.json'
     monkeypatch.setenv('EVALUATION_PATH', str(path))
+    monkeypatch.setenv('EVALUATION_V2_PATH', str(v2_path))
     with TestClient(create_app(store_path=tmp_path / 'runs.db')) as client:
         assert client.get('/api/evaluation').status_code == 404
         report = {'unit': 'normalized_power', 'turbines': {}, 'february_metrics': None}
         path.write_text(json.dumps(report), encoding='utf-8')
         assert client.get('/api/evaluation').json() == report
+        assert client.get('/api/evaluation?variant=v1').json() == report
+        assert client.get('/api/evaluation?variant=v2').status_code == 404
+        v2 = {**report, 'experiment_label': 'post-test-extended-history', 'january_test_previously_viewed': True}
+        v2_path.write_text(json.dumps(v2), encoding='utf-8')
+        assert client.get('/api/evaluation?variant=v2').json() == v2
+        assert client.get('/api/evaluation').json() == report  # no silent default-model switch
+        assert client.get('/api/evaluation?variant=../../private').status_code == 422
         path.write_text('not json private-value', encoding='utf-8')
         response = client.get('/api/evaluation')
         assert response.status_code == 503
