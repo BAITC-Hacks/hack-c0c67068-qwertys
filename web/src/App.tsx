@@ -380,7 +380,6 @@ export default function App() {
           </p>
         </div>
         <div className="chips" aria-live="polite">
-          <a className="chip" href="#/">← Главная</a>
           <span className={`chip ${backendReady ? 'good' : health ? 'warn' : 'bad'}`}>
             <span className="dot" />
             {backendReady ? 'Backend готов' : health ? 'Модель ещё не подключена' : 'Backend недоступен'}

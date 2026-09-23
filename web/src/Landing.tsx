@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import SiteHeader, { Mark } from './components/SiteHeader'
 import './landing.css'
 
 const STEPS = [
@@ -8,15 +9,6 @@ const STEPS = [
   { title: 'Analysis', text: 'Checks issue time, horizon, duplicates and gaps' },
   { title: 'Export', text: 'Table, agent action log and CSV for the dispatcher' },
 ]
-
-/** Turbine mark shared with the dashboard masthead */
-const Mark = () => (
-  <svg className="lp-mark" viewBox="0 0 32 32" aria-hidden>
-    <circle cx="16" cy="13" r="2.2" />
-    <path d="M16 13 L16 2.5 M16 13 L25.2 18.3 M16 13 L6.8 18.3" />
-    <path d="M16 15.2 L16 30" className="mast" />
-  </svg>
-)
 
 /** Hero: variant 3a from design_handoff_wind_landing — full-screen 3D scene, nothing on top by design. */
 function Hero() {
@@ -59,15 +51,7 @@ function Hero() {
       <div ref={stageRef} className="hero-stage" role="img" aria-label="Low-poly wind farm on the steppe, wind blowing across it" />
       <div ref={fadeRef} className="hero-fade" />
       <h1 className="hero-title">SAMAL</h1>
-      <header className="lp-header">
-        <span className="lp-logo">
-          <Mark />
-          SAMAL
-        </span>
-        <a className="lp-nav" href="#/dashboard">
-          Dashboard
-        </a>
-      </header>
+      <SiteHeader overlay href="#/dashboard" label="Dashboard" />
     </section>
   )
 }

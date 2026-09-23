@@ -1,7 +1,8 @@
 /* ==========================================================================
-   Shelek wind dispatch console — visual system
-   Night-steppe palette, Onest (UI) + JetBrains Mono (numbers, metadata).
-   Series colours --t1/--t2 are CVD-validated: keep T1/T2 identity everywhere.
+   SAMAL dispatch console — visual system, monochrome to match the landing
+   Neutral black/white greys (no blue tint), Onest (UI) + JetBrains Mono (numbers).
+   Series: T1 = ink (white on dark / black on light), T2 = orange — separated by
+   lightness and hue, so CVD-safe; keep T1/T2 identity everywhere.
    Status colours (--good/--warning/--critical) are for state only, never series.
    ========================================================================== */
 
@@ -10,25 +11,25 @@
   --font-ui: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
-  --page: #f3f1ea;
-  --page-glow-1: rgba(11, 122, 104, 0.10);
-  --page-glow-2: rgba(42, 120, 214, 0.08);
-  --surface: #fffefa;
-  --surface-2: #f2f0e9;
-  --surface-3: #e9e6dc;
-  --glass: rgba(255, 254, 250, 0.82);
-  --ink: #0e141a;
-  --ink-2: #47525e;
-  --muted: #5c6672;
-  --grid: #e7e3d8;
-  --axis: #cdc8ba;
-  --border: rgba(14, 20, 26, 0.10);
-  --border-strong: rgba(14, 20, 26, 0.18);
-  --accent: #0b7a68;
+  --page: #f5f5f4;
+  --page-glow-1: rgba(0, 0, 0, 0.035);
+  --page-glow-2: rgba(0, 0, 0, 0.02);
+  --surface: #ffffff;
+  --surface-2: #f3f3f2;
+  --surface-3: #e8e8e6;
+  --glass: rgba(255, 255, 255, 0.82);
+  --ink: #0b0b0b;
+  --ink-2: #444444;
+  --muted: #666666;
+  --grid: #e6e6e4;
+  --axis: #c8c8c5;
+  --border: rgba(0, 0, 0, 0.10);
+  --border-strong: rgba(0, 0, 0, 0.18);
+  --accent: #0b0b0b;
   --accent-ink: #ffffff;
-  --accent-soft: #dcefe9;
-  --accent-glow: rgba(11, 122, 104, 0.28);
-  --t1: #2a78d6;
+  --accent-soft: #ebebe9;
+  --accent-glow: rgba(0, 0, 0, 0.22);
+  --t1: #111111;
   --t2: #eb6834;
   --good: #0ca30c;
   --good-ink: #006300;
@@ -37,7 +38,7 @@
   --critical: #d03b3b;
   --synthetic-bg: #fff4d6;
   --synthetic-ink: #6b4a00;
-  --shadow: 0 1px 2px rgba(14, 20, 26, 0.04), 0 8px 24px -12px rgba(14, 20, 26, 0.12);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(0, 0, 0, 0.12);
   --radius: 14px;
   --radius-sm: 9px;
 
@@ -53,25 +54,25 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --page: #080c11;
-    --page-glow-1: rgba(52, 209, 176, 0.10);
-    --page-glow-2: rgba(57, 135, 229, 0.09);
-    --surface: #0f151c;
-    --surface-2: #151d26;
-    --surface-3: #1c2631;
-    --glass: rgba(13, 19, 26, 0.78);
-    --ink: #edf2f6;
-    --ink-2: #a7b4c1;
-    --muted: #8594a2;
-    --grid: #1b2530;
-    --axis: #2b3844;
-    --border: rgba(170, 205, 230, 0.09);
-    --border-strong: rgba(170, 205, 230, 0.18);
-    --accent: #34d1b0;
-    --accent-ink: #04211b;
-    --accent-soft: rgba(52, 209, 176, 0.12);
-    --accent-glow: rgba(52, 209, 176, 0.35);
-    --t1: #3987e5;
+    --page: #0a0a0a;
+    --page-glow-1: rgba(255, 255, 255, 0.045);
+    --page-glow-2: rgba(255, 255, 255, 0.025);
+    --surface: #121212;
+    --surface-2: #1a1a1a;
+    --surface-3: #242424;
+    --glass: rgba(14, 14, 14, 0.78);
+    --ink: #f2f2f2;
+    --ink-2: #b4b4b4;
+    --muted: #8e8e8e;
+    --grid: #1f1f1f;
+    --axis: #343434;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.18);
+    --accent: #f2f2f2;
+    --accent-ink: #0a0a0a;
+    --accent-soft: rgba(255, 255, 255, 0.09);
+    --accent-glow: rgba(255, 255, 255, 0.22);
+    --t1: #f2f2f2;
     --t2: #d95926;
     --good-ink: #3ccf5a;
     --synthetic-bg: #3a2e0a;
@@ -96,6 +97,40 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
 ::selection { background: var(--accent-soft); }
 
 .app { max-width: 1480px; margin: 0 auto; padding: 18px 20px 8px; display: grid; gap: 14px; }
+
+/* ---------- SAMAL brand bar (landing + dashboard) ---------- */
+.site-header {
+  /* content lines up with .app (max 1480px, 20px gutter) */
+  --site-pad: max(22px, calc((100% - 1480px) / 2 + 22px));
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px var(--site-pad); color: var(--ink);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%);
+}
+.site-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 800; letter-spacing: 0.14em; }
+.mark-icon { flex: none; width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.mark-icon circle { fill: currentColor; stroke: none; }
+.mark-icon .mast { stroke-width: 1.6; opacity: 0.7; }
+.site-header .mark-icon path:not(.mast) { transform-box: view-box; transform-origin: 16px 13px; animation: rotor 7s linear infinite; }
+.site-nav {
+  color: inherit; text-decoration: none; font-size: 12.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  padding-bottom: 3px; border-bottom: 1px solid color-mix(in srgb, currentColor 50%, transparent); transition: border-color 0.15s;
+}
+.site-nav:hover { border-bottom-color: currentColor; }
+.site-nav:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 2px; }
+/* landing: floats over the 3D scene, always light-on-dark */
+.site-header.overlay {
+  position: absolute; top: 0; left: 0; right: 0; --site-pad: 32px;
+  color: #f6f6f4; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
+  background: rgba(10, 10, 10, 0.28); border-bottom-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.5);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .site-header { background: var(--surface); }
+  .site-header.overlay { background: rgba(10, 10, 10, 0.55); }
+}
+@media (max-width: 560px) { .site-header, .site-header.overlay { --site-pad: 16px; padding-block: 12px; } }
 
 /* ---------- masthead ---------- */
 .topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 4px 2px; }
@@ -124,9 +159,6 @@ code { font-family: var(--font-mono); font-size: 0.92em; }
   border: 1px solid var(--border); background: var(--surface);
   font-size: 12px; color: var(--ink-2); white-space: nowrap; font-family: var(--font-mono); letter-spacing: -0.01em;
 }
-a.chip { text-decoration: none; transition: border-color 0.15s, color 0.15s; }
-a.chip:hover { border-color: var(--accent); color: var(--ink); }
-a.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
 .chip.good .dot { background: var(--good); box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); animation: beacon 2.4s ease-out infinite; }
 .chip.warn .dot { background: var(--warning); }
@@ -210,6 +242,7 @@ a.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   background: var(--surface-2); cursor: pointer; font-weight: 600; font-size: 13.5px; white-space: nowrap;
   transition: transform 0.12s, background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
+a.btn { color: var(--ink); } /* link buttons (CSV) must not fall back to the browser's blue link colour */
 .btn:hover:not(:disabled) { border-color: var(--accent); background: var(--surface-3); }
 .btn:active:not(:disabled) { transform: translateY(1px); }
 .btn.primary {

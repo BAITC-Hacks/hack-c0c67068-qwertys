@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import Landing from './Landing.tsx'
+import SiteHeader from './components/SiteHeader.tsx'
 
 // Hash routes work unchanged when FastAPI serves web/dist: #/ landing, #/dashboard dispatcher console.
 // Older evidence links (?run=…, ?replay=…) without a hash still open the dashboard directly.
@@ -20,7 +21,14 @@ function Root() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [dashboard])
-  return dashboard ? <App /> : <Landing />
+  return dashboard ? (
+    <>
+      <SiteHeader href="#/" label="Home" />
+      <App />
+    </>
+  ) : (
+    <Landing />
+  )
 }
 
 createRoot(document.getElementById('root')!).render(
