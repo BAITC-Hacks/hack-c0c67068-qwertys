@@ -18,7 +18,7 @@ import { KpiStrip } from './components/KpiStrip'
 import { TrustStrip } from './components/TrustStrip'
 import { ProvenanceCard } from './components/ProvenanceCard'
 import { ReplayPanel } from './components/ReplayPanel'
-import { fmtIso, issueTimeFromLocal, localDateHour, replayDates, tzLabel, type DisplayTz } from './lib/time'
+import { CACHED_ISSUE_HOUR_LOCAL, cachedIssueTime, isSupportedCachedIssue, nextCachedIssue, fmtIso, localDateHour, replayDates, tzLabel, type DisplayTz } from './lib/time'
 
 const ALL_TURBINES: TurbineId[] = ['turbine_1', 'turbine_2']
 const RUNS_KEY = 'wind-ui-runs-v1'
@@ -64,7 +64,6 @@ export default function App() {
   const [healthErr, setHealthErr] = useState<string | null>(null)
   const [tz, setTz] = useState<DisplayTz>('local')
   const [date, setDate] = useState('2026-01-31')
-  const [hour, setHour] = useState(17) // 17:00 UTC+5 = 12:00 UTC: 00Z run + 9 h availability rule (C3 BLOCKER 14:35)
   const [horizon, setHorizon] = useState<24 | 48>(48)
   const [shown, setShown] = useState<TurbineId[]>(ALL_TURBINES)
 
@@ -89,8 +88,8 @@ export default function App() {
   const synthetic = !!current?.synthetic
   const backendReady = !!health?.forecast_ready
   const request: RunRequest = useMemo(
-    () => ({ issue_time: issueTimeFromLocal(date, hour), turbine_ids: ALL_TURBINES, horizon_hours: horizon }),
-    [date, hour, horizon],
+    () => ({ issue_time: cachedIssueTime(date), turbine_ids: ALL_TURBINES, horizon_hours: horizon }),
+    [date, horizon],
   )
 
   // Health + optional history evaluation, re-checked every 10 s.
@@ -241,7 +240,6 @@ export default function App() {
       setEvents([])
       const loc = localDateHour(rec.request.issue_time)
       setDate(loc.date)
-      setHour(loc.hour)
       setHorizon(rec.request.horizon_hours)
       if (rec.synthetic) {
         setBusy(false)
@@ -256,6 +254,10 @@ export default function App() {
   )
 
   const launch = async (req: RunRequest = request, compareWith: string | null = null) => {
+    if (!isSupportedCachedIssue(req.issue_time)) {
+      setError('Для подготовленного кэша выберите дату 31.01–28.02 и выпуск 17:00 UTC+5 (12:00 UTC). Сохранённый результат доступен для просмотра.')
+      return
+    }
     setError(null)
     setBusy(true)
     pendingCompare.current = compareWith
@@ -292,14 +294,13 @@ export default function App() {
   }
 
   /** Honest input update: same target hours, later issue that can use a newer ECMWF run (cache has one 00Z run/day). */
-  const nextIssue = current && !current.synthetic ? new Date(Date.parse(current.request.issue_time) + 24 * 3600_000) : null
-  const nextIssueOk = !!nextIssue && nextIssue.getTime() <= Date.parse('2026-02-28T23:59:59Z')
+  const nextIssue = current && !current.synthetic ? nextCachedIssue(current.request.issue_time) : null
+  const nextIssueOk = !!nextIssue
   const updateWeather = () => {
     if (!current || !nextIssue) return
-    const req: RunRequest = { ...current.request, issue_time: nextIssue.toISOString() }
+    const req: RunRequest = { ...current.request, issue_time: nextIssue }
     const loc = localDateHour(req.issue_time)
     setDate(loc.date)
-    setHour(loc.hour)
     launch(req, current.run_id)
   }
 
@@ -334,7 +335,6 @@ export default function App() {
   const retry = () => {
     if (current && !current.synthetic) {
       setDate(localDateHour(current.request.issue_time).date)
-      setHour(localDateHour(current.request.issue_time).hour)
       setHorizon(current.request.horizon_hours)
       launch(current.request)
     } else launch()
@@ -411,7 +411,7 @@ export default function App() {
           <span>Ошибка: {error}</span>
           <span className="banner-actions">
             {current && !current.synthetic && (
-              <button className="btn" type="button" onClick={retry} disabled={busy || !health}>
+              <button className="btn" type="button" onClick={retry} disabled={busy || !health || !isSupportedCachedIssue(current.request.issue_time)}>
                 Повторить запуск
               </button>
             )}
@@ -436,12 +436,8 @@ export default function App() {
           </label>
           <label className="field">
             <span>Час выпуска (UTC+5)</span>
-            <select value={hour} onChange={(e) => setHour(Number(e.target.value))}>
-              {Array.from({ length: 24 }, (_, h) => (
-                <option key={h} value={h}>
-                  {String(h).padStart(2, '0')}:00
-                </option>
-              ))}
+            <select value={CACHED_ISSUE_HOUR_LOCAL} disabled aria-describedby="origin-support">
+              <option value={CACHED_ISSUE_HOUR_LOCAL}>17:00 · 12:00 UTC</option>
             </select>
           </label>
           <div className="field">
@@ -492,7 +488,7 @@ export default function App() {
             type="button"
             onClick={() => launch()}
             disabled={busy || !health || !current || current.synthetic}
-            title="Новый запуск с теми же параметрами: агент проверит, появились ли более новые входные данные; прежний результат сохраняется"
+            title="Новый запуск с параметрами формы в 17:00 UTC+5; прежний результат сохраняется"
           >
             Пересчитать
           </button>
@@ -504,7 +500,7 @@ export default function App() {
             title={
               nextIssueOk
                 ? 'Новый выпуск на 24 ч позже: агент берёт более свежий прогон ECMWF и пересчитывает те же целевые часы; прежний результат сохраняется и накладывается пунктиром'
-                : 'Доступно после реального запуска в пределах 31.01–28.02'
+                : 'Доступно для выпусков в 17:00 UTC+5; последний выпуск — 28.02'
             }
           >
             Обновить погоду (+24 ч)
@@ -515,6 +511,11 @@ export default function App() {
             </button>
           )}
         </div>
+        <p id="origin-support" className="muted">
+          Подготовленный погодный кэш: ежедневный выпуск в 17:00 UTC+5 (12:00 UTC), 31.01–28.02,
+          горизонты 24 и 48 ч. Произвольный час не поддерживается. Пересчёт +24 ч и февральский replay
+          сохраняют этот час; переключатель часового пояса меняет только отображение.
+        </p>
       </section>
 
       <div className="layout">
@@ -601,7 +602,7 @@ export default function App() {
           <ReplayPanel
             saved={runs}
             autoLoadSaved={new URLSearchParams(window.location.search).get('replay') === 'saved'}
-            hour={hour}
+            hour={CACHED_ISSUE_HOUR_LOCAL}
             tz={tz}
             turbines={shownTurbines}
             enabled={!!health && !busy}
