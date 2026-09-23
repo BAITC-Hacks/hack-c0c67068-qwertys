@@ -62,7 +62,7 @@ export default function App() {
   const [healthErr, setHealthErr] = useState<string | null>(null)
   const [tz, setTz] = useState<DisplayTz>('local')
   const [date, setDate] = useState('2026-01-31')
-  const [hour, setHour] = useState(12)
+  const [hour, setHour] = useState(17) // 17:00 UTC+5 = 12:00 UTC: 00Z run + 9 h availability rule (C3 BLOCKER 14:35)
   const [horizon, setHorizon] = useState<24 | 48>(48)
   const [shown, setShown] = useState<TurbineId[]>(ALL_TURBINES)
 
