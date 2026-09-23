@@ -1,0 +1,187 @@
+{
+  "path": "actual browser UI -> API -> real OpenAI tool calls -> model -> JSON/CSV",
+  "runs": [
+    {
+      "api_run_id": "25c182d9622e445da659dc8282746877",
+      "agent_export_id": "79f7c1cda642443b9d1a0b2f05c17f25",
+      "issue_time": "2026-01-31T12:00:00Z",
+      "horizon_hours": 48,
+      "rows": 96,
+      "csv_exact_numeric_match": true,
+      "events": 21,
+      "llm_responses": 6,
+      "actual_tools": [
+        "weather",
+        "prepare",
+        "forecast",
+        "validate",
+        "export"
+      ],
+      "usage": {
+        "input_tokens": 2978,
+        "output_tokens": 239,
+        "estimated_usd": 0.0015736,
+        "uncertain_request": false,
+        "model": "gpt-4.1-mini-2025-04-14",
+        "price_source": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+        "price_checked": "2026-09-23",
+        "requests": [
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a848d04c87d2ac21c7c815ff90fd",
+            "step": 1,
+            "timestamp": "2026-09-23T10:22:03Z",
+            "input_tokens": 280,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a84a921487d29bcf145cf1894d22",
+            "step": 2,
+            "timestamp": "2026-09-23T10:22:04Z",
+            "input_tokens": 349,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a84be32487d29ef97e8f8cdb583a",
+            "step": 3,
+            "timestamp": "2026-09-23T10:22:06Z",
+            "input_tokens": 433,
+            "output_tokens": 11
+          },
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a84d158887d2b34a8f9f14125ff1",
+            "step": 4,
+            "timestamp": "2026-09-23T10:22:07Z",
+            "input_tokens": 488,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a84ea5e887d29f5d9fe8ccac18f4",
+            "step": 5,
+            "timestamp": "2026-09-23T10:22:09Z",
+            "input_tokens": 680,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_01b629a379d0cb8d016ab3a850491887d287c123cdac35b3cd",
+            "step": 6,
+            "timestamp": "2026-09-23T10:22:12Z",
+            "input_tokens": 748,
+            "output_tokens": 188
+          }
+        ],
+        "elapsed_seconds": 16.062
+      },
+      "metadata": {
+        "model_version": "nwp-tabular-7f1b4f31e9bb",
+        "input_version": "b26cdbdedacfef410a6b1cd1ffd033fc093e8e12634242b18c5826a760382282",
+        "weather_provider": "Open-Meteo Single Runs",
+        "weather_model": "ecmwf_ifs",
+        "weather_run_time": "2026-01-31T00:00:00Z",
+        "weather_available_at": "2026-01-31T09:00:00Z",
+        "availability_basis": "inferred_run_plus_9h",
+        "scada_timezone": "fixed UTC+6 hypothesis",
+        "timezone_status": "inferred",
+        "provenance_status": "unconfirmed"
+      },
+      "csv_sha256": "32ba9ff0125973bee8a15af5ff9cc7e8de4afefddac70a935d3e7b8cd662a014"
+    },
+    {
+      "api_run_id": "65d1b212eee445f8b61405a68f5c1275",
+      "agent_export_id": "ac469e4b49a44cd4a2e8013ec234ba24",
+      "issue_time": "2026-02-01T12:00:00Z",
+      "horizon_hours": 24,
+      "rows": 48,
+      "csv_exact_numeric_match": true,
+      "events": 21,
+      "llm_responses": 6,
+      "actual_tools": [
+        "weather",
+        "prepare",
+        "forecast",
+        "validate",
+        "export"
+      ],
+      "usage": {
+        "input_tokens": 2846,
+        "output_tokens": 231,
+        "estimated_usd": 0.001508,
+        "uncertain_request": false,
+        "model": "gpt-4.1-mini-2025-04-14",
+        "price_source": "https://developers.openai.com/api/docs/models/gpt-4.1-mini",
+        "price_checked": "2026-09-23",
+        "requests": [
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a86c03ac87d2ae7d56bb1316662d",
+            "step": 1,
+            "timestamp": "2026-09-23T10:22:37Z",
+            "input_tokens": 280,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a86cf4a487d2a8d662c31f51f3d1",
+            "step": 2,
+            "timestamp": "2026-09-23T10:22:38Z",
+            "input_tokens": 349,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a86dd5ec87d2bfa0341ded78d2af",
+            "step": 3,
+            "timestamp": "2026-09-23T10:22:40Z",
+            "input_tokens": 433,
+            "output_tokens": 11
+          },
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a86f0db887d283ad253623b9762c",
+            "step": 4,
+            "timestamp": "2026-09-23T10:22:40Z",
+            "input_tokens": 488,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a870051887d2b57cb58c4c249a1b",
+            "step": 5,
+            "timestamp": "2026-09-23T10:22:42Z",
+            "input_tokens": 616,
+            "output_tokens": 10
+          },
+          {
+            "response_id": "resp_0f2f309b1cf92a39016ab3a8715dfc87d2abac34a8cf46e128",
+            "step": 6,
+            "timestamp": "2026-09-23T10:22:44Z",
+            "input_tokens": 680,
+            "output_tokens": 180
+          }
+        ],
+        "elapsed_seconds": 7.797
+      },
+      "metadata": {
+        "model_version": "nwp-tabular-7f1b4f31e9bb",
+        "input_version": "0b17de166bc9a164ab84f4aeee3dbe6aa76a2fb1de640e6a3e5e4d72c04d2935",
+        "weather_provider": "Open-Meteo Single Runs",
+        "weather_model": "ecmwf_ifs",
+        "weather_run_time": "2026-02-01T00:00:00Z",
+        "weather_available_at": "2026-02-01T09:00:00Z",
+        "availability_basis": "inferred_run_plus_9h",
+        "scada_timezone": "fixed UTC+6 hypothesis",
+        "timezone_status": "inferred",
+        "provenance_status": "unconfirmed"
+      },
+      "csv_sha256": "04e79a801426fd2cac756344aafd3959c39fa309b70055123367d690c709d4ad"
+    }
+  ],
+  "limitations": [
+    "V1 model; CPU numerical inference",
+    "weather run+9h and SCADA UTC+6 inferred",
+    "No February labels",
+    "No claim of GPU training"
+  ],
+  "updated_inputs": {
+    "overlapping_rows": 48,
+    "changed_predictions": 46,
+    "mean_absolute_change": 0.06851648533493421,
+    "max_absolute_change": 0.48920250009882776,
+    "old_run_retained": true
+  },
+  "this_verification_estimated_usd": 0.0030816000000000003
+}

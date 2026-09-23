@@ -20,3 +20,11 @@ No paid job or API request started. Other team spending unknown; request coordin
 - Cumulative API estimate$0.002948. Dashboard balance not re-read after these calls, so confirmed remaining credits not claimed to the cent. Local usage ledger `artifacts/openai-usage.json`; per-run reservation$0.20, cumulative local default cap$1, no SDK retries; unknown model tariff rejected.
 - NVIDIA Magician access restored using new controlled tab; Brev organizationQwertyS Billing currentbalance$50.00 and totalcost$0.00. No environment exists yet. Prepared1×T4/16GB VRAM,AWSg4dn.xlarge,16GiBRAM4CPU,128GiBdisk,$0.63compute+$0.02storage=$0.65/hr. Planned≤30min≈$0.325plus any residualstorage. Stop and disk-billing check required after experiment.
 - Deploy not pressed: one pending user confirmation for explicit AWS personal/deployment-data consent, separate from already-authorized spending. Dataset115951bytes SHA94d90c8150e4499c2b1e388e31658366918c9ca973a2df551d05abf60966704a; pinned code d7d8a68; no upload yet. CPU hardware-reproduction1.594s;GPU not run.
+
+## Confirmed update 2026-09-23 15:24 UTC+5
+
+- Two additional **browser-originated live UI/API** runs completed: API25c182d9622e445da659dc8282746877 -> agent79f7c1cda642443b9d1a0b2f05c17f25, 96 rows; API65d1b212eee445f8b61405a68f5c1275 -> agentac469e4b49a44cd4a2e8013ec234ba24, 48 rows. Six real responses and five actual tools each. Combined estimated cost $0.0030816. Exact token/response evidence in research/C2/live-ui-api-evidence.json.
+- Cumulative API estimate **$0.0060296**, derived from actual usage, not a reread of settled billing. No new credit purchase or subscription.
+- Local CPU DL research uses no cloud charges. Optional torch2.14.0+cpu installed from official PyTorch index (124MB wheel).
+- User requested a pre-Deploy check and said they would press Deploy themselves. Prepared configuration reverified: one AWS T4,128GiB,$0.65/hour,$50 balance shown. Setup saved at pinned b05bc81; Python environment + CatBoost1.2.10 + numpy2.2.6 + PyTorch2.14.0 CUDA12.6, nvidia-smi and real GPU forward/backward smoke. Actual driver/CUDA readiness unverified until boot.
+- New private DL input544113bytes SHA256 b4d01f11d33d485c1a36940b849ba345300698fa306ac98ffcb25749d5458dc0. No upload yet. No GPU deployment/spend claimed; maximum one machine and planned stop within30min remain.

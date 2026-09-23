@@ -73,16 +73,17 @@ def compare(rows, curve, candidate, mask=None):
     return result
 
 
-def select_pretest(rows):
+def select_pretest(rows, candidates=None):
     """Two expanding pretest folds; January never participates in selection."""
     folds=[("2025-12-01T00:00:00Z",TRAIN_END),(TRAIN_END,VALID_END)]
-    details={}; scores={name:[] for name in ["nwp_curve",*CANDIDATES]}
+    candidates=candidates or CANDIDATES
+    details={}; scores={name:[] for name in ["nwp_curve",*candidates]}
     for start,end in folds:
         training=[r for r in rows if utc(r["valid_time"])<utc(start)]
         validation=[r for r in rows if utc(r["issue_time"])>=utc(start) and utc(r["valid_time"])<utc(end)]
         if min(len(training),len(validation))<100: raise ValueError("Insufficient pretest fold coverage")
         trial_results={}
-        for name,config in CANDIDATES.items():
+        for name,config in candidates.items():
             curve,model=fit_models(training,config)
             train_result=compare(training,curve,model,config["feature_mask"])
             val_result=compare(validation,curve,model,config["feature_mask"])
@@ -92,14 +93,18 @@ def select_pretest(rows):
         details[start]={"end_exclusive":end,"train_rows":len(training),"validation_rows":len(validation),"baseline":val_result["nwp_curve"],"trials":trial_results}
     means={name:float(np.mean(values)) for name,values in scores.items()}
     selected=min(means,key=means.get)
-    best_candidate=min(CANDIDATES,key=lambda name:means[name])
+    best_candidate=min(candidates,key=lambda name:means[name])
     return selected,best_candidate,{"folds":details,"mean_fold_rmse":means,"selection":"lowest unweighted mean of two fold RMSEs; ties preserve insertion-order baseline"}
 
 
-def train(scada_dir, weather_dir, output_dir, report_path, baseline_only=False):
+def train(scada_dir, weather_dir, output_dir, report_path, baseline_only=False, fixed_candidate=None, experiment_label="v1-pretest-selection"):
     started=time.monotonic(); obs=observations(scada_dir); output=Path(output_dir); output.mkdir(parents=True,exist_ok=True)
     manifest={"training_end_exclusive": FINAL_END, "scada_timezone":"fixed UTC+6 hypothesis", "features":FEATURES, "turbines":{}}
     report={"unit":"normalized_power", "target_split":{"train_end_exclusive":TRAIN_END,"validation_end_exclusive":VALID_END,"test_end_exclusive":FINAL_END}, "protocol":"Split by target timestamp AND issue_time>=fit cutoff for evaluation; preserve overlapping issues, each issue/target pair has weight 1. Select on two pre-January expanding folds; freeze before January test. Complete SCADA hours only. Historical NWP availability conditional (+9h). Bias=mean(prediction-actual). No capacity normalization.", "params":PARAMS,"candidate_grid":CANDIDATES,"versions":{name:importlib.metadata.version(name) for name in ("numpy","pandas","catboost")},"scada_input_sha256":{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(scada_dir).glob("scada-t*-hourly.jsonl")}, "turbines":{}, "february_metrics":None}
+    candidates={fixed_candidate:CANDIDATES[fixed_candidate]} if fixed_candidate else CANDIDATES
+    report["candidate_grid"]=candidates
+    report["experiment_label"]=experiment_label
+    report["january_test_previously_viewed"]=experiment_label.startswith("post-test")
     if baseline_only:
         for turbine in TURBINES:
             rows=[r for stamp,r in obs[turbine].items() if utc(stamp)<utc(FINAL_END)]
@@ -115,7 +120,7 @@ def train(scada_dir, weather_dir, output_dir, report_path, baseline_only=False):
             te=[r for r in rows if utc(r["issue_time"])>=utc(VALID_END) and utc(r["valid_time"])<utc(FINAL_END)]
             if min(len(tr),len(va),len(te))<100:
                 raise ValueError("Insufficient temporal split coverage")
-            selected,best_candidate,selection=select_pretest(rows)
+            selected,best_candidate,selection=select_pretest(rows,candidates)
             config=CANDIDATES[best_candidate]
             curve,candidate=fit_models(tr,config)
             validation=compare(va,curve,candidate,config["feature_mask"])
@@ -153,9 +158,11 @@ def main():
     parser.add_argument("--output-dir",type=Path,default=Path("models/production"))
     parser.add_argument("--report",type=Path,default=Path("artifacts/evaluation.json"))
     parser.add_argument("--baseline-only",action="store_true")
+    parser.add_argument("--fixed-candidate",choices=list(CANDIDATES),help="Run just the frozen named candidate versus baseline; no configuration search")
+    parser.add_argument("--experiment-label",default="v1-pretest-selection")
     args=parser.parse_args()
     if not args.baseline_only and args.weather_dir is None: parser.error("--weather-dir required for candidate")
-    report=train(args.scada_dir,args.weather_dir,args.output_dir,args.report,args.baseline_only)
+    report=train(args.scada_dir,args.weather_dir,args.output_dir,args.report,args.baseline_only,args.fixed_candidate,args.experiment_label)
     print(json.dumps({"model_version":report["model_version"],"runtime_seconds":report["runtime_seconds"],"report":str(args.report)}))
 
 if __name__=="__main__": main()

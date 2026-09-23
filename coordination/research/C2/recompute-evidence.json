@@ -1,0 +1,16 @@
+{
+  "old_run_id": "a4a9a157ff374d0ba137f9bda719efe1",
+  "new_run_id": "a072d05677b648abae9b85167d21adab",
+  "old_weather_run_time": "2026-01-31T00:00:00Z",
+  "new_weather_run_time": "2026-02-01T00:00:00Z",
+  "old_input_version": "b26cdbdedacfef410a6b1cd1ffd033fc093e8e12634242b18c5826a760382282",
+  "new_input_version": "a371c4fd0a193c0cd9847632d1252fc997a0f7f8d0cf93d687ffbe674ce0dd3c",
+  "overlapping_turbine_hours": 48,
+  "changed_predictions": 46,
+  "mean_absolute_change": 0.06851648533493421,
+  "max_absolute_change": 0.48920250009882776,
+  "old_forecast_sha256": "a2b179e7b3690a9155fe1e9997d123df086239b0f4c5344dc68c454faf0245fb",
+  "new_forecast_sha256": "06fa020eb53744bee13c57c879421f44dc05ea2cddf27eb788767d44aa5e17f0",
+  "evidence": "Two real LLM runs, newer weather cycle, overlapping target comparison; old forecast retained",
+  "unit": "normalized_power"
+}
