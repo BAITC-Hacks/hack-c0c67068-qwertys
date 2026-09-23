@@ -15,7 +15,8 @@
 /* brand title in the middle of the scene (user request, overrides the handoff's "nothing on top") */
 .hero-title {
   position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 0 16px; pointer-events: none;
-  font-size: clamp(64px, 15vw, 220px); font-weight: 800; line-height: 1; letter-spacing: 0.08em; color: #f6f3ea;
+  font-family: var(--font-brand); font-size: clamp(32px, 8vw, 120px); font-weight: 200; line-height: 1; color: #f6f3ea;
+  letter-spacing: 0.5em; text-indent: 0.5em; /* indent balances the trailing letter-spacing so the word stays centred */
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), 0 12px 60px rgba(0, 0, 0, 0.35);
 }
 
