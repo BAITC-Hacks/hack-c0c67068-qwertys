@@ -60,7 +60,8 @@ npm.cmd run dev
 | `RUN_STORE_PATH` | SQLite-журнал; по умолчанию `.local/runs.sqlite3` |
 | `FORECAST_RUNNER` | `src.agent.runner:run_forecast`; пусто — честный `not_ready` |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | Только для реализованного LLM-режима ядра; не требуются для запуска HTTP API |
-| `NVIDIA_API_KEY` | Только при фактическом подключении соответствующего провайдера |
+| `WEATHER_FETCH_POLICY` | never — проверенный локальный кэш; missing/refresh — явное обращение к погодному источнику |
+| `OPENAI_SESSION_BUDGET_USD` | Локальный лимит агента; по умолчанию1USD, в пределах согласованного общего бюджета |
 | `EVALUATION_PATH` | JSON исторических метрик; по умолчанию coordination/research/C2/evaluation-v1.json |
 
 Ключи не передаются в браузер и не коммитятся. Детерминированному режиму API-ключ не нужен. Health проверяет наличие модели/погодного кэша; покрытие конкретной даты проверяется в расчёте.
