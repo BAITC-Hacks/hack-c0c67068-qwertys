@@ -66,5 +66,7 @@ export const api = {
   forecast: (id: string) => request<ForecastResponse>(`/runs/${encodeURIComponent(id)}/forecast`),
   events: (id: string) => request<EventsResponse>(`/runs/${encodeURIComponent(id)}/events`),
   evaluation: () => request<EvaluationV1>('/evaluation'),
+  /** Optional post-test experiment report (C2 v2); 404 when the backend does not expose it. */
+  evaluationV2: () => request<EvaluationV1>('/evaluation?variant=v2'),
   exportUrl: (id: string) => `/api/runs/${encodeURIComponent(id)}/export.csv`,
 }

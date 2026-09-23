@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 // Renders C2's history evaluation (coordination/research/C2/evaluation-v*.json) as served by
 // GET /api/evaluation. Only numbers present in the file are shown; February has no labels.
 
@@ -24,6 +26,8 @@ export interface EvaluationV1 {
   evaluation_fit_end_exclusive?: string
   production_fit_end_exclusive?: string
   estimator_relationship?: string
+  experiment_label?: string
+  january_test_previously_viewed?: boolean
 }
 
 const MODEL_LABEL: Record<string, string> = {
@@ -31,12 +35,25 @@ const MODEL_LABEL: Record<string, string> = {
   catboost: 'CatBoost',
   persistence: 'Persistence (baseline)',
 }
+/** selected_on_validation may name a candidate config (e.g. depth4_full) that is reported under `catboost`. */
+const selectedKey = (sel?: string) => (sel && /^depth/.test(sel) ? 'catboost' : sel)
 const BUCKET_LABEL: Record<string, string> = { hours_1_24: '1–24 ч', hours_25_48: '25–48 ч', all_48: '1–48 ч', available_only: 'все доступные' }
 const TURBINE_RU: Record<string, string> = { turbine_1: 'Турбина 1', turbine_2: 'Турбина 2' }
 const d10 = (s?: string) => (s ? s.slice(0, 10) : '?')
 const f3 = (v?: number) => (v == null ? '—' : v.toFixed(3))
 
-export function EvaluationPanel({ evaluation, currentModel }: { evaluation: EvaluationV1 | null; currentModel?: string | null }) {
+export function EvaluationPanel({
+  evaluation: v1,
+  evaluationV2,
+  currentModel,
+}: {
+  evaluation: EvaluationV1 | null
+  evaluationV2?: EvaluationV1 | null
+  currentModel?: string | null
+}) {
+  const [tab, setTab] = useState<'v1' | 'v2'>('v1')
+  const evaluation = tab === 'v2' && evaluationV2 ? evaluationV2 : v1
+  const posttest = evaluation === evaluationV2 && !!evaluationV2
   const turbines = evaluation?.turbines ? Object.entries(evaluation.turbines) : []
   const split = evaluation?.target_split
   return (
@@ -45,6 +62,22 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
         Качество на истории
         <small>фактических данных за февраль нет — метрик за февраль не бывает</small>
       </h2>
+      {v1 && evaluationV2 && (
+        <div className="eval-tabs" role="tablist" aria-label="Версия отчёта">
+          <button type="button" role="tab" aria-selected={tab === 'v1'} onClick={() => setTab('v1')}>
+            v1 · независимая оценка
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'v2'} onClick={() => setTab('v2')}>
+            v2 · post-test эксперимент
+          </button>
+        </div>
+      )}
+      {posttest && (
+        <p className="eval-badge">
+          Январь уже был открыт до этого эксперимента ({evaluation?.experiment_label ?? 'post-test'}). Эти числа — диагностика, не новая
+          независимая проверка и не основание выбирать модель задним числом.
+        </p>
+      )}
       {!turbines.length ? (
         <p className="unknown">Историческая проверка пока не опубликована backend-ом.</p>
       ) : (
@@ -67,7 +100,7 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
               <div key={tid} className="table-scroll">
                 <table>
                   <caption className="eval-cap">
-                    {TURBINE_RU[tid] ?? tid} · выбрано на валидации: <b>{MODEL_LABEL[t.selected_on_validation ?? ''] ?? t.selected_on_validation ?? '?'}</b>
+                    {TURBINE_RU[tid] ?? tid} · выбрано на валидации: <b>{MODEL_LABEL[selectedKey(t.selected_on_validation) ?? ''] ?? t.selected_on_validation ?? '?'}</b>
                     {t.test_coverage && ` · покрытие ${t.test_coverage.labelled_pairs}/${t.test_coverage.possible_pairs}`}
                   </caption>
                   <thead>
@@ -87,7 +120,7 @@ export function EvaluationPanel({ evaluation, currentModel }: { evaluation: Eval
                         .map((b) => {
                           const m = buckets[b] as Metric
                           return (
-                            <tr key={model + b} className={model === t.selected_on_validation ? 'selected' : undefined}>
+                            <tr key={model + b} className={model === selectedKey(t.selected_on_validation) ? 'selected' : undefined}>
                               <td>{MODEL_LABEL[model] ?? model}</td>
                               <td>{BUCKET_LABEL[b]}</td>
                               <td>{f3(m.mae)}</td>

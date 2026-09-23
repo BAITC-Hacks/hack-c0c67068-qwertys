@@ -78,6 +78,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [evaluation, setEvaluation] = useState<EvaluationV1 | null>(null)
+  const [evaluationV2, setEvaluationV2] = useState<EvaluationV1 | null>(null)
 
   const forecastCache = useRef(new Map<string, ForecastResponse>())
   const pollRef = useRef<number | null>(null)
@@ -121,6 +122,11 @@ export default function App() {
           })
           .catch(() => {})
         api.evaluation().then((e) => alive && setEvaluation(e)).catch(() => alive && setEvaluation(null))
+        api
+          .evaluationV2()
+          // only accept a report that really is a different (post-test) experiment
+          .then((e) => alive && setEvaluationV2(e?.experiment_label || e?.january_test_previously_viewed ? e : null))
+          .catch(() => alive && setEvaluationV2(null))
       } catch (e) {
         if (!alive) return
         setHealth(null)
@@ -606,7 +612,7 @@ export default function App() {
             }}
           />
 
-          <EvaluationPanel evaluation={evaluation} currentModel={forecast?.metadata.model_version ?? null} />
+          <EvaluationPanel evaluation={evaluation} evaluationV2={evaluationV2} currentModel={forecast?.metadata.model_version ?? null} />
         </div>
 
         <aside className="side-col">
