@@ -1,13 +1,13 @@
 # C2 resource ledger — sole writer C2
 
-## Current state — 2026-09-23 15:44 UTC+5
+## Current state — 2026-09-23 16:05 UTC+5
 
-- One user-deployed Brev environment47y85unm3, created15:21:27, still Running. AWS T4 16GB; actual Tesla T4 15360MiB, driver595.91.07. Rate panel verified15:43: $0.65/hour ($0.63 compute+$0.02 storage previously itemized).
-- At15:43 elapsed21min33sec since creation: approximately$0.2335 at displayed hourly rate; billing rounding/settlement may differ. Panel still displays$50.00 credit, therefore this is NOT a settled remaining balance. Conservative estimated remaining from original$50: $49.7665 before other provider charges.
-- Latest direct user instruction15:38 explicitly requests another bounded quality cycle. C3 ACK15:41 supersedes previous15:51:27 stop: results16:30, one existingGPU stops no later than16:40. Maximum creation-to-new-stop78min33sec ≈$0.8510 at displayed rate; no added machines, top-ups or increased$50 ceiling.
-- CUDA project DL completed115.418s; CPU equivalent614.75s. Actual weights/reports archived on GPU; local export pending. Initial failed setup repaired via official uv/Python3.12, torch2.14cu126, numpy2.5.3, catboost1.2.10. No account keys or git credentials uploaded.
-- Storage persists after compute Stop at approximately$0.02/hour ($0.48/day). Do not claim zero ongoing charge after Stop. Export and deletion decision remain separate.
-- OpenAI cumulative actual-token estimate unchanged$0.0060296; no new API calls or subscriptions in this quality cycle so far.
+- One user-deployed Brev environment47y85unm3, created15:21:27, provider History confirms **Stopped at16:05:12**, observed16:05. Successful Stop transition entered16:00:25 and took4m48s. The earlier attempt returned to Running, so it was not treated as success.
+- Actual Tesla T4 15360MiB, driver595.91.07. Running rate $0.65/hour ($0.63 compute+$0.02 disk). Creation-to-Stopped43min45s gives a conservative all-period estimate **$0.4740**, before provider rounding/other charges; this is not settled billing. Panel displays **$49.91** credit, potentially delayed. The authorized shared ceiling remains $50; no additional machines, top-ups or subscriptions.
+- Panel now displays **$0.02/hour** disk storage ($0.48/day). Stop does not remove this charge. All artifacts have been exported and verified; specific confirmation for irreversible environment deletion is pending. No deletion performed without that answer.
+- V3 CUDA research completed115.418s, V4 completed107.970s. Total60 outer DL checkpoints plus12 GPU CatBoost models exported. CPU V3 took614.75s; differing early stopping means that runtime ratio is not an equal-work benchmark. Input/ZIP/weight/CSV hashes verified locally. Same-device V3 CUDA restore measured max error0.0 over24weights. No account keys or Git credentials uploaded.
+- Final browser-originated live run31ecc157653948728b3e599a61741ab0: six responses,2846input/181output tokens, estimated **$0.001428**. Cumulative C2 OpenAI actual-token estimate **$0.0074576** including preceding four live runs; billing panel not reread after calls. No new model-fitting API charges.
+- User quality-cycle request15:38 and C3 ACK15:41 superseded previous15:51 stop; the revised16:40 hard stop was met. Both quality gates failed, V1 retained, search stopped. No further paid computation planned.
 
 Historical entries below remain as recorded; this current-state section supersedes their old GPU pending/stop status.
 

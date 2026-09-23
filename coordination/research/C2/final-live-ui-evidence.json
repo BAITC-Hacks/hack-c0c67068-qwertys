@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "test": "Actual refreshed UI -> strict weather -> live LLM -> V1 -> CSV, Feb28 boundary",
+  "api_run_id": "31ecc157653948728b3e599a61741ab0",
+  "agent_export_id": "3db41f5b0c444b9dbbb0561571aa8067",
+  "rows": 96,
+  "model_version": "nwp-tabular-7f1b4f31e9bb",
+  "requests": 6,
+  "input_tokens": 2846,
+  "output_tokens": 181,
+  "estimated_usd": 0.001428,
+  "elapsed_seconds": 10.187,
+  "old_runs_preserved": [
+    "25c182d9622e445da659dc8282746877",
+    "65d1b212eee445f8b61405a68f5c1275"
+  ],
+  "api_csv_equal": true,
+  "last_target": "2026-03-02T12:00:00Z",
+  "ui_prepare_claim_corrected": true,
+  "browser_console_errors_and_warnings": [],
+  "frontend_assets": [
+    "index-Bu6gZIe7.js",
+    "index-O7nCWpHI.css"
+  ],
+  "replay": {
+    "status": "completed",
+    "runs": 29,
+    "journal_rows": 2784,
+    "february_rows": 1344,
+    "csv_sha256": "da6730f17ab48ad19bcb169725bc5eeab872b95fe9713ecf42a3bdc8c4801996"
+  },
+  "limitations": [
+    "Weather availability and SCADA timezone inferred",
+    "No February observed labels; no February accuracy metrics",
+    "GPU research models are not production; V1 retained"
+  ]
+}

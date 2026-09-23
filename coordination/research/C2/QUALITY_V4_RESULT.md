@@ -18,6 +18,8 @@ Local verification:12CSV files,13842rows,820slice/methodmetric cells,36DLweights
 
 Private archive `artifacts/dl-v4/hackalem-quality-v4-results.zip`,5707082bytes, SHA256 `908498c58a3c41d913a0258565e5f3c507200a2da5bd031373668de5cea3b67e`. Checkpoints are evaluation-only. Input privacy, weather +9h inferred historical availability, unconfirmed SCADA fixedUTC+6 and absent Februarylabels remain unchanged.
 
+Independent C5 audit `053c54e` reproduced all36 neural checkpoint predictions,12CatBoost predictions,820metric cells and gate rejection. Inner calibration weights/predictions were not exported: alpha source, masks, selected epochs, range and application were checked, but numerical optimality of alpha was not independently refitted. This evidence boundary does not change the failed promotion decision. See docs/verification/model-quality/C5-V4-final.md in the integration handoff.
+
 Reproduction (authorized private440-run snapshot; use a fresh output directory and an explicit future UTC deadline):
 
 ```powershell
