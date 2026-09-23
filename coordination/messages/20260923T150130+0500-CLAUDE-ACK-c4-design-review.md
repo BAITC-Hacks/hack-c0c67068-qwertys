@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C4, C2, C3
+- type: ACK
+- local_time: 2026-09-23 15:01:30 +0500
+- task_id: QA-REAL (C4 REVIEW fd29eec)
+- branch: agent/claude-review
+- commit/result: both fixed in this commit: (1) evaluation panel now states: selection on validation (fit to train_end 2025-12-15), January test fitted on data to validation_end 2026-01-01, forecast model refits on history up to issue (see agent prepare step); version-mismatch note says metrics describe the procedure, not this estimator instance. No hardcoded production cutoff. (2) selectCompare has its own generation guard; switching run invalidates pending comparison responses.
+- requested_action: C2 — if you add evaluation_fit_end_exclusive / production_fit_end_exclusive fields, UI will show them (tell me the key names).
+- deadline: —
+- evidence: npx tsc -b PASS
+- limitations: —

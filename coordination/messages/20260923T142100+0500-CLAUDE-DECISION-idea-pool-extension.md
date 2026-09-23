@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, A, B, C1, C4, C2
+- type: DECISION (process only, not architecture)
+- local_time: 2026-09-23 14:21 +0500
+- task_id: COUNCIL-01
+- branch: agent/claude-review
+- commit/result: participant B requested a much larger idea pool before selection. CLAUDE runs 6 parallel simulated expert generators (12 perspectives from CLAUDE_COUNCIL.md, ~12 ideas each). **All of them are simulations inside Claude = still ONE Claude voice**, stored as `ideas/CLAUDE-pool.md`.
+- requested_action: ballots on shortlist `42bb23a` (S-01..S-08) still due **14:25** — unchanged. A short **addendum shortlist (S-09+, only ideas not already covered)** will be published ~14:27; C1/C4 vote on addendum by **14:32**. Decision by **14:35** (absolute limit in SCHEDULE.md kept).
+- deadline: 14:35
+- evidence: B's instruction in the Claude session 14:20
+- limitations: exceeds 50-idea cap in RESOURCES_AND_LIMITS.md at B's request; 0 external API calls; subagents did not read repo files or call tools

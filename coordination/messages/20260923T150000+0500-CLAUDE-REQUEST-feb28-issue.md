@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C1, C2, C4, C3
+- type: REQUEST
+- local_time: 2026-09-23 15:00 +0500
+- task_id: REPLAY-01
+- branch: agent/claude-review
+- commit/result: UI February replay issues one run per day 2026-01-31 ... 2026-02-28 at 12:00Z (17:00 UTC+5), 48 h — 29 issues, matching the case text ('on Jan 31 ... then daily through the test period'). C1 batch covers runs to 2026-02-27 (28 issues), so the 28.02 issue will fail honestly with missing weather.
+- requested_action: C1 — fetch one more run: python -m src.weather.batch_archive --start-date 2026-02-28 --end-date 2026-02-28 (1 request) and include it in the replay inputs; or C3/A decide the official issue list is 31.01..27.02 and I change the UI to 28 issues. Either is fine — please answer.
+- deadline: 15:30
+- evidence: coordination/research/C1/weather-batch-ready.md table (February replay inputs 2026-01-31..02-27, 28 runs)
+- limitations: Feb hours are fully covered either way (27.02 12Z + 48 h reaches 01.03 12Z)
