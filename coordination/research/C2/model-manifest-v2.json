@@ -1,0 +1,44 @@
+{
+  "training_end_exclusive": "2026-01-31T00:00:00Z",
+  "scada_timezone": "fixed UTC+6 hypothesis",
+  "features": [
+    "wind100",
+    "temperature2",
+    "direction_sin",
+    "direction_cos",
+    "hour_sin",
+    "hour_cos",
+    "lead_hours"
+  ],
+  "turbines": {
+    "turbine_1": {
+      "kind": "catboost",
+      "file": "turbine_1.cbm",
+      "feature_mask": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sha256": "11938b06490f77921008bbc30df9f200e89437822af11679b8728f62e945d3fd"
+    },
+    "turbine_2": {
+      "kind": "catboost",
+      "file": "turbine_2.cbm",
+      "feature_mask": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sha256": "d0f5c14a7885e2a10618a0fd125949663a330c8e9117054ce78f4ce5bb99e978"
+    }
+  },
+  "model_version": "nwp-tabular-0079962f502f"
+}
