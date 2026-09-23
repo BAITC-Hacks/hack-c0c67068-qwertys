@@ -1,0 +1,275 @@
+{
+  "role": "C1",
+  "independent_executor": true,
+  "shortlist_commit": "42bb23a46c88c746867921215bbd56a855d6766a",
+  "candidates": [
+    {
+      "id": "S-01",
+      "scores": {
+        "K": 5,
+        "F": 2,
+        "D": 2,
+        "I": 2,
+        "V": 5,
+        "R": 3,
+        "N": 4
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 170,
+        "integration_and_check": 10
+      },
+      "owner": "C1/C2/C3/C4",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "C2 absent; NWP as-issued provenance not yet proved"
+      ],
+      "stop_rule": "If no provenance or runnable forecast by 15:15, reduce to verified offline baseline",
+      "veto": null,
+      "reason": "Strong fit but 150–180 min and absent C2 make deadline fragile.",
+      "expected_result": "end-to-end 29×48×2, source provenance and rolling backtest",
+      "acceptance_check": "29 выпусков, 48 часов, 2 турбины; no-leak check and runnable backtest",
+      "rollback": "Fallback to simpler verified pipeline"
+    },
+    {
+      "id": "S-02",
+      "scores": {
+        "K": 4,
+        "F": 3,
+        "D": 2,
+        "I": 3,
+        "V": 3,
+        "R": 5,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 130,
+        "integration_and_check": 10
+      },
+      "owner": "C2/C3",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "same archived NWP provenance issue"
+      ],
+      "stop_rule": "If no source proof by 14:45, use clearly labelled limited replay",
+      "veto": null,
+      "reason": "Simpler CPU path; site power curve and forecast bias remain unverified.",
+      "expected_result": "physics-first forecast without GBM",
+      "acceptance_check": "same as S-01, with climatology comparator",
+      "rollback": "Restore simple baseline"
+    },
+    {
+      "id": "S-03",
+      "scores": {
+        "K": 3,
+        "F": 3,
+        "D": 3,
+        "I": 3,
+        "V": 4,
+        "R": 4,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C2",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "historical validation and owner available"
+      ],
+      "stop_rule": "Stop at 16:00 if coverage calculation unavailable",
+      "veto": null,
+      "reason": "Valuable but 25 min exceeds preferred 20-min P1 ceiling.",
+      "expected_result": "calibrated P10/P90 only when tested",
+      "acceptance_check": "backtest empirical coverage printed; hidden otherwise",
+      "rollback": "Hide bands and retain point forecast"
+    },
+    {
+      "id": "S-04",
+      "scores": {
+        "K": 2,
+        "F": 1,
+        "D": 1,
+        "I": 1,
+        "V": 3,
+        "R": 1,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "low",
+      "effort_minutes": {
+        "implementation": 35,
+        "integration_and_check": 10
+      },
+      "owner": "C1/C2",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "multiple historical source provenance unknown"
+      ],
+      "stop_rule": "Stop before implementation without verified per-source run and gain",
+      "veto": "Unverified additional archives and 45 min violate P1 gate.",
+      "expected_result": "multi-source NWP blend",
+      "acceptance_check": "same-hour backtest gain and source availability proof",
+      "rollback": "Keep one NWP source"
+    },
+    {
+      "id": "S-05",
+      "scores": {
+        "K": 3,
+        "F": 4,
+        "D": 4,
+        "I": 4,
+        "V": 4,
+        "R": 5,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 15,
+        "integration_and_check": 10
+      },
+      "owner": "C4",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "requires two actual stored runs for same issue"
+      ],
+      "stop_rule": "Stop if no real second run by 16:00",
+      "veto": "Good operator value once a second run exists; 25 min is tight.",
+      "expected_result": "real revision comparison",
+      "acceptance_check": "two run IDs with common valid times and delta",
+      "rollback": "Hide comparison"
+    },
+    {
+      "id": "S-06",
+      "scores": {
+        "K": 4,
+        "F": 3,
+        "D": 3,
+        "I": 4,
+        "V": 4,
+        "R": 4,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 10,
+        "integration_and_check": 10
+      },
+      "owner": "C1/C4",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "cache redistribution terms and size unknown"
+      ],
+      "stop_rule": "Do not commit weather payload until license/size checked",
+      "veto": "Reproducibility matters; committing cache is conditional on source terms.",
+      "expected_result": "small licensable replay cache and clean-clone run",
+      "acceptance_check": "fresh clone reproduces committed export offline",
+      "rollback": "Ship fetch script and manifest instead"
+    },
+    {
+      "id": "S-07",
+      "scores": {
+        "K": 2,
+        "F": 4,
+        "D": 3,
+        "I": 4,
+        "V": 3,
+        "R": 5,
+        "N": 3
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "medium",
+      "effort_minutes": {
+        "implementation": 5,
+        "integration_and_check": 10
+      },
+      "owner": "C3",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "availability of RH/icing features unknown"
+      ],
+      "stop_rule": "Exclude icing when RH unavailable",
+      "veto": "Cheap if restricted to verifiable ramps/low confidence.",
+      "expected_result": "numeric-rule alerts",
+      "acceptance_check": "flags derive from code and match export values",
+      "rollback": "Remove alert module"
+    },
+    {
+      "id": "S-08",
+      "scores": {
+        "K": 4,
+        "F": 4,
+        "D": 4,
+        "I": 3,
+        "V": 4,
+        "R": 5,
+        "N": 4
+      },
+      "evidence": [
+        "coordination/research/C1/evidence.md @ 1bc29c1: no February actuals, two sites share weather gridpoint, Single Runs 72/72, run publication unresolved",
+        "coordination/council/20260923T141110+0500/shortlist.md @ 42bb23a46c88c746867921215bbd56a855d6766a: candidate scope and estimated effort"
+      ],
+      "confidence": "high",
+      "effort_minutes": {
+        "implementation": 10,
+        "integration_and_check": 10
+      },
+      "owner": "C3/C1",
+      "files": [
+        "proposed by candidate owner; C1 only src/data/ and src/weather/"
+      ],
+      "dependencies": [
+        "SCADA timezone still inferred"
+      ],
+      "stop_rule": "If lag evidence inconclusive, show warning without auto-setting offset",
+      "veto": "Directly addresses two observed risks and fits 20 minutes.",
+      "expected_result": "safe rerun plus UTC diagnostic",
+      "acceptance_check": "failed rerun preserves previous result; ±3h warning shown",
+      "rollback": "Keep previous run and disable auto-timezone"
+    }
+  ],
+  "overall_note": "S-01 or S-02 can be ratified only with honest weather provenance/availability gate. If not established promptly, use explicitly limited offline mode; no February actuals or reported February skill."
+}

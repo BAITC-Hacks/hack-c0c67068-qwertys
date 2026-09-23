@@ -1,0 +1,32 @@
+{
+  "source_url": "https://single-runs-api.open-meteo.com/v1/forecast?latitude=43.645150&longitude=78.535604&hourly=wind_speed_100m%2Cwind_direction_100m%2Ctemperature_2m&run=2026-01-31T00%3A00&forecast_hours=72&timezone=GMT&models=ecmwf_ifs&wind_speed_unit=ms",
+  "provider_documentation": "https://open-meteo.com/en/docs/single-runs-api",
+  "response_sha256": "3c846b4f520d1ee3f1cefa0d4be765c7cd12a41a077d026e18d083867871237e",
+  "response_bytes": 2638,
+  "run_init_utc": "2026-01-31T00:00:00Z",
+  "available_at_utc_assumed": "2026-01-31T09:00:00Z",
+  "availability_status": "ASSUMED, not verified historical publication",
+  "availability_basis": "inferred_run_plus_9h",
+  "provenance_status": "unconfirmed",
+  "model": "ecmwf_ifs",
+  "grid_latitude": 43.620384,
+  "grid_longitude": 78.47891,
+  "grid_elevation_m": 555.0,
+  "hour_count": 72,
+  "first_valid_time": "2026-01-31T00:00:00Z",
+  "last_valid_time": "2026-02-02T23:00:00Z",
+  "null_counts": {
+    "wind_speed_100m": 0,
+    "wind_direction_100m": 0,
+    "temperature_2m": 0
+  },
+  "hourly_units": {
+    "time": "iso8601",
+    "wind_speed_100m": "m/s",
+    "wind_direction_100m": "°",
+    "temperature_2m": "°C"
+  },
+  "provenance_limit": "HTTP response and cycle date do not prove as-issued operational field at historical issue time",
+  "cache_file": "data\\cache\\weather\\3c846b4f520d1ee3f1cefa0d4be765c7cd12a41a077d026e18d083867871237e.json",
+  "retrieved_at_utc": "2026-09-23T09:24:55Z"
+}

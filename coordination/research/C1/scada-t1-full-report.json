@@ -1,0 +1,17 @@
+{
+  "source_name": "Dataset HackAlemAI для участников 11.03.2023-28.02.2026 - turbine 1.csv",
+  "source_sha256": "c4c341582fb2dd348b7187f0128cff265fe055f469413871ebb5db50eef58b5b",
+  "turbine_id": "turbine_1",
+  "raw_rows": 142360,
+  "output_hours": 23763,
+  "complete_hours": 23667,
+  "partial_hours": 96,
+  "first_hour_utc": "2023-03-10T18:00:00Z",
+  "last_hour_utc": "2026-01-31T17:00:00Z",
+  "timezone_hypothesis": "fixed UTC+6",
+  "timezone_status": "inferred",
+  "utc_offset_hours": 6,
+  "aggregation": "arithmetic mean of unique on-grid 10-minute readings; coverage=unique slots/6",
+  "start_utc": null,
+  "end_utc_exclusive": null
+}

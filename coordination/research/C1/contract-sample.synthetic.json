@@ -1,0 +1,36 @@
+{
+  "synthetic": true,
+  "observation": {
+    "turbine_id": "turbine_1",
+    "timestamp": "2026-01-30T18:00:00Z",
+    "timezone_interpretation": "fixed UTC+6 hypothesis",
+    "timezone_status": "inferred",
+    "utc_offset_hours": 6,
+    "wind_m_s": 6.0,
+    "temperature_c": 3.0,
+    "power_normalized": 0.4,
+    "coverage": 1.0,
+    "quality_flags": []
+  },
+  "weather_forecast": {
+    "provider": "Open-Meteo Single Runs",
+    "model": "ecmwf_ifs",
+    "run_time": "2026-01-31T00:00:00Z",
+    "available_at": "2026-01-31T09:00:00Z",
+    "available_at_basis": "inferred run_init + 9h safety margin; not provider publication timestamp",
+    "availability_basis": "inferred_run_plus_9h",
+    "provenance_status": "unconfirmed",
+    "valid_time": "2026-01-31T08:00:00Z",
+    "variables": {
+      "wind_speed_100m_m_s": 6.0,
+      "wind_direction_100m_deg": 90.0,
+      "temperature_2m_c": 3.0
+    },
+    "units": {
+      "wind_speed_100m_m_s": "m/s",
+      "wind_direction_100m_deg": "degrees",
+      "temperature_2m_c": "°C"
+    },
+    "source_reference": "synthetic-example-no-response-hash"
+  }
+}
