@@ -74,12 +74,21 @@ def load_model(model_dir=None):
     if not path.is_file():
         raise CoreNotReady("Model manifest is absent; run src.ml.train first")
     manifest = json.loads(path.read_text(encoding="utf-8"))
+    utc(manifest["training_end_exclusive"])
+    if not manifest.get("model_version") or set(manifest["turbines"])!=set(TURBINES):
+        raise CoreNotReady("Model manifest identity is invalid")
     for spec in manifest["turbines"].values():
         if spec["kind"] == "catboost":
             artifact=directory/spec["file"]
             if not artifact.is_file(): raise CoreNotReady("Trained model artifact is absent")
             if spec.get("sha256") and hashlib.sha256(artifact.read_bytes()).hexdigest()!=spec["sha256"]:
                 raise CoreNotReady("Trained model artifact checksum mismatch")
+        elif spec["kind"]=="curve":
+            wind=np.asarray(spec["curve"]["wind"],dtype=float); power=np.asarray(spec["curve"]["power"],dtype=float)
+            if wind.ndim!=1 or power.shape!=wind.shape or len(wind)<2 or not np.isfinite(wind).all() or not np.isfinite(power).all() or not (np.diff(wind)>0).all():
+                raise CoreNotReady("Model calibration curve is malformed")
+        else:
+            raise CoreNotReady("Unsupported model kind")
     return directory, manifest
 
 
@@ -91,6 +100,7 @@ def predict_from_inputs(issue_time, turbine_ids, horizon_hours, weather, model_d
     weather = select_horizon(weather, iso(issue), horizon_hours)
     x = features(weather, issue)
     output = []
+    model_warnings=[]
     for turbine in turbine_ids:
         spec = manifest["turbines"][turbine]
         if spec["kind"] == "catboost":
@@ -100,6 +110,8 @@ def predict_from_inputs(issue_time, turbine_ids, horizon_hours, weather, model_d
             prediction = model.predict(x*np.array(spec.get("feature_mask",[1]*7)))
         elif spec["kind"] == "curve":
             prediction = curve_predict(spec["curve"], x[:, 0])
+            outside=(x[:,0]<spec["curve"]["wind"][0])|(x[:,0]>spec["curve"]["wind"][-1])
+            if outside.any(): model_warnings.append(f"{turbine}: {int(outside.sum())} часов за диапазоном обученной кривой ветра; использовано ближайшее крайнее значение кривой.")
         else:
             raise CoreNotReady("Unsupported model kind")
         if not np.isfinite(prediction).all():
@@ -108,7 +120,7 @@ def predict_from_inputs(issue_time, turbine_ids, horizon_hours, weather, model_d
             output.append({"turbine_id": turbine, "issue_time": iso(issue), "valid_time": row["valid_time"], "lead_hours": lead, "y_pred": float(value)})
     first = weather[0]
     input_version = fingerprint({"model": manifest["model_version"], "weather": weather})
-    return {"rows": output, "mode": "deterministic", "metadata": {"model_version": manifest["model_version"], "input_version": input_version, "weather_provider": first["provider"], "weather_model": first["model"], "weather_run_time": first["run_time"], "weather_available_at": first["available_at"], "availability_basis": first["availability_basis"], "scada_timezone": manifest["scada_timezone"], "timezone_status": "inferred", "provenance_status": first["provenance_status"]}, "warnings": ["Архивная погода Open-Meteo; публикация на момент выпуска не подтверждена (+9h — допущение).", "Часовой пояс SCADA принят как фиксированный UTC+6; подтверждения владельца нет.", "Мощность в исходных нормализованных единицах; это не МВт и не энергия.", "Февральских фактических меток нет; февральские метрики не вычислялись."]}
+    return {"rows": output, "mode": "deterministic", "metadata": {"model_version": manifest["model_version"], "input_version": input_version, "weather_provider": first["provider"], "weather_model": first["model"], "weather_run_time": first["run_time"], "weather_available_at": first["available_at"], "availability_basis": first["availability_basis"], "scada_timezone": manifest["scada_timezone"], "timezone_status": "inferred", "provenance_status": first["provenance_status"]}, "warnings": ["Архивная погода Open-Meteo; публикация на момент выпуска не подтверждена (+9h — допущение).", "Часовой пояс SCADA принят как фиксированный UTC+6; подтверждения владельца нет.", "Мощность в исходных нормализованных единицах; это не МВт и не энергия.", "Февральских фактических меток нет; февральские метрики не вычислялись.",*model_warnings]}
 
 
 def predict_forecast(issue_time: str, turbine_ids: list[str], horizon_hours: int = 48, *, model_dir=None, weather_dir=None) -> dict:
