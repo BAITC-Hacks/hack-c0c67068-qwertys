@@ -22,6 +22,8 @@ class ForecastTests(unittest.TestCase):
         self.rows=[]
         for lead in range(1,49):
             self.rows.append({"provider":"test","model":"test","run_time":"2026-02-01T00:00:00Z","available_at":"2026-02-01T09:00:00Z","availability_basis":"inferred_run_plus_9h","provenance_status":"unconfirmed","valid_time":iso(utc(self.request["issue_time"])+timedelta(hours=lead)),"source_reference":"test-sha","variables":{"wind_speed_100m_m_s":20,"wind_direction_100m_deg":90,"temperature_2m_c":5}})
+        for row in self.rows:
+            row["units"]={"wind_speed_100m_m_s":"m/s","wind_direction_100m_deg":"degrees","temperature_2m_c":"°C"}
         self.save_weather()
 
     def tearDown(self): self.temp.cleanup()
@@ -37,7 +39,8 @@ class ForecastTests(unittest.TestCase):
         self.assertEqual(result["metadata"]["provenance_status"],"unconfirmed")
 
     def test_future_weather_rejected(self):
-        self.rows[0]["available_at"]="2026-02-01T13:00:00Z"; self.save_weather()
+        for row in self.rows: row["available_at"]="2026-02-01T13:00:00Z"
+        self.save_weather()
         with self.assertRaises(WeatherUnavailable): self.predict()
 
     def test_incomplete_weather_rejected(self):
