@@ -92,3 +92,5 @@ Observed: audit verified=true,440 hashes,24 restored weights; five selected test
 ```
 
 Агрегаты: `gpu-recomputed.json`, `gpu-verified-summary.json`. Это дополнение относится только к замороженному V3; текущий V4 не принят автоматически.
+
+Окончательный отдельный аудит V4 завершён: см. [C5-V4-final.md](C5-V4-final.md) и `v4-recomputed.json`. Независимый пересчёт подтвердил отказ обеих frozen promotion gates; productionV1 сохранена.
