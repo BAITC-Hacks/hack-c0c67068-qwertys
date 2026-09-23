@@ -35,6 +35,11 @@ const MODEL_LABEL: Record<string, string> = {
   catboost: 'CatBoost',
   persistence: 'Persistence (baseline)',
 }
+/** Russian rendering of C2's known estimator_relationship text; unknown texts are shown verbatim. */
+const RELATION_RU: Record<string, string> = {
+  'January metrics belong to estimators fitted only on pre-January targets. model_version identifies final production refit, not the January-test estimator. Same family/configuration, different fitted parameters.':
+    'Метрики января получены моделями, обученными только на целях до января. model_version обозначает финальное переобучение для прогнозов, а не январский оценщик: то же семейство и конфигурация, другие обученные параметры.',
+}
 /** selected_on_validation may name a candidate config (e.g. depth4_full) that is reported under `catboost`. */
 const selectedKey = (sel?: string) => (sel && /^depth/.test(sel) ? 'catboost' : sel)
 const BUCKET_LABEL: Record<string, string> = { hours_1_24: '1–24 ч', hours_25_48: '25–48 ч', all_48: '1–48 ч', available_only: 'все доступные' }
@@ -136,7 +141,11 @@ export function EvaluationPanel({
               </div>
             ))}
           </div>
-          {evaluation?.estimator_relationship && <p className="eval-meta">{evaluation.estimator_relationship}</p>}
+          {evaluation?.estimator_relationship && (
+            <p className="eval-meta" title={evaluation.estimator_relationship}>
+              {RELATION_RU[evaluation.estimator_relationship.trim()] ?? evaluation.estimator_relationship}
+            </p>
+          )}
           {evaluation?.protocol && (
             <details className="eval-proto">
               <summary>Протокол оценки</summary>
