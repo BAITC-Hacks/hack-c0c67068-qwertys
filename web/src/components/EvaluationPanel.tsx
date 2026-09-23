@@ -89,9 +89,10 @@ export function EvaluationPanel({
         <>
           <p className="eval-meta">
             Тест: {d10(split?.validation_end_exclusive)} — {d10(split?.test_end_exclusive)}, не использовался для выбора. Выбор модели — на валидации
-            (обучение до {d10(split?.train_end_exclusive)}); для теста выбранная процедура переобучена на данных до{' '}
-            {d10(evaluation?.evaluation_fit_end_exclusive ?? split?.validation_end_exclusive)}; модель для прогнозов переобучена на данных до{' '}
-            {evaluation?.production_fit_end_exclusive ? d10(evaluation.production_fit_end_exclusive) : 'момента выпуска (шаг prepare в журнале агента)'}. Версия{' '}
+            (обучение до {d10(split?.train_end_exclusive)}); оценщик для теста обучен на данных до{' '}
+            {d10(evaluation?.evaluation_fit_end_exclusive ?? split?.validation_end_exclusive)}.
+            {evaluation?.production_fit_end_exclusive && <> Рабочая модель обучена заранее на данных до {d10(evaluation.production_fit_end_exclusive)}.</>} При
+            прогнозе загружается заранее обученная модель; шаг prepare проверяет её и временную границу обучения. Версия{' '}
             {evaluation?.model_version ?? '?'} · единица {evaluation?.unit ?? '?'} · bias = прогноз − факт
           </p>
           {currentModel && evaluation?.model_version && currentModel !== evaluation.model_version && (
