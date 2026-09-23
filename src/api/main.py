@@ -8,7 +8,6 @@ import importlib
 import io
 import json
 import os
-import re
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -23,6 +22,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from src.api.store import RunStore, now
+from src.agent.safety import safe_summary
 from src.contracts.schemas import ApiError, EventInput, EventResponse, ForecastPayload, ForecastRequest, ForecastResponse, RunStatus, check_payload
 
 Runner = Callable[[ForecastRequest, Callable[[EventInput], None]], ForecastPayload]
@@ -30,14 +30,6 @@ Runner = Callable[[ForecastRequest, Callable[[EventInput], None]], ForecastPaylo
 
 def problem(status: int, code: str, message: str, retryable=False):
     raise HTTPException(status, detail=ApiError(code=code, message=message, retryable=retryable).model_dump())
-
-
-def safe_summary(text: str) -> str:
-    # Defense against accidental key inclusion in tool-generated text; do not log exception text.
-    text = re.sub(r"(?i)(bearer\s+)[^\s,;]+", r"\1[REDACTED]", text)
-    text = re.sub(r"\b(?:sk-|nvapi-)[a-zA-Z0-9_-]+", "[REDACTED]", text)
-    text = re.sub(r"(?i)((?:api[_-]?key|token|password|secret)\s*[:=]\s*)[^\s,;&]+", r"\1[REDACTED]", text)
-    return text
 
 
 def configured_runner() -> Runner | None:

@@ -11,6 +11,7 @@ from uuid import uuid4
 from src.ml.common import iso, utc, write_json
 from src.ml.forecast import CoreNotReady, InvalidForecastRequest, load_model, load_weather, predict_from_inputs, validate_request
 from src.agent.budget import RATES, PRICE_SOURCE, PRICE_DATE, Reservation
+from src.agent.safety import safe_summary
 
 STAGES=("weather", "prepare", "forecast", "validate", "export")
 
@@ -41,9 +42,22 @@ class ForecastTools:
         self.started=time.monotonic()
 
     def event(self, tool, state, summary, stage=None):
-        event={"tool":tool,"state":state,"summary":summary,"stage":stage}
+        event={"tool":tool,"state":state,"summary":safe_summary(summary)[:1000],"stage":stage}
         self.events.append({"seq":len(self.events)+1,"timestamp":iso(datetime.now(timezone.utc)),**event})
         self.emit(event)
+
+    def completed_summary(self):
+        if self.done != set(STAGES) or self.payload is None:
+            raise CoreNotReady("Cannot summarize an incomplete workflow")
+        rows = self.payload["rows"]
+        return (
+            f"Итог выполненных инструментов: рассчитано и проверено {len(rows)} строк, "
+            f"горизонт {self.request['horizon_hours']} ч; экспорт подготовлен. "
+            f"Модель: {self.payload['metadata']['model_version']}. "
+            "Мощность в нормализованных единицах. "
+            "Историческая доступность погоды и часовой пояс SCADA не подтверждены. "
+            "Точность февраля не оценивалась: фактических меток нет."
+        )
 
     def call(self, name):
         if name not in STAGES: raise InvalidForecastRequest("Unknown tool")
@@ -81,7 +95,7 @@ class ForecastTools:
                     writer.writeheader(); writer.writerows(self.payload["rows"])
                 result={"export_id":self.run_id,"rows":len(self.payload["rows"]),"formats":["json","csv"],"status":"staged_pending_agent_completion"}
             self.done.add(name)
-            self.event(name,"ok",json.dumps(result,ensure_ascii=False)[:990],name)
+            self.event(name,"ok",json.dumps(result,ensure_ascii=False),name)
             return result
         except Exception:
             self.event(name,"error",f"Инструмент {name} завершился ошибкой; результат не опубликован",name)
@@ -119,8 +133,8 @@ def _live_loop(context, client=None):
                 if tool_errors>2: raise CoreNotReady("LLM did not complete required tools")
                 history.append({"role":"user","content":"Workflow incomplete; execute the missing tools before final response."})
                 continue
-            summary=response.output_text[:900]
-            context.event("llm.summary","ok",summary)
+            # A free-form model response is not evidence of quality or provenance.
+            context.event("agent.summary","ok",context.completed_summary())
             return usage
         for call in calls:
             arguments=json.loads(call.arguments)

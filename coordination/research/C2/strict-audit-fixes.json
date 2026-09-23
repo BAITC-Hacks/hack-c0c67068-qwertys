@@ -1,0 +1,116 @@
+{
+  "base_commit": "798bfb9",
+  "tests": {
+    "passed": 85,
+    "subtests_passed": 4,
+    "optional_training_tests_run": false
+  },
+  "strict_audit": {
+    "pass": 20,
+    "fail": 3,
+    "checks": [
+      {
+        "name": "real_48h_two_turbines",
+        "status": "PASS"
+      },
+      {
+        "name": "reject_wind_speed_100m_m_s",
+        "status": "PASS"
+      },
+      {
+        "name": "reject_wind_direction_100m_deg",
+        "status": "PASS"
+      },
+      {
+        "name": "reject_temperature_2m_c",
+        "status": "PASS"
+      },
+      {
+        "name": "100_synthetic_physical_range_inputs",
+        "status": "PASS"
+      },
+      {
+        "name": "equivalent_weather_offsets_preserve_numbers",
+        "status": "PASS"
+      },
+      {
+        "name": "direct_callable_enforces_nine_hour_gate",
+        "status": "PASS"
+      },
+      {
+        "name": "input_version_covers_actual_curve_parameters",
+        "status": "PASS"
+      },
+      {
+        "name": "reject_wrong_provider_temperature_and_direction_units",
+        "status": "FAIL"
+      },
+      {
+        "name": "reject_missing_provider_units",
+        "status": "FAIL"
+      },
+      {
+        "name": "redact_plain_password",
+        "status": "PASS"
+      },
+      {
+        "name": "redact_json_password",
+        "status": "PASS"
+      },
+      {
+        "name": "redact_json_token",
+        "status": "PASS"
+      },
+      {
+        "name": "redact_bearer",
+        "status": "PASS"
+      },
+      {
+        "name": "redact_api_key",
+        "status": "PASS"
+      },
+      {
+        "name": "unsupported_llm_quality_claim_is_rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "advertised_arbitrary_hour_48h_coverage",
+        "status": "FAIL"
+      },
+      {
+        "name": "synthetic_text_and_invalid_api_requests",
+        "status": "PASS"
+      },
+      {
+        "name": "api_csv_numeric_equality_2026-01-31T12:00:00Z",
+        "status": "PASS"
+      },
+      {
+        "name": "api_csv_numeric_equality_2026-02-01T12:00:00Z",
+        "status": "PASS"
+      },
+      {
+        "name": "weather_update_changes_overlap_preserves_history",
+        "status": "PASS"
+      },
+      {
+        "name": "restart_persists_real_forecasts",
+        "status": "PASS"
+      },
+      {
+        "name": "not_ready_returns_503",
+        "status": "PASS"
+      }
+    ]
+  },
+  "numerical_compatibility": {
+    "status": "PASS",
+    "v1_rows_unchanged": 96,
+    "catboost_blob_inference_rows": 96,
+    "training_or_api_calls": 0
+  },
+  "new_training": false,
+  "new_external_requests": false,
+  "production_model_changed": false,
+  "input_version_formula_changed": true
+}
