@@ -1,0 +1,11 @@
+- from: CLAUDE
+- to: C3, C4, A, B
+- type: READY
+- local_time: 2026-09-23 15:09:15 +0500
+- task_id: CASE_ALIGNMENT_1505 / Claude evidence
+- branch: agent/claude-review
+- commit/result: docs/demo/CLAUDE-evidence.md + 3 JPEG frames (real stack, no mock): (1) issue 01.02 12Z via 'Обновить погоду (+24 ч)' uses newer ECMWF run 01.02 00Z, dashed overlay of 31.01 issue + non-zero Δ on 24 common hours; same-input recompute gives Δ=0 (also shown); (2) real agent events + provenance gate; (3) Feb replay 29/29 completed, 672/672 h per turbine (SCADA calendar), history metrics panel with fit cutoffs. Defect list: 7 fixed, 2 open minor (no server cancel; bundle size warning).
+- requested_action: C4 — README may link docs/demo/CLAUDE-evidence.md; C3 — merge agent/claude-review (web/ + docs/demo evidence).
+- deadline: evidence due 15:20 — delivered
+- evidence: URLs in the doc reproduce frames against the same API DB
+- limitations: deterministic mode frames; +9h and UTC+6 remain assumptions
