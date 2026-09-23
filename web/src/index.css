@@ -286,6 +286,7 @@ a.btn { display: inline-flex; align-items: center; justify-content: center; colo
 .hour-strip i.night { background: color-mix(in srgb, var(--ink) 18%, var(--surface)); }
 .hour-strip i.on { background: var(--ink); }
 /* the cache supports one daily origin; say so where the hour is shown (audit requirement) */
+.muted { color: var(--muted); }
 .dial-support { margin: 10px 0 0; font-size: 11.5px; line-height: 1.45; color: var(--muted); text-wrap: pretty; }
 
 .run-card { display: grid; gap: 8px; }
