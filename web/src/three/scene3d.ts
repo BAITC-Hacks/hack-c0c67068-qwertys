@@ -375,8 +375,8 @@ export function createScene(host: HTMLElement, opt: SceneOptions = {}): WindScen
     const day = clamp((el + 2) / 12, 0, 1)
     const tw = clamp(1 - Math.abs(el - 8) / 10, 0, 1) // golden hour: strongest with the sun on the far ridge (~7.5° high)
     const mix3 = (n: string, d: string, t: string, out: THREE.Color) => out.copy(C(n)).lerp(C(d), day).lerp(C(t), tw)
-    mix3('#040817', '#3c7ccc', '#8f86b0', skyU.top.value) // dusty lavender
-    mix3('#0a1030', '#97bfe6', '#f3b08e', skyU.mid.value) // soft peach
+    mix3('#040817', '#3c7ccc', '#9a8fb8', skyU.top.value) // dusty lavender
+    mix3('#0a1030', '#97bfe6', '#f0bc98', skyU.mid.value) // soft peach
     mix3('#10183a', '#c9e4f4', '#ffd28e', skyU.horizon.value) // soft gold
     mix3('#05070c', '#6f7d5a', '#4a2f3a', skyU.bottom.value)
     skyU.sunDir.value.copy(v)

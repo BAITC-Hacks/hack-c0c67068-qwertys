@@ -30,7 +30,7 @@ function Hero() {
           sweep: { r: 48, h: 0.5, a0: -0.42, a1: 0.42, dur: 36 }, // near-level gaze: more sunset sky
           still: matchMedia('(prefers-reduced-motion: reduce)').matches,
           fade: fadeRef.current,
-          hour: 15.82, // January sunset: the sun peeks over the far ridge, UTC+5 (decorative)
+          hour: 15.94, // January sunset: only the top of the sun peeks over the far ridge, UTC+5 (decorative)
           sunAz: [-2.3, 0.35], // sun sets just right of the view centre
         })
         // 7.9 m/s is the prototype's animation-only estimate for 17.01.2026 14:00
