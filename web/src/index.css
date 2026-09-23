@@ -19,7 +19,7 @@
   --glass: rgba(255, 254, 250, 0.82);
   --ink: #0e141a;
   --ink-2: #47525e;
-  --muted: #7a8490;
+  --muted: #5c6672;
   --grid: #e7e3d8;
   --axis: #cdc8ba;
   --border: rgba(14, 20, 26, 0.10);
@@ -62,7 +62,7 @@
     --glass: rgba(13, 19, 26, 0.78);
     --ink: #edf2f6;
     --ink-2: #a7b4c1;
-    --muted: #6d7c8a;
+    --muted: #8594a2;
     --grid: #1b2530;
     --axis: #2b3844;
     --border: rgba(170, 205, 230, 0.09);
@@ -427,6 +427,10 @@ a.btn:focus-visible, .rcell:focus-visible, .runs button:focus-visible, .trust su
 
 /* ---------- evaluation ---------- */
 .eval-meta { margin: 0 0 10px; color: var(--ink-2); font-size: 12.5px; }
+.eval-note {
+  margin: 0 0 10px; padding: 7px 10px; border-radius: var(--radius-sm); font-size: 12.5px; color: var(--ink-2);
+  background: color-mix(in srgb, var(--warning) 10%, var(--surface)); border-left: 3px solid var(--warning);
+}
 .eval-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 12px; }
 .eval-grid .table-scroll { max-height: none; }
 .eval-grid td:first-child { white-space: normal; min-width: 150px; font-family: var(--font-ui); }
