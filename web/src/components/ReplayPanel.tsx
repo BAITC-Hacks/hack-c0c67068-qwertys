@@ -14,8 +14,9 @@ interface Cell {
   rows?: ForecastRow[]
 }
 
-const FEB_START = Date.parse('2026-02-01T00:00:00+05:00')
-const FEB_END = Date.parse('2026-03-01T00:00:00+05:00')
+// February target calendar = SCADA clock (fixed UTC+6, inferred), same as the team replay export (C3 faab55c)
+const FEB_START = Date.parse('2026-02-01T00:00:00+06:00')
+const FEB_END = Date.parse('2026-03-01T00:00:00+06:00')
 const FEB_HOURS = (FEB_END - FEB_START) / 3600_000 // 672
 const COLOR: Record<TurbineId, string> = { turbine_1: 'var(--t1)', turbine_2: 'var(--t2)' }
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -180,7 +181,7 @@ export function ReplayPanel({ hour, tz, turbines, enabled, onRun, onOpen }: Prop
             </ResponsiveContainer>
           </div>
           <p className="legend-note">
-            Для каждого часа февраля взят прогноз самого свежего выпуска (наименьшее упреждение). Полный журнал всех 48-ч горизонтов с перекрытиями — в «CSV всех выпусков». Фактических значений за февраль нет, поэтому точность здесь не считается.
+            Для каждого часа февраля (календарь SCADA, UTC+6) взят прогноз самого свежего выпуска (наименьшее упреждение ≥ 1 ч). Полный журнал всех 48-ч горизонтов с перекрытиями — в «CSV всех выпусков». Фактических значений за февраль нет, поэтому точность здесь не считается.
           </p>
         </>
       )}

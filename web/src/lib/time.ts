@@ -1,10 +1,13 @@
 // Display helpers. Kazakhstan civil time since 2024-03-01 is UTC+5 (single zone).
 // SCADA clock is a separate question (inferred fixed UTC+6) and handled by the backend.
-export type DisplayTz = 'local' | 'utc'
+export type DisplayTz = 'local' | 'scada' | 'utc'
 export const LOCAL_OFFSET_H = 5
+/** SCADA clock: fixed UTC+6 (inferred, C1). The team replay defines February in this calendar. */
+export const SCADA_OFFSET_H = 6
+const OFFSET: Record<DisplayTz, number> = { local: LOCAL_OFFSET_H, scada: SCADA_OFFSET_H, utc: 0 }
 
 function shift(ms: number, tz: DisplayTz): Date {
-  return new Date(ms + (tz === 'local' ? LOCAL_OFFSET_H * 3600_000 : 0))
+  return new Date(ms + OFFSET[tz] * 3600_000)
 }
 const p2 = (n: number) => String(n).padStart(2, '0')
 
@@ -24,7 +27,7 @@ export function fmtIso(iso: string | null | undefined, tz: DisplayTz): string | 
   return `${fmtDayHour(ms, tz)} ${tzLabel(tz)}`
 }
 export function tzLabel(tz: DisplayTz): string {
-  return tz === 'local' ? `UTC+${LOCAL_OFFSET_H}` : 'UTC'
+  return tz === 'utc' ? 'UTC' : tz === 'scada' ? `UTC+${SCADA_OFFSET_H} SCADA` : `UTC+${LOCAL_OFFSET_H}`
 }
 
 /** Issue dates of the case replay: 2026-01-31 … 2026-02-28. */

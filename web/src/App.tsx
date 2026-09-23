@@ -412,6 +412,9 @@ export default function App() {
               <button type="button" aria-pressed={tz === 'local'} onClick={() => setTz('local')}>
                 UTC+5
               </button>
+              <button type="button" aria-pressed={tz === 'scada'} onClick={() => setTz('scada')} title="Часы SCADA (фиксированный UTC+6, допущение)">
+                UTC+6
+              </button>
               <button type="button" aria-pressed={tz === 'utc'} onClick={() => setTz('utc')}>
                 UTC
               </button>
